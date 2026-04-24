@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\B2bChatbotController;
+use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminFinanceController;
 use App\Http\Controllers\Admin\AdminB2bOrderController;
 use App\Http\Controllers\B2b\B2bOrderController;
@@ -97,75 +98,7 @@ Route::middleware('auth')->group(function () {
     // Admin CMS Routes
     Route::middleware(['admin'])->prefix('admin')->name('admin.')->group(function () {
         // Dashboard
-        Route::get('/dashboard', function () {
-            $totalProducts       = \App\Models\Product::count();
-            $totalCategories     = \App\Models\Category::count();
-            $featuredCount       = \App\Models\Product::where('is_featured', true)->count();
-            $pendingB2bCount     = \App\Models\B2bRegistration::where('status', 'pending')->count();
-            $pendingOrdersCount  = \App\Models\Order::where('status', 'pending')->where('payment_status', 'paid')->count();
-
-            // Chart Data: Last 7 Days Revenue
-            $salesData    = [];
-            $b2bSalesData = [];
-            $labels       = [];
-            for ($i = 6; $i >= 0; $i--) {
-                $date = now()->subDays($i)->format('Y-m-d');
-                $labels[] = now()->subDays($i)->format('d M');
-
-                // B2C Revenue
-                $dailyTotal = \App\Models\Order::where('payment_status', 'paid')
-                    ->whereDate('paid_at', $date)
-                    ->sum('total');
-                $salesData[] = (int) $dailyTotal;
-
-                // B2B Revenue (Berdasarkan total pesanan yang sudah DP Verified atau lebih)
-                $dailyB2bTotal = \App\Models\B2bOrder::whereNotIn('status', ['pending_review', 'waiting_dp', 'dp_uploaded', 'cancelled'])
-                    ->whereDate('dp_verified_at', $date)
-                    ->sum('total');
-                $b2bSalesData[] = (int) $dailyB2bTotal;
-            }
-
-            // Top Selling B2C
-            $b2cOrders = \App\Models\Order::whereNotIn('status', ['cancelled'])->get();
-            $b2cTopProducts = [];
-            foreach ($b2cOrders as $order) {
-                $items = is_array($order->items) ? $order->items : json_decode($order->items, true);
-                if ($items) {
-                    foreach ($items as $item) {
-                        $pId = $item['product_id'] ?? 0;
-                        if (!isset($b2cTopProducts[$pId])) {
-                            $b2cTopProducts[$pId] = ['name' => $item['name'] ?? 'Unknown', 'total' => 0];
-                        }
-                        $b2cTopProducts[$pId]['total'] += $item['quantity'] ?? 0;
-                    }
-                }
-            }
-            usort($b2cTopProducts, fn($a, $b) => $b['total'] <=> $a['total']);
-            $b2cTopProducts = array_slice($b2cTopProducts, 0, 5);
-
-            // Top Selling B2B
-            $b2bOrders = \App\Models\B2bOrder::whereNotIn('status', ['cancelled'])->get();
-            $b2bTopProducts = [];
-            foreach ($b2bOrders as $order) {
-                $items = is_array($order->items) ? $order->items : json_decode($order->items, true);
-                if ($items) {
-                    foreach ($items as $item) {
-                        $pId = $item['product_id'] ?? 0;
-                        if (!isset($b2bTopProducts[$pId])) {
-                            $b2bTopProducts[$pId] = ['name' => $item['name'] ?? 'Unknown', 'total' => 0];
-                        }
-                        $b2bTopProducts[$pId]['total'] += $item['qty_kg'] ?? 0;
-                    }
-                }
-            }
-            usort($b2bTopProducts, fn($a, $b) => $b['total'] <=> $a['total']);
-            $b2bTopProducts = array_slice($b2bTopProducts, 0, 5);
-
-            return view('admin.dashboard', compact(
-                'totalProducts', 'totalCategories', 'featuredCount', 'pendingB2bCount', 'pendingOrdersCount',
-                'labels', 'salesData', 'b2bSalesData', 'b2cTopProducts', 'b2bTopProducts'
-            ));
-        })->name('dashboard');
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
         // Products CRUD
         Route::resource('products', \App\Http\Controllers\Admin\AdminProductController::class);
