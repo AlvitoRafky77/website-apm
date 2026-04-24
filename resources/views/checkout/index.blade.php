@@ -32,6 +32,29 @@
             });
         }
 
+        function showCartMessage(message, type = 'error') {
+            let box = document.getElementById('cartMessageBox');
+            if (!box) {
+                box = document.createElement('div');
+                box.id = 'cartMessageBox';
+                box.className = 'fixed top-4 right-4 z-[99999] max-w-sm rounded-xl px-4 py-3 text-sm font-medium shadow-lg border transition-opacity duration-200';
+                document.body.appendChild(box);
+            }
+
+            const styles = type === 'success'
+                ? 'bg-green-50 border-green-200 text-green-700'
+                : 'bg-red-50 border-red-200 text-red-700';
+
+            box.className = `fixed top-4 right-4 z-[99999] max-w-sm rounded-xl px-4 py-3 text-sm font-medium shadow-lg border transition-opacity duration-200 ${styles}`;
+            box.textContent = message;
+            box.style.opacity = '1';
+
+            clearTimeout(box._hideTimer);
+            box._hideTimer = setTimeout(() => {
+                box.style.opacity = '0';
+            }, 3500);
+        }
+
         // ── Subtotal & Total recalculation ───────────────────────
         let currentShipping = {{ $shipping }};
 
@@ -56,7 +79,9 @@
             const row   = document.querySelector(`[data-item-row][data-product-id="${productId}"]`);
             const input = row.querySelector('[data-qty-input]');
             const max   = parseInt(input.max);
-            let newQty  = Math.max(10, Math.min(max, parseInt(input.value) + delta));
+            const min   = parseInt(input.min) || 1;
+            const currentQty = parseInt(input.value) || min;
+            const newQty  = Math.max(min, Math.min(max, currentQty + delta));
             input.value = newQty;
 
             fetch(CART_UPDATE_URL, {
@@ -64,16 +89,27 @@
                 headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN},
                 body: JSON.stringify({product_id: productId, quantity: newQty})
             })
-            .then(r => r.json())
+            .then(async r => {
+                const data = await r.json().catch(() => ({}));
+
+                if (!r.ok) {
+                    throw new Error(data.error || data.message || 'Gagal memperbarui kuantitas.');
+                }
+
+                return data;
+            })
             .then(data => {
                 if (data.success) {
                     recalcTotal();
                     updateCartBadge(data.cart_count);
-                    // Re-fetch shipping if address is already set
                     if (document.getElementById('recipient_lat').value) {
                         fetchShippingQuote();
                     }
                 }
+            })
+            .catch(err => {
+                input.value = currentQty;
+                showCartMessage(err.message || 'Gagal memperbarui kuantitas.');
             });
         }
 

@@ -140,11 +140,22 @@ class CartController extends Controller
             return response()->json(['error' => 'Stok belum memenuhi minimal pembelian ' . $minOrder . ' ' . $product->unit . '.'], 422);
         }
 
-        $qty = min((int) $request->quantity, $maxOrder);
-        $qty = max($minOrder, $qty);
+        $requestedQty = (int) $request->quantity;
+
+        if ($requestedQty < $minOrder) {
+            return response()->json([
+                'error' => 'Kuantitas tidak valid. Minimal pembelian untuk produk ini adalah ' . $minOrder . ' ' . $product->unit . '.',
+            ], 422);
+        }
+
+        if ($requestedQty > $maxOrder) {
+            return response()->json([
+                'error' => 'Kuantitas tidak valid. Maksimal pembelian untuk produk ini adalah ' . $maxOrder . ' ' . $product->unit . '.',
+            ], 422);
+        }
 
         $cart[$key]['max_order'] = $maxOrder;
-        $cart[$key]['quantity'] = $qty;
+        $cart[$key]['quantity'] = $requestedQty;
 
         $this->saveCart($cart);
         return $this->cartSummaryResponse($cart);
