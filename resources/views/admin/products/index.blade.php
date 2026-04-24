@@ -17,7 +17,8 @@
             <tr class="bg-gray-50 border-b border-gray-100">
                 <th class="text-left px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Produk</th>
                 <th class="text-left px-4 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Kategori</th>
-                <th class="text-left px-4 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Harga</th>
+                <th class="text-left px-4 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Harga B2C</th>
+                <th class="text-left px-4 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Harga B2B</th>
                 <th class="text-center px-4 py-4 text-xs font-bold text-blue-500 uppercase tracking-wider">Stok B2C</th>
                 <th class="text-center px-4 py-4 text-xs font-bold text-emerald-500 uppercase tracking-wider">Stok B2B</th>
                 <th class="text-center px-4 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
@@ -53,9 +54,16 @@
                         <span class="text-gray-400 text-xs">—</span>
                     @endif
                 </td>
-                <!-- Harga -->
+                <!-- Harga B2C -->
                 <td class="px-4 py-4">
                     <p class="font-bold text-[#CD422B]">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
+                </td>
+                <!-- Harga B2B -->
+                <td class="px-4 py-4">
+                    <p class="font-bold text-emerald-600">Rp {{ number_format($product->price_b2b ?? 0, 0, ',', '.') }}</p>
+                    <p class="text-[10px] text-gray-400 mt-0.5">
+                        {{ $product->price_b2b ? 'Harga khusus B2B' : 'Belum diisi' }}
+                    </p>
                 </td>
                 <!-- Stok B2C -->
                 <td class="px-4 py-4 text-center">
@@ -106,7 +114,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="7" class="text-center py-16 text-gray-400">
+                <td colspan="8" class="text-center py-16 text-gray-400">
                     <svg class="w-12 h-12 mx-auto mb-3 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
                     <p class="font-medium">Belum ada produk.</p>
                     <a href="{{ route('admin.products.create') }}" class="text-[#CD422B] font-semibold text-sm mt-2 inline-block hover:underline">Tambah produk pertama →</a>

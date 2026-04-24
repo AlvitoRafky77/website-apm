@@ -29,6 +29,7 @@ class AdminProductController extends Controller
             'name'          => 'required|string|max:255',
             'category_id'   => 'required|exists:categories,id',
             'price'         => 'required|numeric|min:0',
+            'price_b2b'     => 'nullable|numeric|min:0',
             'unit'          => 'required|string|max:50',
             'weight'        => 'required|numeric|min:0.01',
             'description'   => 'required|string',
@@ -37,12 +38,19 @@ class AdminProductController extends Controller
             'is_active'     => 'nullable|boolean',
             'stock_b2c'     => 'required|integer|min:0',
             'stock_b2b'     => 'required|integer|min:0',
+            'min_order_b2c' => 'nullable|integer|min:1',
+            'max_order_b2c' => 'nullable|integer|min:1',
+            'min_order_b2b' => 'nullable|integer|min:1',
+            'max_order_b2b' => 'nullable|integer|min:1',
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
         $validated['is_featured'] = $request->boolean('is_featured');
         $validated['is_active']   = $request->boolean('is_active');
-        $validated['max_order_b2c'] = 200;
+        $validated['min_order_b2c'] = $validated['min_order_b2c'] ?? 10;
+        $validated['max_order_b2c'] = $validated['max_order_b2c'] ?? null;
+        $validated['min_order_b2b'] = $validated['min_order_b2b'] ?? 1;
+        $validated['max_order_b2b'] = $validated['max_order_b2b'] ?? null;
 
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('products', 'public');
@@ -67,6 +75,7 @@ class AdminProductController extends Controller
             'name'          => 'required|string|max:255',
             'category_id'   => 'required|exists:categories,id',
             'price'         => 'required|numeric|min:0',
+            'price_b2b'     => 'nullable|numeric|min:0',
             'unit'          => 'required|string|max:50',
             'weight'        => 'required|numeric|min:0.01',
             'description'   => 'required|string',
@@ -75,12 +84,19 @@ class AdminProductController extends Controller
             'is_active'     => 'nullable|boolean',
             'stock_b2c'     => 'required|integer|min:0',
             'stock_b2b'     => 'required|integer|min:0',
+            'min_order_b2c' => 'nullable|integer|min:1',
+            'max_order_b2c' => 'nullable|integer|min:1',
+            'min_order_b2b' => 'nullable|integer|min:1',
+            'max_order_b2b' => 'nullable|integer|min:1',
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
         $validated['is_featured'] = $request->boolean('is_featured');
         $validated['is_active']   = $request->boolean('is_active');
-        $validated['max_order_b2c'] = 200;
+        $validated['min_order_b2c'] = $validated['min_order_b2c'] ?? 10;
+        $validated['max_order_b2c'] = $validated['max_order_b2c'] ?? null;
+        $validated['min_order_b2b'] = $validated['min_order_b2b'] ?? 1;
+        $validated['max_order_b2b'] = $validated['max_order_b2b'] ?? null;
 
         if ($request->hasFile('image')) {
             // Hapus gambar lama jika bukan URL eksternal

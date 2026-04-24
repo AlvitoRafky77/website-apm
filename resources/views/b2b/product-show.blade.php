@@ -74,12 +74,15 @@
             </div>
 
             {{-- Harga --}}
+            @php
+                $b2bPrice = $product->price_b2b ?? $product->price;
+            @endphp
             <div class="bg-gradient-to-r from-[#1a1a2e] to-[#2d1b0e] rounded-2xl p-5 text-white">
                 <p class="text-xs text-white/50 font-semibold uppercase tracking-wider mb-1">Harga B2B (per KG)</p>
-                <p class="text-3xl font-black text-white">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
-                <p class="text-sm text-white/60 mt-1">Estimasi per 1 Ton: <strong class="text-[#CD422B] font-black">Rp {{ number_format($product->price * 1000, 0, ',', '.') }}</strong></p>
+                <p class="text-3xl font-black text-white">Rp {{ number_format($b2bPrice, 0, ',', '.') }}</p>
+                <p class="text-sm text-white/60 mt-1">Estimasi per 1 Ton: <strong class="text-[#CD422B] font-black">Rp {{ number_format($b2bPrice * 1000, 0, ',', '.') }}</strong></p>
                 <div class="mt-3 pt-3 border-t border-white/10 grid grid-cols-3 gap-3">
-                    @foreach([['1 Ton', $product->price * 1000], ['5 Ton', $product->price * 5000], ['10 Ton', $product->price * 10000]] as [$label, $val])
+                    @foreach([['1 Ton', $b2bPrice * 1000], ['5 Ton', $b2bPrice * 5000], ['10 Ton', $b2bPrice * 10000]] as [$label, $val])
                     <div class="bg-white/8 rounded-xl p-3 text-center">
                         <p class="text-[10px] text-white/50 mb-1">{{ $label }}</p>
                         <p class="text-sm font-black text-white">Rp {{ number_format($val, 0, ',', '.') }}</p>
@@ -166,7 +169,7 @@
                 </div>
                 <div class="p-3">
                     <p class="font-bold text-gray-900 text-xs leading-tight line-clamp-2">{{ $r->name }}</p>
-                    <p class="text-[#CD422B] font-black text-sm mt-1">Rp {{ number_format($r->price, 0, ',', '.') }}<span class="text-gray-400 font-medium text-[10px]">/KG</span></p>
+                    <p class="text-[#CD422B] font-black text-sm mt-1">Rp {{ number_format($r->price_b2b ?? $r->price, 0, ',', '.') }}<span class="text-gray-400 font-medium text-[10px]">/KG</span></p>
                     @php $rTon = $r->stock_b2b / 1000; @endphp
                     <p class="text-[10px] text-gray-400 mt-0.5">Stok: {{ number_format($rTon, 1, ',', '.') }} Ton</p>
                 </div>

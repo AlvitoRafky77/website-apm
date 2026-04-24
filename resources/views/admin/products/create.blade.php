@@ -38,51 +38,107 @@
                 </div>
             </div>
 
-            <!-- Harga & Satuan -->
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Harga (Rp) <span class="text-red-500">*</span></label>
-                <div class="relative">
-                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">Rp</span>
-                    <input type="number" name="price" value="{{ old('price') }}" required min="0" step="500"
-                        class="w-full border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#CD422B]/30 focus:border-[#CD422B] transition"
-                        placeholder="45000">
+            <!-- Harga B2C & B2B -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Harga B2C (Rp) <span class="text-red-500">*</span></label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">Rp</span>
+                        <input type="number" name="price" value="{{ old('price') }}" required min="0" step="500"
+                            class="w-full border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#CD422B]/30 focus:border-[#CD422B] transition"
+                            placeholder="45000">
+                    </div>
+                    @error('price')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                 </div>
-                @error('price')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Harga B2B (Rp)</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">Rp</span>
+                        <input type="number" name="price_b2b" value="{{ old('price_b2b') }}" min="0" step="500"
+                            class="w-full border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#CD422B]/30 focus:border-[#CD422B] transition"
+                            placeholder="85000">
+                    </div>
+                    <p class="text-[11px] text-gray-400 mt-1">Kosongkan jika harga B2B mengikuti harga utama.</p>
+                    @error('price_b2b')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                </div>
             </div>
 
             <!-- Manajemen Stok (Live Update) -->
             <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 space-y-4">
-                <div class="flex items-center gap-2 mb-1">
+                <div class="flex items-center gap-2">
                     <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/></svg>
                     <h4 class="text-sm font-bold text-gray-700">Manajemen Stok</h4>
+                    <span class="ml-auto text-[10px] bg-green-100 text-green-700 font-bold px-2 py-0.5 rounded-full animate-pulse">● Live Update</span>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Stok B2C -->
-                    <div class="bg-white rounded-xl p-4 border border-blue-100 shadow-sm">
-                        <label class="block text-xs font-bold text-blue-600 mb-1 uppercase tracking-wide">Stok B2C</label>
+                    <div class="bg-white rounded-xl p-4 border border-blue-200 shadow-sm">
+                        <label class="block text-xs font-bold text-blue-600 mb-1 uppercase tracking-wide">STOK B2C</label>
                         <p class="text-[10px] text-gray-400 mb-2">Retail / Pelanggan Umum</p>
-                        <input type="number" name="stock_b2c" value="{{ old('stock_b2c', 0) }}" required min="0"
-                            class="w-full border border-blue-200 rounded-lg px-3 py-2 text-sm font-bold text-center focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition"
+                        <input type="number" name="stock_b2c" id="stock_b2c" value="{{ old('stock_b2c', 0) }}" required min="0"
+                            class="w-full border border-blue-200 rounded-xl px-4 py-3 text-sm font-bold text-center focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition"
                             placeholder="0">
                         @error('stock_b2c')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                     </div>
 
-                    <!-- Stok B2B -->
-                    <div class="bg-white rounded-xl p-4 border border-emerald-100 shadow-sm">
-                        <label class="block text-xs font-bold text-emerald-600 mb-1 uppercase tracking-wide">Stok B2B</label>
+                    <div class="bg-white rounded-xl p-4 border border-emerald-200 shadow-sm">
+                        <label class="block text-xs font-bold text-emerald-600 mb-1 uppercase tracking-wide">STOK B2B</label>
                         <p class="text-[10px] text-gray-400 mb-2">Mitra / Partai Besar</p>
-                        <input type="number" name="stock_b2b" value="{{ old('stock_b2b', 0) }}" required min="0"
-                            class="w-full border border-emerald-200 rounded-lg px-3 py-2 text-sm font-bold text-center focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-400 transition"
+                        <input type="number" name="stock_b2b" id="stock_b2b" value="{{ old('stock_b2b', 0) }}" required min="0"
+                            class="w-full border border-emerald-200 rounded-xl px-4 py-3 text-sm font-bold text-center focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-400 transition"
                             placeholder="0">
                         @error('stock_b2b')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                     </div>
+                </div>
 
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-white rounded-xl p-4 border border-rose-200 shadow-sm">
+                        <label class="block text-xs font-bold text-rose-600 mb-1 uppercase tracking-wide">Minimal Order B2C</label>
+                        <p class="text-[10px] text-gray-400 mb-2">Default retail per produk</p>
+                        <input type="number" name="min_order_b2c" value="{{ old('min_order_b2c', 10) }}" min="1" step="1"
+                            class="w-full border border-rose-200 rounded-xl px-4 py-3 text-sm font-bold text-center focus:outline-none focus:ring-2 focus:ring-rose-300 focus:border-rose-400 transition"
+                            placeholder="10">
+                        <p class="text-[11px] text-gray-400 mt-2">Bisa diubah jika diperlukan.</p>
+                        @error('min_order_b2c')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                    </div>
+
+                    <div class="bg-white rounded-xl p-4 border border-amber-200 shadow-sm">
+                        <label class="block text-xs font-bold text-amber-600 mb-1 uppercase tracking-wide">Maksimal Order B2C</label>
+                        <p class="text-[10px] text-gray-400 mb-2">Batas pembelian maksimum retail</p>
+                        <input type="number" name="max_order_b2c" value="{{ old('max_order_b2c') }}" min="1" step="1"
+                            class="w-full border border-amber-200 rounded-xl px-4 py-3 text-sm font-bold text-center focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 transition"
+                            placeholder="200">
+                        <p class="text-[11px] text-gray-400 mt-2">Opsional, gunakan jika dibatasi per transaksi.</p>
+                        @error('max_order_b2c')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-white rounded-xl p-4 border border-sky-200 shadow-sm">
+                        <label class="block text-xs font-bold text-sky-600 mb-1 uppercase tracking-wide">Minimal Order B2B</label>
+                        <p class="text-[10px] text-gray-400 mb-2">Batas pembelian minimum untuk B2B</p>
+                        <input type="number" name="min_order_b2b" value="{{ old('min_order_b2b', 1) }}" min="1" step="1"
+                            class="w-full border border-sky-200 rounded-xl px-4 py-3 text-sm font-bold text-center focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-400 transition"
+                            placeholder="1">
+                        <p class="text-[11px] text-gray-400 mt-2">Digunakan jika mitra B2B memiliki batas pembelian minimum khusus.</p>
+                        @error('min_order_b2b')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                    </div>
+
+                    <div class="bg-white rounded-xl p-4 border border-emerald-200 shadow-sm">
+                        <label class="block text-xs font-bold text-emerald-600 mb-1 uppercase tracking-wide">Maksimal Order B2B</label>
+                        <p class="text-[10px] text-gray-400 mb-2">Pembelian B2B per transaksi</p>
+                        <input type="number" name="max_order_b2b" value="{{ old('max_order_b2b') }}" min="1" step="1"
+                            class="w-full border border-emerald-200 rounded-xl px-4 py-3 text-sm font-bold text-center focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-400 transition"
+                            placeholder="100">
+                        <p class="text-[11px] text-gray-400 mt-2">Opsional, gunakan jika dibatasi per transaksi.</p>
+                        @error('max_order_b2b')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                    </div>
                 </div>
 
                 <p class="text-xs text-gray-400 flex items-center gap-1">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    Stok B2C dan B2B dikelola terpisah. Batas retail di website otomatis: minimal 10 KG, maksimal 200 KG, dan tetap mengikuti stok tersedia.
+                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Stok B2C dan B2B dikelola terpisah. Di website retail, aturan order otomatis mengikuti data produk dan tetap mengikuti stok yang tersedia.
                 </p>
             </div>
 

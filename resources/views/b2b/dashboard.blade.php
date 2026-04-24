@@ -507,10 +507,10 @@
                             <p class="text-[10px] text-gray-400">{{ number_format($p->stock_b2b, 0, ',', '.') }} KG</p>
                         </td>
                         <td class="px-6 py-3.5">
-                            <p class="font-bold text-gray-900 text-sm">Rp {{ number_format($p->price, 0, ',', '.') }}</p>
+                            <p class="font-bold text-gray-900 text-sm">Rp {{ number_format($p->price_b2b ?? $p->price, 0, ',', '.') }}</p>
                         </td>
                         <td class="px-6 py-3.5">
-                            <p class="font-black text-[#CD422B] text-sm">Rp {{ number_format($p->price * 1000, 0, ',', '.') }}</p>
+                            <p class="font-black text-[#CD422B] text-sm">Rp {{ number_format(($p->price_b2b ?? $p->price) * 1000, 0, ',', '.') }}</p>
                             <p class="text-[10px] text-gray-400">per 1 Ton</p>
                         </td>
                         <td class="px-6 py-3.5 text-right">

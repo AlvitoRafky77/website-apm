@@ -81,8 +81,11 @@
 
                     <!-- Info Stok B2C -->
                     @php
-                        $minOrder = 10;
-                        $maxOrder = min(200, (int) $product->stock_b2c);
+                        $minOrder = max(1, (int) ($product->min_order_b2c ?? 1));
+                        $maxOrder = min(
+                            (int) ($product->max_order_b2c ?? $product->stock_b2c),
+                            (int) $product->stock_b2c
+                        );
                     @endphp
                     <div class="mb-6">
                         @if($product->stock_b2c > 0)
@@ -91,10 +94,10 @@
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                                     Stok tersedia : <strong class="font-bold text-green-800">{{ $product->stock_b2c }} KG</strong>
                                 </span>
-                                <span class="bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-sm font-medium border border-blue-200 shadow-sm flex items-center gap-1.5">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                    Min. {{ $minOrder }} KG / transaksi
-                                </span>
+                                    <span class="bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-sm font-medium border border-blue-200 shadow-sm flex items-center gap-1.5">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        Min. {{ $minOrder }} KG / transaksi
+                                    </span>
                                 <span class="bg-orange-50 text-orange-700 px-3 py-1.5 rounded-lg text-sm font-medium border border-orange-200 shadow-sm flex items-center gap-1.5">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 11l3 3L22 4M20 14v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"/></svg>
                                     Maks. {{ $maxOrder }} KG / transaksi
@@ -145,7 +148,7 @@
                                             <button type="button" onclick="changeQty(1)"
                                                 class="px-4 h-full text-gray-500 hover:text-[#CD422B] hover:bg-red-50 transition font-bold text-lg">+</button>
                                         </div>
-                                        <span class="text-xs text-gray-400">Min. {{ $minOrder }} — Maks. {{ $maxOrder }} KG</span>
+                                            <span class="text-xs text-gray-400">Min. {{ $minOrder }} KG — Maks. {{ $maxOrder }} KG</span>
                                     </div>
 
                                     <!-- Total Harga -->
@@ -174,9 +177,9 @@
                                 </div>
 
                             @elseif($product->stock_b2c > 0)
-                                <button disabled class="w-full bg-amber-100 text-amber-700 font-bold py-3.5 px-8 rounded-xl cursor-not-allowed text-center border border-amber-200">
-                                    Stok belum memenuhi minimal order 10 KG
-                                </button>
+                                    <button disabled class="w-full bg-amber-100 text-amber-700 font-bold py-3.5 px-8 rounded-xl cursor-not-allowed text-center border border-amber-200">
+                                        Stok belum memenuhi minimal order {{ $minOrder }}
+                                    </button>
 
                             @else
                                 {{-- Stok habis --}}
@@ -327,8 +330,8 @@
                             Order WA
                         </a>
                     </div>
-                @elseif($product->stock_b2c > 0)
-                    <button disabled class="w-full bg-amber-100 text-amber-700 font-bold py-3.5 rounded-xl border border-amber-200">Stok belum memenuhi minimal 10 KG</button>
+                    @elseif($product->stock_b2c > 0)
+                    <button disabled class="w-full bg-amber-100 text-amber-700 font-bold py-3.5 rounded-xl border border-amber-200">Stok belum memenuhi minimal {{ $minOrder }}</button>
                 @else
                     <button disabled class="w-full bg-gray-200 text-gray-400 font-bold py-3.5 rounded-xl">Stok Habis</button>
                 @endif

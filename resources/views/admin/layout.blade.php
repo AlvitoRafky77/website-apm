@@ -15,13 +15,13 @@
 </head>
 <body class="bg-gray-100 antialiased text-gray-800">
     {{-- Global Page Loader --}}
-    <div id="apm-preloader" class="fixed inset-0 z-[99999] bg-white flex flex-col items-center justify-center transition-opacity duration-500 pointer-events-none select-none">
-        <div class="relative w-16 h-16">
-            <div class="absolute inset-0 rounded-full border-4 border-gray-100"></div>
-            <div class="absolute inset-0 rounded-full border-4 border-[#CD422B] border-t-transparent animate-spin"></div>
-            <img src="{{ asset('images/APM_Logo.webp') }}" class="absolute inset-0 m-auto w-8 h-8 object-contain animate-pulse" alt="APM">
+    <div id="apm-preloader" class="fixed inset-0 z-[99999] bg-white flex flex-col items-center justify-center transition-opacity duration-300 pointer-events-none select-none">
+        <div class="relative w-12 h-12">
+            <div class="absolute inset-0 rounded-full border-3 border-gray-100"></div>
+            <div class="absolute inset-0 rounded-full border-3 border-[#CD422B] border-t-transparent animate-spin"></div>
+            <img src="{{ asset('images/APM_Logo.webp') }}" class="absolute inset-0 m-auto w-6 h-6 object-contain" alt="APM">
         </div>
-        <p class="mt-4 text-[10px] font-black text-[#CD422B] tracking-[0.2em] uppercase animate-pulse">Memuat...</p>
+        <p class="mt-3 text-[9px] font-black text-[#CD422B] tracking-[0.18em] uppercase">Memuat...</p>
     </div>
     <script>
         (function () {
@@ -31,14 +31,18 @@
 
                 loader.dataset.hidden = '1';
                 loader.style.opacity = '0';
-                loader.style.pointerEvents = 'none';
-                setTimeout(() => { loader.style.display = 'none'; }, 250);
+                setTimeout(() => { loader.style.display = 'none'; }, 120);
             }
 
-            document.addEventListener('DOMContentLoaded', hideAdminPreloader);
-            window.addEventListener('load', hideAdminPreloader);
-            window.addEventListener('pageshow', hideAdminPreloader);
-            setTimeout(hideAdminPreloader, 1200);
+            if (document.readyState === 'interactive' || document.readyState === 'complete') {
+                hideAdminPreloader();
+                return;
+            }
+
+            document.addEventListener('DOMContentLoaded', hideAdminPreloader, { once: true });
+            window.addEventListener('load', hideAdminPreloader, { once: true });
+            window.addEventListener('pageshow', hideAdminPreloader, { once: true });
+            setTimeout(hideAdminPreloader, 450);
         })();
     </script>
 

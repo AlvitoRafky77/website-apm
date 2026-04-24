@@ -9,8 +9,16 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $categories = \App\Models\Category::with('products')->get();
-        $featuredProducts = \App\Models\Product::where('is_featured', true)->take(3)->get();
+        $categories = \App\Models\Category::with([
+            'products' => function ($query) {
+                $query->where('is_active', true);
+            },
+        ])->get();
+
+        $featuredProducts = \App\Models\Product::where('is_active', true)
+            ->where('is_featured', true)
+            ->take(3)
+            ->get();
 
         return view('products.index', compact('categories', 'featuredProducts'));
     }

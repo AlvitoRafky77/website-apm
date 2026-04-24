@@ -62,15 +62,15 @@ class CartController extends Controller
             return response()->json(['error' => 'Mitra B2B menggunakan portal khusus.'], 403);
         }
 
-        $minOrder = 10; // minimum 10 KG per transaksi
-        $maxOrder = min(200, (int) $product->stock_b2c);
+        $minOrder = max(1, (int) ($product->min_order_b2c ?? 1));
+        $maxOrder = min((int) ($product->max_order_b2c ?? $product->stock_b2c), (int) $product->stock_b2c);
 
         if ($product->stock_b2c <= 0) {
             return response()->json(['error' => 'Stok produk habis.'], 422);
         }
 
         if ($maxOrder < $minOrder) {
-            return response()->json(['error' => 'Stok belum memenuhi minimal pembelian 10 KG.'], 422);
+            return response()->json(['error' => 'Stok belum memenuhi minimal pembelian ' . $minOrder . ' ' . $product->unit . '.'], 422);
         }
 
         $qty = min((int) $request->quantity, $maxOrder);
@@ -134,10 +134,10 @@ class CartController extends Controller
             return response()->json(['error' => 'Stok produk habis.'], 422);
         }
 
-        $minOrder = 10;
-        $maxOrder = min(200, (int) $product->stock_b2c);
+        $minOrder = max(1, (int) ($product->min_order_b2c ?? 1));
+        $maxOrder = min((int) ($product->max_order_b2c ?? $product->stock_b2c), (int) $product->stock_b2c);
         if ($maxOrder < $minOrder) {
-            return response()->json(['error' => 'Stok belum memenuhi minimal pembelian 10 KG.'], 422);
+            return response()->json(['error' => 'Stok belum memenuhi minimal pembelian ' . $minOrder . ' ' . $product->unit . '.'], 422);
         }
 
         $qty = min((int) $request->quantity, $maxOrder);

@@ -45,6 +45,7 @@
         </div>
 
         <div class="flex flex-col items-end gap-3">
+            @if(in_array($order->status, ['settlement_verified', 'delivered', 'completed']))
             <a href="{{ route('b2b.orders.invoice', $order->order_number) }}"
                class="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#CD422B] text-white text-sm font-black shadow-sm hover:bg-red-700 transition-all">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -54,6 +55,7 @@
                 </svg>
                 Cetak Invoice
             </a>
+            @endif
             @php
                 $colorMap = [
                     'gray' => 'bg-gray-100 text-gray-700',
