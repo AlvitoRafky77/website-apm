@@ -260,23 +260,76 @@
         </div>
         @endif
 
-        {{-- Verifikasi DP --}}
+        {{-- Verifikasi DP (Hanya Approve/Reject) --}}
         @if($order->status === 'dp_uploaded')
         <div class="bg-white rounded-2xl border border-amber-200 shadow-sm p-6">
-            <h3 class="font-bold text-gray-900 text-sm mb-4">🔍 Verifikasi DP & Siapkan Armada</h3>
-            <p class="text-xs text-gray-500 mb-4">DP mitra: <strong>Rp {{ number_format($order->dp_amount, 0, ',', '.') }}</strong></p>
+            <h3 class="font-bold text-gray-900 text-sm mb-2">🔍 Verifikasi Bukti DP</h3>
+            <p class="text-xs text-gray-500 mb-4">Cek bukti DP mitra senilai <strong class="text-[#CD422B]">Rp {{ number_format($order->dp_amount, 0, ',', '.') }}</strong>. Pastikan jumlah & bukti transfer sesuai.</p>
+            
+            @if($order->dp_proof_path)
+            <div class="bg-gray-50 rounded-xl p-3 mb-4">
+                @php $ext = pathinfo($order->dp_proof_path, PATHINFO_EXTENSION); @endphp
+                @if(in_array(strtolower($ext), ['jpg','jpeg','png']))
+                    <a href="{{ Storage::url($order->dp_proof_path) }}" target="_blank">
+                        <img src="{{ Storage::url($order->dp_proof_path) }}" class="w-full h-40 object-cover rounded-lg border border-gray-200 hover:opacity-80 transition">
+                    </a>
+                @else
+                    <a href="{{ Storage::url($order->dp_proof_path) }}" target="_blank" class="flex items-center gap-2 text-blue-600 text-sm font-semibold hover:underline">📄 Lihat File PDF</a>
+                @endif
+                @if($order->dp_bank_name)
+                <p class="text-xs text-gray-500 mt-2">Bank: <strong>{{ $order->dp_bank_name }}</strong></p>
+                @endif
+                @if($order->dp_transfer_reference)
+                <p class="text-xs text-gray-500">Ref: <strong>{{ $order->dp_transfer_reference }}</strong></p>
+                @endif
+                <p class="text-[10px] text-gray-400 mt-1">Diupload: {{ $order->dp_uploaded_at?->format('d M Y, H:i') }}</p>
+            </div>
+            @endif
+
             <form method="POST" action="{{ route('admin.b2b.orders.verify-dp', $order->order_number) }}">
+                @csrf
+                <div class="mb-4">
+                    <label class="text-xs font-semibold text-gray-600 block mb-1">Catatan Admin (Opsional)</label>
+                    <textarea name="dp_admin_notes" rows="2" placeholder="Contoh: Bukti DP valid, nominal sesuai." class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none resize-none focus:ring-2 focus:ring-amber-200"></textarea>
+                </div>
+                <div class="flex gap-2">
+                    <button type="submit" name="action" value="approve" onclick="return confirm('Setujui bukti DP ini? Status akan menjadi DP Terverifikasi.')" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 rounded-xl transition text-sm shadow-sm flex items-center justify-center gap-1">
+                        ✅ Setujui DP
+                    </button>
+                    <button type="submit" name="action" value="reject" onclick="return confirm('Tolak bukti DP ini? Mitra akan diminta upload ulang.')" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 rounded-xl transition text-sm flex items-center justify-center gap-1">
+                        ❌ Tolak DP
+                    </button>
+                </div>
+            </form>
+        </div>
+        @endif
+
+        {{-- Dispatch Armada (Setelah DP Verified) --}}
+        @if($order->status === 'dp_verified')
+        <div class="bg-green-50 border border-green-200 rounded-2xl p-4 mb-0">
+            <div class="flex items-center gap-2">
+                <span class="text-xl">✅</span>
+                <div>
+                    <p class="font-bold text-green-800 text-sm">DP Telah Terverifikasi</p>
+                    <p class="text-[10px] text-green-600">Diverifikasi {{ $order->dp_verified_at?->format('d M Y, H:i') }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-2xl border border-blue-200 shadow-sm p-6">
+            <h3 class="font-bold text-gray-900 text-sm mb-2">🚛 Siapkan & Dispatch Armada</h3>
+            <p class="text-xs text-gray-500 mb-4">Isi data driver dan jadwal pengiriman. Setelah dispatch, status akan berubah menjadi <strong>Dalam Pengiriman</strong>.</p>
+            <form method="POST" action="{{ route('admin.b2b.orders.dispatch-armada', $order->order_number) }}">
                 @csrf
                 <div class="space-y-3 mb-4">
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="text-xs font-semibold text-gray-600 block mb-1">Ongkir (Rp)</label>
-                            <input type="number" name="shipping_cost" min="0" required value="{{ (int) $order->shipping_cost }}"
-                                   class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#CD422B]/20">
-                        </div>
-                        <div>
                             <label class="text-xs font-semibold text-gray-600 block mb-1">Tgl Kirim</label>
                             <input type="date" name="delivery_date" required min="{{ now()->format('Y-m-d') }}"
+                                   class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold text-gray-600 block mb-1">No. Surat Jalan</label>
+                            <input type="text" name="waybill_number" value="{{ $order->order_number }}-SJ"
                                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">
                         </div>
                     </div>
@@ -293,19 +346,13 @@
                         </div>
                     </div>
                     <div>
-                        <label class="text-xs font-semibold text-gray-600 block mb-1">No. Surat Jalan (Manual/Otomatis)</label>
-                        <input type="text" name="waybill_number" value="{{ $order->order_number }}-SJ"
-                               class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">
-                    </div>
-                    <div>
-                        <label class="text-xs font-semibold text-gray-600 block mb-1">Catatan Admin</label>
+                        <label class="text-xs font-semibold text-gray-600 block mb-1">Catatan (Opsional)</label>
                         <textarea name="dp_admin_notes" rows="2" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm resize-none"></textarea>
                     </div>
                 </div>
-                <div class="flex gap-2">
-                    <button type="submit" name="action" value="approve" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 rounded-xl transition text-sm shadow-sm">✅ Setujui & Kirim</button>
-                    <button type="submit" name="action" value="reject" onclick="return confirm('Tolak bukti DP ini?')" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 rounded-xl transition text-sm">❌ Tolak</button>
-                </div>
+                <button type="submit" onclick="return confirm('Dispatch armada sekarang? Barang akan langsung dikirim.')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition text-sm shadow-md flex items-center justify-center gap-2">
+                    🚛 Dispatch Armada Sekarang
+                </button>
             </form>
         </div>
         @endif
@@ -374,7 +421,7 @@
         @endif
 
         {{-- Batalkan Order --}}
-        @if(in_array($order->status, ['draft','waiting_dp','dp_uploaded','dp_verified','waiting_settlement']))
+        @if(in_array($order->status, ['draft','pending_review','waiting_dp','dp_uploaded','dp_verified','waiting_settlement']))
         <div class="bg-white rounded-2xl border border-red-100 shadow-sm p-5">
             <h3 class="font-bold text-gray-900 text-sm mb-3">Batalkan Order</h3>
             <form method="POST" action="{{ route('admin.b2b.orders.cancel', $order->order_number) }}">

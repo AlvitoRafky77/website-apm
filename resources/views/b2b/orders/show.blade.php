@@ -82,22 +82,24 @@
     @php
         $steps = [
             ['key' => 'waiting_dp',          'label' => 'DP 50%',           'icon' => '💳'],
-            ['key' => 'dp_uploaded',         'label' => 'Verifikasi',       'icon' => '🔍'],
+            ['key' => 'dp_uploaded',         'label' => 'Verifikasi DP',    'icon' => '🔍'],
+            ['key' => 'dp_verified',         'label' => 'Siap Kirim',      'icon' => '✅'],
             ['key' => 'in_transit',           'label' => 'Pengiriman',      'icon' => '🚛'],
             ['key' => 'settlement_uploaded',  'label' => 'Pelunasan',       'icon' => '💰'],
             ['key' => 'delivered',            'label' => 'Diterima',        'icon' => '📦'],
             ['key' => 'completed',            'label' => 'Selesai',         'icon' => '🎉'],
         ];
-        $statusOrder = ['draft','waiting_dp','dp_uploaded','in_transit','waiting_settlement','settlement_uploaded','settlement_verified','delivered','completed'];
+        $statusOrder = ['draft','waiting_dp','dp_uploaded','dp_verified','in_transit','waiting_settlement','settlement_uploaded','settlement_verified','delivered','completed'];
         $visualIdx = match($order->status) {
             'pending_review'      => 0,
             'waiting_dp'          => 0,
             'dp_uploaded'         => 1,
-            'in_transit'          => 2,
-            'settlement_uploaded' => 3,
-            'settlement_verified' => 3,
-            'delivered'           => 4,
-            'completed'           => 5,
+            'dp_verified'         => 2,
+            'in_transit'          => 3,
+            'settlement_uploaded' => 4,
+            'settlement_verified' => 4,
+            'delivered'           => 5,
+            'completed'           => 6,
             default               => 0
         };
         $progressPct = ($visualIdx / (count($steps) - 1)) * 100;
@@ -438,6 +440,23 @@
             @endif
 
             @if($order->status === 'waiting_dp')
+            {{-- Show rejection notice if DP was previously rejected --}}
+            @if($order->dp_admin_notes && !$order->dp_proof_path)
+            <div class="bg-red-50 border border-red-200 rounded-[2rem] p-6 mb-4 shadow-sm">
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-xl shadow-sm shrink-0">⚠️</div>
+                    <div>
+                        <h3 class="font-black text-red-800 text-sm mb-1">Bukti DP Ditolak</h3>
+                        <p class="text-xs text-red-700/80 font-medium leading-relaxed">Admin menolak bukti pembayaran DP Anda. Silakan upload ulang bukti transfer yang benar.</p>
+                        <div class="mt-3 bg-white border border-red-100 rounded-xl p-3">
+                            <p class="text-[10px] font-bold text-red-400 uppercase tracking-wide mb-1">Catatan Admin:</p>
+                            <p class="text-xs text-gray-700 font-semibold">{{ $order->dp_admin_notes }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <div class="bg-white rounded-[2rem] border border-amber-200 shadow-sm p-8">
                 <h3 class="font-black text-gray-900 text-lg mb-2 tracking-tight">Upload Bukti DP</h3>
                 <p class="text-xs text-gray-400 mb-6 font-medium leading-relaxed">Harap bayar <strong class="text-[#CD422B]">Rp {{ number_format($order->dp_amount, 0, ',', '.') }}</strong> agar pesanan bisa diproses.</p>
@@ -455,6 +474,18 @@
             </div>
             @endif
 
+            {{-- DP Terverifikasi — Menunggu Armada --}}
+            @if($order->status === 'dp_verified')
+            <div class="bg-teal-50 border border-teal-200 rounded-[2rem] p-8 text-center shadow-sm">
+                <div class="w-16 h-16 bg-white rounded-[1.5rem] flex items-center justify-center text-3xl shadow-sm mx-auto mb-4">✅</div>
+                <h3 class="font-black text-teal-800 mb-1">DP Terverifikasi</h3>
+                <p class="text-xs text-teal-700/70 font-medium leading-relaxed">Pembayaran DP Anda sudah diverifikasi oleh admin.<br>Tim logistik sedang menyiapkan armada dan driver untuk pengiriman ke lokasi Anda.</p>
+                @if($order->dp_verified_at)
+                <p class="text-[10px] text-teal-500 mt-3 font-bold">Diverifikasi: {{ $order->dp_verified_at->format('d M Y, H:i') }} WIB</p>
+                @endif
+            </div>
+            @endif
+
             @if($order->status === 'in_transit')
             <div class="bg-emerald-50 border border-emerald-100 rounded-[2rem] p-6 mb-6 shadow-sm">
                 <div class="flex items-start gap-4">
@@ -467,6 +498,24 @@
                     </div>
                 </div>
             </div>
+
+            {{-- Show rejection notice if settlement was previously rejected --}}
+            @if($order->settlement_admin_notes && !$order->settlement_proof_path)
+            <div class="bg-red-50 border border-red-200 rounded-[2rem] p-6 mb-4 shadow-sm">
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-xl shadow-sm shrink-0">⚠️</div>
+                    <div>
+                        <h3 class="font-black text-red-800 text-sm mb-1">Bukti Pelunasan Ditolak</h3>
+                        <p class="text-xs text-red-700/80 font-medium leading-relaxed">Admin menolak bukti pelunasan Anda. Silakan upload ulang bukti transfer yang benar.</p>
+                        <div class="mt-3 bg-white border border-red-100 rounded-xl p-3">
+                            <p class="text-[10px] font-bold text-red-400 uppercase tracking-wide mb-1">Catatan Admin:</p>
+                            <p class="text-xs text-gray-700 font-semibold">{{ $order->settlement_admin_notes }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <div class="bg-white rounded-[2rem] border border-purple-200 shadow-sm p-8">
                 <h3 class="font-black text-gray-900 text-lg mb-2 tracking-tight">Upload Pelunasan</h3>
                 <p class="text-xs text-gray-400 mb-6 font-medium leading-relaxed">Sisa tagihan: <strong class="text-purple-600">Rp {{ number_format($order->settlement_amount, 0, ',', '.') }}</strong>. Bisa transfer/bayar ke driver.</p>

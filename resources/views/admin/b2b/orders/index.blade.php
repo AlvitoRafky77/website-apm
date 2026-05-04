@@ -21,8 +21,9 @@
             'all'                  => ['label' => 'Semua',             'count' => $counts['all']],
             'pending_review'       => ['label' => 'Butuh Review',      'count' => $counts['pending_review']],
             'dp_uploaded'          => ['label' => 'DP Masuk',          'count' => $counts['dp_uploaded']],
-            'settlement_uploaded'  => ['label' => 'Pelunasan Masuk',   'count' => $counts['settlement_uploaded']],
+            'dp_verified'          => ['label' => 'Siap Kirim',        'count' => $counts['dp_verified']],
             'in_transit'           => ['label' => 'Dalam Perjalanan',  'count' => $counts['in_transit']],
+            'settlement_uploaded'  => ['label' => 'Pelunasan Masuk',   'count' => $counts['settlement_uploaded']],
             'completed'            => ['label' => 'Selesai',           'count' => $counts['completed']],
             'cancelled'            => ['label' => 'Dibatalkan',        'count' => $counts['cancelled']],
         ];

@@ -31,6 +31,7 @@ class AdminB2bOrderController extends Controller
             'pending_review'      => B2bOrder::where('status', 'pending_review')->count(),
             'waiting_dp'          => B2bOrder::where('status', 'waiting_dp')->count(),
             'dp_uploaded'         => B2bOrder::where('status', 'dp_uploaded')->count(),
+            'dp_verified'         => B2bOrder::where('status', 'dp_verified')->count(),
             'in_transit'          => B2bOrder::where('status', 'in_transit')->count(),
             'settlement_uploaded' => B2bOrder::where('status', 'settlement_uploaded')->count(),
             'settlement_verified' => B2bOrder::where('status', 'settlement_verified')->count(),
@@ -81,17 +82,11 @@ class AdminB2bOrderController extends Controller
         return view('admin.b2b.orders.show', compact('order'));
     }
 
-    // ─── Verifikasi DP → Dispatch Armada ─────────────────────────────
-    // Alur baru: DP verified → in_transit (barang langsung dikirim)
+    // ─── Verifikasi DP (Terima / Tolak Bukti Pembayaran) ───────────
     public function verifyDp(Request $request, string $orderNumber)
     {
         $request->validate([
             'action'         => 'required|in:approve,reject',
-            'shipping_cost'  => 'required_if:action,approve|nullable|numeric|min:0',
-            'delivery_date'  => 'required_if:action,approve|nullable|date|after:today',
-            'driver_name'    => 'required_if:action,approve|nullable|string|max:100',
-            'driver_phone'   => 'required_if:action,approve|nullable|string|max:20',
-            'waybill_number' => 'nullable|string|max:50',
             'dp_admin_notes' => 'nullable|string|max:500',
         ]);
 
@@ -102,37 +97,58 @@ class AdminB2bOrderController extends Controller
         }
 
         if ($request->action === 'approve') {
-            $shippingCost  = (float) $request->shipping_cost;
-            $newTotal      = $order->subtotal + $shippingCost;
-            $newDp         = round($newTotal * 0.5, 2);
-            $newSettlement = round($newTotal * 0.5, 2);
-
             $order->update([
-                'shipping_cost'     => $shippingCost,
-                'total'             => $newTotal,
-                'dp_amount'         => $newDp,
-                'settlement_amount' => $newSettlement,
                 'dp_verified_at'    => now(),
                 'dp_verified_by'    => Auth::id(),
                 'dp_admin_notes'    => $request->dp_admin_notes,
-                'delivery_date'     => $request->delivery_date,
-                'driver_name'       => $request->driver_name,
-                'driver_phone'      => $request->driver_phone,
-                'waybill_number'    => $request->waybill_number,
-                // Langsung in_transit — barang disiapkan & dikirim
-                'status'            => 'in_transit',
+                'status'            => 'dp_verified',
             ]);
 
-            return back()->with('success', 'DP diverifikasi. Surat jalan dapat dicetak. Armada siap dikirim.');
+            return back()->with('success', 'Bukti DP disetujui. Silakan siapkan armada untuk pengiriman.');
         } else {
             $order->update([
                 'dp_admin_notes' => $request->dp_admin_notes,
                 'dp_verified_by' => Auth::id(),
+                // Kembali ke waiting_dp agar mitra bisa upload ulang
                 'status'         => 'waiting_dp',
+                // Reset bukti DP lama agar mitra bisa upload baru
+                'dp_proof_path'  => null,
+                'dp_uploaded_at' => null,
+                'dp_bank_name'   => null,
+                'dp_transfer_reference' => null,
             ]);
 
-            return back()->with('success', 'DP ditolak. Mitra perlu mengupload ulang bukti pembayaran.');
+            return back()->with('success', 'Bukti DP ditolak. Mitra akan diminta untuk mengupload ulang bukti pembayaran.');
         }
+    }
+
+    // ─── Dispatch Armada (Setelah DP Verified) ───────────────────────
+    public function dispatchArmada(Request $request, string $orderNumber)
+    {
+        $request->validate([
+            'delivery_date'  => 'required|date|after_or_equal:today',
+            'driver_name'    => 'required|string|max:100',
+            'driver_phone'   => 'required|string|max:20',
+            'waybill_number' => 'nullable|string|max:50',
+            'dp_admin_notes' => 'nullable|string|max:500',
+        ]);
+
+        $order = B2bOrder::where('order_number', $orderNumber)->firstOrFail();
+
+        if ($order->status !== 'dp_verified') {
+            return back()->with('error', 'Status order tidak memungkinkan pengiriman armada. DP harus diverifikasi terlebih dahulu.');
+        }
+
+        $order->update([
+            'delivery_date'  => $request->delivery_date,
+            'driver_name'    => $request->driver_name,
+            'driver_phone'   => $request->driver_phone,
+            'waybill_number' => $request->waybill_number ?: $order->order_number . '-SJ',
+            'dp_admin_notes' => $request->dp_admin_notes ?: $order->dp_admin_notes,
+            'status'         => 'in_transit',
+        ]);
+
+        return back()->with('success', 'Armada berhasil didispatch. Barang sedang dalam perjalanan ke lokasi mitra.');
     }
 
     // ─── Cetak Surat Jalan ────────────────────────────────────────────
@@ -179,9 +195,14 @@ class AdminB2bOrderController extends Controller
                 'settlement_admin_notes' => $request->settlement_admin_notes,
                 'settlement_verified_by' => Auth::id(),
                 'status'                 => 'in_transit',
+                // Reset bukti pelunasan lama agar mitra bisa upload ulang
+                'settlement_proof_path'  => null,
+                'settlement_uploaded_at' => null,
+                'settlement_bank_name'   => null,
+                'settlement_transfer_reference' => null,
             ]);
 
-            return back()->with('success', 'Pelunasan ditolak. Mitra perlu mengupload ulang bukti pelunasan.');
+            return back()->with('success', 'Pelunasan ditolak. Mitra akan diminta untuk mengupload ulang bukti pelunasan.');
         }
     }
 
@@ -253,7 +274,7 @@ class AdminB2bOrderController extends Controller
         $order = B2bOrder::where('order_number', $orderNumber)->firstOrFail();
 
         // Hanya bisa dibatalkan sebelum barang berangkat
-        $cancelableStatuses = ['waiting_dp', 'dp_uploaded'];
+        $cancelableStatuses = ['pending_review', 'waiting_dp', 'dp_uploaded', 'dp_verified'];
         if (!in_array($order->status, $cancelableStatuses)) {
             return back()->with('error', 'Order tidak dapat dibatalkan setelah barang dikirim.');
         }

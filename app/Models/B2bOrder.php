@@ -81,8 +81,10 @@ class B2bOrder extends Model
     public function getStatusLabelAttribute(): string
     {
         return match ($this->status) {
+            'pending_review'       => 'Menunggu Review Admin',
             'waiting_dp'           => 'Menunggu DP (50%)',
             'dp_uploaded'          => 'DP Menunggu Verifikasi',
+            'dp_verified'          => 'DP Terverifikasi — Siapkan Armada',
             'in_transit'           => 'Dalam Pengiriman',
             'settlement_uploaded'   => 'Pelunasan Menunggu Verifikasi',
             'settlement_verified'   => 'Pembayaran Lunas',
@@ -96,8 +98,10 @@ class B2bOrder extends Model
     public function getStatusColorAttribute(): string
     {
         return match ($this->status) {
+            'pending_review'       => 'orange',
             'waiting_dp'           => 'amber',
             'dp_uploaded'          => 'yellow',
+            'dp_verified'          => 'teal',
             'in_transit'           => 'blue',
             'settlement_uploaded'  => 'purple',
             'settlement_verified'  => 'teal',
