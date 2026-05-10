@@ -213,7 +213,7 @@ class B2bOrderController extends Controller
     }
 
     // ─── Upload Bukti Pelunasan ───────────────────────────────────────
-    // Alur baru: mitra upload pelunasan saat barang sudah in_transit
+    // Alur baru: mitra upload pelunasan SETELAH barang diterima baik
     public function uploadSettlement(Request $request, string $orderNumber)
     {
         $this->ensureB2bAccess();
@@ -227,7 +227,7 @@ class B2bOrderController extends Controller
             ->firstOrFail();
 
         if (!$order->canUploadSettlement()) {
-            return back()->with('error', 'Upload pelunasan hanya bisa dilakukan saat barang sedang dalam perjalanan.');
+            return back()->with('error', 'Upload pelunasan hanya bisa dilakukan setelah barang diterima baik.');
         }
 
         if ($order->settlement_proof_path) {
@@ -242,29 +242,50 @@ class B2bOrderController extends Controller
             'status'                 => 'settlement_uploaded',
         ]);
 
-        return back()->with('success', 'Bukti pelunasan berhasil diupload. Driver akan mengkonfirmasi penerimaan.');
+        return back()->with('success', 'Bukti pelunasan berhasil diupload. Admin akan memverifikasi pembayaran Anda.');
     }
 
-    // ─── Konfirmasi Penerimaan Barang (Mitra TTD) ─────────────────────
-    // Alur baru: setelah driver konfirmasi pelunasan, mitra klik konfirmasi terima
-    public function confirmReceived(string $orderNumber)
+    // ─── Inspeksi Barang (Mitra + Driver cek bersama) ──────────────────
+    public function inspectGoods(Request $request, string $orderNumber)
     {
         $this->ensureB2bAccess();
+
+        $request->validate([
+            'inspection_status' => 'required|in:good,damaged',
+            'inspection_notes'  => 'required_if:inspection_status,damaged|nullable|string|max:1000',
+            'inspection_images' => 'nullable|array|max:5',
+            'inspection_images.*' => 'image|max:3072',
+        ]);
 
         $order = B2bOrder::where('order_number', $orderNumber)
             ->where('user_id', Auth::id())
             ->firstOrFail();
 
-        if (!$order->canConfirmReceived()) {
-            return back()->with('error', 'Konfirmasi penerimaan belum dapat dilakukan saat ini.');
+        if (!$order->canInspect()) {
+            return back()->with('error', 'Inspeksi barang belum bisa dilakukan pada status ini.');
+        }
+
+        $imagePaths = [];
+        if ($request->hasFile('inspection_images')) {
+            foreach ($request->file('inspection_images') as $img) {
+                $imagePaths[] = $img->store('b2b/inspection', 'public');
+            }
         }
 
         $order->update([
-            'status' => 'delivered',
-            'received_at' => now(),
+            'inspection_status' => $request->inspection_status,
+            'inspection_notes'  => $request->inspection_notes,
+            'inspection_images' => $imagePaths ?: null,
+            'inspected_at'      => now(),
+            'received_at'       => now(),
+            'status'            => 'goods_accepted',
         ]);
 
-        return back()->with('success', 'Terima kasih! Pesanan telah dikonfirmasi diterima. Admin akan mengunggah dokumen SPB final segera.');
+        if ($request->inspection_status === 'damaged') {
+            return back()->with('success', 'Inspeksi dicatat dengan laporan kerusakan. Barang tetap diterima dan klaim asuransi akan diproses oleh APM. Silakan lanjutkan upload pelunasan.');
+        }
+
+        return back()->with('success', 'Barang diterima dalam kondisi baik. Silakan lanjutkan upload bukti pelunasan 50%.');
     }
 
     // ─── Buka Dispute / Komplain ─────────────────────────────────────

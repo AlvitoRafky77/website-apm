@@ -239,16 +239,43 @@
 
         {{-- Review Order & Input Ongkir --}}
         @if($order->status === 'pending_review')
+        @php
+            $totalWeightKg = collect($order->items)->sum('qty_kg');
+            $shippingCalc = \App\Models\ShippingRate::calculate($order->recipient_city, $totalWeightKg);
+        @endphp
         <div class="bg-white rounded-2xl border border-blue-200 shadow-sm p-6">
             <h3 class="font-bold text-gray-900 text-sm mb-3">🚚 Review & Input Ongkir</h3>
-            <p class="text-xs text-gray-500 mb-4">Tentukan biaya pengiriman tonase untuk pesanan ini sebelum mitra membayar DP.</p>
+            <p class="text-xs text-gray-500 mb-4">Tentukan biaya pengiriman untuk pesanan ini. Tujuan: <strong>{{ $order->recipient_city }}</strong> · Berat: <strong>{{ number_format($totalWeightKg, 0, ',', '.') }} KG</strong></p>
+            
+            @if($shippingCalc)
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 mb-4">
+                <p class="text-[10px] font-bold text-blue-500 uppercase tracking-wide mb-1">💡 Sugesti Tarif Ongkir</p>
+                <p class="text-xs text-gray-700">Rute: <strong>Pekanbaru → {{ $order->recipient_city }}</strong></p>
+                <p class="text-xs text-gray-700">Tarif: Rp {{ number_format($shippingCalc['rate_per_kg'], 0, ',', '.') }}/KG × {{ number_format($totalWeightKg, 0, ',', '.') }} KG</p>
+                <p class="text-sm font-black text-blue-700 mt-1">= Rp {{ number_format($shippingCalc['total'], 0, ',', '.') }}</p>
+                @if($shippingCalc['estimated_days'])
+                <p class="text-[10px] text-blue-500 mt-1">Estimasi: {{ $shippingCalc['estimated_days'] }} hari</p>
+                @endif
+                <button type="button" onclick="document.getElementById('shipping_cost_input').value = {{ (int) $shippingCalc['total'] }}" class="mt-2 text-[10px] font-bold text-blue-600 bg-white border border-blue-200 px-3 py-1 rounded-lg hover:bg-blue-100 transition">
+                    Gunakan Tarif Ini
+                </button>
+            </div>
+            @else
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4">
+                <p class="text-[10px] font-bold text-amber-600">⚠️ Tarif ongkir untuk kota <strong>{{ $order->recipient_city }}</strong> belum tersedia di tabel tarif.</p>
+                <a href="{{ route('admin.shipping-rates.index') }}" class="text-[10px] text-blue-600 font-bold hover:underline">Tambah tarif →</a>
+            </div>
+            @endif
+
             <form method="POST" action="{{ route('admin.b2b.orders.approve-review', $order->order_number) }}">
                 @csrf
                 <div class="mb-4">
                     <label class="text-xs font-semibold text-gray-600 block mb-1.5">Biaya Ongkir (Rp)</label>
                     <div class="relative">
                         <span class="absolute left-3 top-2.5 text-gray-400 text-sm">Rp</span>
-                        <input type="number" name="shipping_cost" required min="0" placeholder="0"
+                        <input type="number" name="shipping_cost" id="shipping_cost_input" required min="0"
+                               value="{{ $shippingCalc ? (int) $shippingCalc['total'] : '' }}"
+                               placeholder="0"
                                class="w-full border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#CD422B]/20">
                     </div>
                     <p class="text-[10px] text-gray-400 mt-2 italic">*Total & DP akan otomatis dihitung ulang setelah ongkir disimpan.</p>
@@ -357,8 +384,65 @@
         </div>
         @endif
 
-        {{-- Cetak Surat Jalan --}}
-        @if(in_array($order->status, ['in_transit', 'waiting_settlement', 'settlement_uploaded', 'settlement_verified', 'completed']))
+        {{-- Tandai Barang Tiba (Admin/Driver) --}}
+        @if($order->status === 'in_transit')
+        <div class="bg-white rounded-2xl border border-blue-200 shadow-sm p-6">
+            <h3 class="font-bold text-gray-900 text-sm mb-2">📍 Barang Tiba di Lokasi?</h3>
+            <p class="text-xs text-gray-500 mb-4">Tandai bahwa armada sudah sampai di lokasi mitra. Mitra akan diminta melakukan inspeksi barang bersama driver.</p>
+            <form method="POST" action="{{ route('admin.b2b.orders.mark-arrived', $order->order_number) }}">
+                @csrf
+                <button type="submit" onclick="return confirm('Tandai barang sudah tiba? Mitra akan diminta inspeksi.')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition text-sm shadow-md flex items-center justify-center gap-2">
+                    📍 Tandai Barang Tiba
+                </button>
+            </form>
+        </div>
+        @endif
+
+        {{-- Menunggu Inspeksi --}}
+        @if($order->status === 'arrived')
+        <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-5">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl">🔍</span>
+                <div>
+                    <p class="font-bold text-indigo-800 text-sm">Menunggu Inspeksi Mitra</p>
+                    <p class="text-[10px] text-indigo-600">Barang tiba {{ $order->arrived_at?->format('d M Y, H:i') }}. Mitra sedang melakukan pengecekan bersama driver.</p>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        {{-- Hasil Inspeksi --}}
+        @if($order->inspection_status)
+        <div class="bg-white rounded-2xl border {{ $order->inspection_status === 'good' ? 'border-green-200' : 'border-orange-200' }} shadow-sm p-6">
+            <h3 class="font-bold text-gray-900 text-sm mb-3">🔍 Hasil Inspeksi Barang</h3>
+            <div class="flex items-center gap-2 mb-3">
+                @if($order->inspection_status === 'good')
+                    <span class="px-3 py-1 bg-green-100 text-green-800 text-xs font-bold rounded-full">✅ Barang Baik</span>
+                @else
+                    <span class="px-3 py-1 bg-orange-100 text-orange-800 text-xs font-bold rounded-full">⚠️ Ada Kerusakan — Klaim Asuransi</span>
+                @endif
+            </div>
+            @if($order->inspection_notes)
+            <div class="bg-gray-50 rounded-xl p-3 mb-3 text-xs text-gray-700">
+                <p class="font-bold text-gray-500 mb-1">Catatan Inspeksi:</p>
+                {{ $order->inspection_notes }}
+            </div>
+            @endif
+            @if($order->inspection_images)
+            <div class="flex gap-2 flex-wrap">
+                @foreach($order->inspection_images as $img)
+                <a href="{{ Storage::url($img) }}" target="_blank">
+                    <img src="{{ Storage::url($img) }}" class="w-16 h-16 object-cover rounded-lg border border-gray-200 hover:opacity-80 transition">
+                </a>
+                @endforeach
+            </div>
+            @endif
+            <p class="text-[10px] text-gray-400 mt-2">Diinspeksi: {{ $order->inspected_at?->format('d M Y, H:i') }}</p>
+        </div>
+        @endif
+
+        {{-- Cetak Surat Jalan (Hanya muncul saat persiapan kirim) --}}
+        @if($order->status === 'dp_verified')
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
             <h3 class="font-bold text-gray-900 text-sm mb-3">📄 Dokumen Pengiriman</h3>
             <a href="{{ route('admin.b2b.orders.print-surat-jalan', $order->order_number) }}" target="_blank"
@@ -366,7 +450,9 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                 Cetak Surat Jalan (Print PDF)
             </a>
-            <p class="text-[10px] text-center text-gray-400 mt-3 italic">Berikan dokumen ini kepada driver sebelum berangkat.</p>
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 mt-3">
+                <p class="text-[10px] text-amber-700 font-bold">⚠️ Cetak dokumen ini dan berikan kepada driver <strong>SEBELUM</strong> dispatch armada.</p>
+            </div>
         </div>
         @endif
 
@@ -379,7 +465,7 @@
                 @csrf
                 <div class="mb-4">
                     <label class="text-xs font-semibold text-gray-600 block mb-1">Catatan Konfirmasi</label>
-                    <textarea name="settlement_admin_notes" rows="2" placeholder="Contoh: Pembayaran sudah diterima driver di lokasi." class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm resize-none"></textarea>
+                    <textarea name="settlement_admin_notes" rows="2" placeholder="Contoh: Pembayaran sudah diterima via transfer." class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm resize-none"></textarea>
                 </div>
                 <div class="flex gap-2">
                     <button type="submit" name="action" value="approve" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 rounded-xl transition text-sm">✅ Konfirmasi Lunas</button>
@@ -389,8 +475,8 @@
         </div>
         @endif
 
-        {{-- Upload SPB --}}
-        @if($order->status === 'delivered')
+        {{-- Upload SPB (Setelah pelunasan terverifikasi) --}}
+        @if($order->status === 'settlement_verified')
         <div class="bg-white rounded-2xl border border-teal-200 shadow-sm p-6">
             <h3 class="font-bold text-gray-900 text-sm mb-1">📄 Upload SPB & Selesaikan</h3>
             <p class="text-xs text-gray-500 mb-4">Upload Surat Penerimaan Barang (SPB) fisik yang sudah ditandatangani mitra sebagai bukti final.</p>
@@ -421,7 +507,7 @@
         @endif
 
         {{-- Batalkan Order --}}
-        @if(in_array($order->status, ['draft','pending_review','waiting_dp','dp_uploaded','dp_verified','waiting_settlement']))
+        @if(in_array($order->status, ['draft','pending_review','waiting_dp','dp_uploaded','dp_verified']))
         <div class="bg-white rounded-2xl border border-red-100 shadow-sm p-5">
             <h3 class="font-bold text-gray-900 text-sm mb-3">Batalkan Order</h3>
             <form method="POST" action="{{ route('admin.b2b.orders.cancel', $order->order_number) }}">

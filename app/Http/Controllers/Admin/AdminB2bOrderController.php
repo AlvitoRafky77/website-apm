@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\B2bOrder;
+use App\Models\ShippingRate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -33,6 +34,8 @@ class AdminB2bOrderController extends Controller
             'dp_uploaded'         => B2bOrder::where('status', 'dp_uploaded')->count(),
             'dp_verified'         => B2bOrder::where('status', 'dp_verified')->count(),
             'in_transit'          => B2bOrder::where('status', 'in_transit')->count(),
+            'arrived'             => B2bOrder::where('status', 'arrived')->count(),
+            'goods_accepted'      => B2bOrder::where('status', 'goods_accepted')->count(),
             'settlement_uploaded' => B2bOrder::where('status', 'settlement_uploaded')->count(),
             'settlement_verified' => B2bOrder::where('status', 'settlement_verified')->count(),
             'completed'           => B2bOrder::where('status', 'completed')->count(),
@@ -70,6 +73,23 @@ class AdminB2bOrderController extends Controller
         ]);
 
         return back()->with('success', 'Review selesai. Ongkir telah diinput dan mitra dapat melanjutkan pembayaran DP.');
+    }
+
+    // ─── Tandai Barang Tiba (Admin/Driver) ────────────────────────────
+    public function markArrived(string $orderNumber)
+    {
+        $order = B2bOrder::where('order_number', $orderNumber)->firstOrFail();
+
+        if ($order->status !== 'in_transit') {
+            return back()->with('error', 'Barang harus dalam status pengiriman untuk ditandai tiba.');
+        }
+
+        $order->update([
+            'status'     => 'arrived',
+            'arrived_at' => now(),
+        ]);
+
+        return back()->with('success', 'Barang ditandai sudah tiba di lokasi mitra. Menunggu inspeksi oleh mitra & driver.');
     }
 
     // ─── Detail Order B2B ─────────────────────────────────────────────
@@ -158,7 +178,7 @@ class AdminB2bOrderController extends Controller
             ->with(['user', 'b2bRegistration'])
             ->firstOrFail();
 
-        if (!in_array($order->status, ['in_transit', 'settlement_uploaded', 'settlement_verified', 'completed'])) {
+        if (!in_array($order->status, ['in_transit', 'arrived', 'goods_accepted', 'settlement_uploaded', 'settlement_verified', 'completed'])) {
             return back()->with('error', 'Surat jalan hanya tersedia setelah DP diverifikasi.');
         }
 
@@ -194,7 +214,7 @@ class AdminB2bOrderController extends Controller
             $order->update([
                 'settlement_admin_notes' => $request->settlement_admin_notes,
                 'settlement_verified_by' => Auth::id(),
-                'status'                 => 'in_transit',
+                'status'                 => 'goods_accepted',
                 // Reset bukti pelunasan lama agar mitra bisa upload ulang
                 'settlement_proof_path'  => null,
                 'settlement_uploaded_at' => null,

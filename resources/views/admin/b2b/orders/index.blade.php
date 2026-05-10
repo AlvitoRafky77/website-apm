@@ -23,6 +23,8 @@
             'dp_uploaded'          => ['label' => 'DP Masuk',          'count' => $counts['dp_uploaded']],
             'dp_verified'          => ['label' => 'Siap Kirim',        'count' => $counts['dp_verified']],
             'in_transit'           => ['label' => 'Dalam Perjalanan',  'count' => $counts['in_transit']],
+            'arrived'              => ['label' => 'Inspeksi',          'count' => $counts['arrived']],
+            'goods_accepted'       => ['label' => 'Perlu Pelunasan',   'count' => $counts['goods_accepted']],
             'settlement_uploaded'  => ['label' => 'Pelunasan Masuk',   'count' => $counts['settlement_uploaded']],
             'completed'            => ['label' => 'Selesai',           'count' => $counts['completed']],
             'cancelled'            => ['label' => 'Dibatalkan',        'count' => $counts['cancelled']],

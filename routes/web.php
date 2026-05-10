@@ -7,6 +7,7 @@ use App\Http\Controllers\B2bChatbotController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminFinanceController;
 use App\Http\Controllers\Admin\AdminB2bOrderController;
+use App\Http\Controllers\Admin\AdminShippingRateController;
 use App\Http\Controllers\B2b\B2bOrderController;
 use Illuminate\Support\Facades\Route;
 
@@ -143,8 +144,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/orders/{orderNumber}/invoice',             [B2bOrderController::class, 'downloadInvoice'])->name('orders.invoice');
         Route::post('/orders/{orderNumber}/upload-dp',          [B2bOrderController::class, 'uploadDp'])->name('orders.upload-dp');
         Route::post('/orders/{orderNumber}/upload-settlement',  [B2bOrderController::class, 'uploadSettlement'])->name('orders.upload-settlement');
+        Route::post('/orders/{orderNumber}/inspect-goods',      [B2bOrderController::class, 'inspectGoods'])->name('orders.inspect-goods');
         Route::post('/orders/{orderNumber}/dispute',            [B2bOrderController::class, 'openDispute'])->name('orders.dispute');
-        Route::post('/orders/{orderNumber}/confirm-received',   [B2bOrderController::class, 'confirmReceived'])->name('orders.confirm-received');
 
         // B2B Product Detail (khusus stok & info B2B)
         Route::get('/products/{slug}', [\App\Http\Controllers\B2bController::class, 'productShow'])->name('products.show');
@@ -158,10 +159,20 @@ Route::middleware('auth')->group(function () {
         Route::get('/{orderNumber}/print-surat-jalan',          [AdminB2bOrderController::class, 'printSuratJalan'])->name('print-surat-jalan');
         Route::post('/{orderNumber}/verify-dp',             [AdminB2bOrderController::class, 'verifyDp'])->name('verify-dp');
         Route::post('/{orderNumber}/dispatch-armada',        [AdminB2bOrderController::class, 'dispatchArmada'])->name('dispatch-armada');
+        Route::post('/{orderNumber}/mark-arrived',           [AdminB2bOrderController::class, 'markArrived'])->name('mark-arrived');
         Route::post('/{orderNumber}/verify-settlement',     [AdminB2bOrderController::class, 'verifySettlement'])->name('verify-settlement');
         Route::post('/{orderNumber}/upload-spb',            [AdminB2bOrderController::class, 'uploadSpb'])->name('upload-spb');
         Route::post('/{orderNumber}/dispute',               [AdminB2bOrderController::class, 'handleDispute'])->name('dispute');
         Route::post('/{orderNumber}/cancel',                [AdminB2bOrderController::class, 'cancel'])->name('cancel');
+    });
+
+    // Admin Shipping Rates Management
+    Route::middleware(['admin'])->prefix('admin/shipping-rates')->name('admin.shipping-rates.')->group(function () {
+        Route::get('/',             [AdminShippingRateController::class, 'index'])->name('index');
+        Route::post('/',            [AdminShippingRateController::class, 'store'])->name('store');
+        Route::put('/{rate}',       [AdminShippingRateController::class, 'update'])->name('update');
+        Route::delete('/{rate}',    [AdminShippingRateController::class, 'destroy'])->name('destroy');
+        Route::post('/calculate',   [AdminShippingRateController::class, 'calculate'])->name('calculate');
     });
 });
 

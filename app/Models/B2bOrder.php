@@ -26,6 +26,10 @@ class B2bOrder extends Model
         'recipient_name', 'recipient_phone', 'recipient_address', 'recipient_city',
         'delivery_date', 'driver_name', 'driver_phone', 'waybill_number', 'delivery_notes',
 
+        // Inspeksi Barang
+        'inspection_status', 'inspection_notes', 'inspection_images',
+        'inspected_at', 'arrived_at',
+
         // SPB
         'spb_path', 'spb_uploaded_at', 'received_at',
 
@@ -39,6 +43,7 @@ class B2bOrder extends Model
 
     protected $casts = [
         'items'                 => 'array',
+        'inspection_images'     => 'array',
         'dispute_images'        => 'array',
         'subtotal'              => 'float',
         'shipping_cost'         => 'float',
@@ -50,6 +55,8 @@ class B2bOrder extends Model
         'settlement_uploaded_at'=> 'datetime',
         'settlement_verified_at' => 'datetime',
         'delivery_date'         => 'date',
+        'arrived_at'            => 'datetime',
+        'inspected_at'          => 'datetime',
         'spb_uploaded_at'       => 'datetime',
         'received_at'           => 'datetime',
         'dispute_at'            => 'datetime',
@@ -86,9 +93,10 @@ class B2bOrder extends Model
             'dp_uploaded'          => 'DP Menunggu Verifikasi',
             'dp_verified'          => 'DP Terverifikasi — Siapkan Armada',
             'in_transit'           => 'Dalam Pengiriman',
-            'settlement_uploaded'   => 'Pelunasan Menunggu Verifikasi',
-            'settlement_verified'   => 'Pembayaran Lunas',
-            'delivered'            => 'Barang Diterima',
+            'arrived'              => 'Barang Tiba — Inspeksi',
+            'goods_accepted'       => 'Barang Diterima Baik',
+            'settlement_uploaded'  => 'Pelunasan Menunggu Verifikasi',
+            'settlement_verified'  => 'Pembayaran Lunas',
             'completed'            => 'Pesanan Selesai',
             'cancelled'            => 'Dibatalkan',
             default                => ucfirst((string) $this->status),
@@ -103,9 +111,10 @@ class B2bOrder extends Model
             'dp_uploaded'          => 'yellow',
             'dp_verified'          => 'teal',
             'in_transit'           => 'blue',
+            'arrived'              => 'indigo',
+            'goods_accepted'       => 'teal',
             'settlement_uploaded'  => 'purple',
             'settlement_verified'  => 'teal',
-            'delivered'            => 'indigo',
             'completed'            => 'green',
             'cancelled'            => 'red',
             default                => 'gray',
@@ -129,21 +138,27 @@ class B2bOrder extends Model
         return $this->status === 'waiting_dp';
     }
 
-    /** Mitra bisa upload pelunasan ketika barang sudah dalam perjalanan **/
+    /** Mitra bisa upload pelunasan setelah barang diterima baik **/
     public function canUploadSettlement(): bool
     {
-        return $this->status === 'in_transit';
+        return $this->status === 'goods_accepted';
     }
 
-    /** Admin upload SPB setelah barang diterima **/
+    /** Mitra bisa inspeksi barang saat status arrived **/
+    public function canInspect(): bool
+    {
+        return $this->status === 'arrived';
+    }
+
+    /** Admin upload SPB setelah pelunasan terverifikasi **/
     public function canUploadSpb(): bool
     {
-        return in_array($this->status, ['settlement_verified', 'delivered'], true);
+        return in_array($this->status, ['settlement_verified'], true);
     }
 
     public function canConfirmReceived(): bool
     {
-        return $this->status === 'settlement_verified';
+        return false; // Tidak dipakai lagi, diganti inspeksi
     }
 
     public function canDispute(): bool

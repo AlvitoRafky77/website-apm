@@ -85,20 +85,20 @@
             ['key' => 'dp_uploaded',         'label' => 'Verifikasi DP',    'icon' => '🔍'],
             ['key' => 'dp_verified',         'label' => 'Siap Kirim',      'icon' => '✅'],
             ['key' => 'in_transit',           'label' => 'Pengiriman',      'icon' => '🚛'],
-            ['key' => 'settlement_uploaded',  'label' => 'Pelunasan',       'icon' => '💰'],
-            ['key' => 'delivered',            'label' => 'Diterima',        'icon' => '📦'],
+            ['key' => 'arrived',              'label' => 'Inspeksi',        'icon' => '🔍'],
+            ['key' => 'goods_accepted',       'label' => 'Pelunasan',       'icon' => '💰'],
             ['key' => 'completed',            'label' => 'Selesai',         'icon' => '🎉'],
         ];
-        $statusOrder = ['draft','waiting_dp','dp_uploaded','dp_verified','in_transit','waiting_settlement','settlement_uploaded','settlement_verified','delivered','completed'];
         $visualIdx = match($order->status) {
             'pending_review'      => 0,
             'waiting_dp'          => 0,
             'dp_uploaded'         => 1,
             'dp_verified'         => 2,
             'in_transit'          => 3,
-            'settlement_uploaded' => 4,
-            'settlement_verified' => 4,
-            'delivered'           => 5,
+            'arrived'             => 4,
+            'goods_accepted'      => 5,
+            'settlement_uploaded' => 5,
+            'settlement_verified' => 5,
             'completed'           => 6,
             default               => 0
         };
@@ -388,25 +388,8 @@
         {{-- Kolom Kanan — Aksi --}}
         <div class="lg:col-span-4 space-y-10">
 
-            {{-- Tombol Konfirmasi Terima (Delivered Status) --}}
-            @if($order->status === 'settlement_verified')
-            <div class="bg-gradient-to-br from-gray-900 to-[#1a1a2e] rounded-[2rem] p-1 shadow-2xl overflow-hidden group">
-                <div class="bg-gray-900 rounded-[1.9rem] p-10 text-white h-full relative">
-                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-red-600/10 rounded-full blur-3xl group-hover:bg-red-600/20 transition-colors"></div>
-                    <h3 class="font-black text-xl mb-3 tracking-tight">Barang Sudah Diterima?</h3>
-                    <p class="text-xs text-gray-400 mb-8 leading-relaxed font-medium">Admin telah memverifikasi pelunasan Anda. Pastikan barang dalam kondisi baik sebelum konfirmasi penerimaan.</p>
-                    <form method="POST" action="{{ route('b2b.orders.confirm-received', $order->order_number) }}">
-                        @csrf
-                        <button type="submit" class="w-full bg-[#CD422B] hover:bg-red-700 text-white font-black py-4 rounded-2xl transition-all shadow-xl hover:-translate-y-1 active:translate-y-0 text-sm tracking-widest uppercase">
-                            Konfirmasi Terima
-                        </button>
-                    </form>
-                </div>
-            </div>
-            @endif
-
             {{-- Struk Lunas --}}
-            @if(in_array($order->status, ['settlement_verified', 'delivered', 'completed']) && $order->settlement_verified_at)
+            @if(in_array($order->status, ['settlement_verified', 'completed']) && $order->settlement_verified_at)
             <div class="bg-emerald-600 rounded-[2rem] p-8 text-white shadow-lg relative overflow-hidden">
                 <div class="absolute -bottom-6 -right-6 w-24 h-24 bg-white/10 rounded-full"></div>
                 <div class="flex items-center gap-4 mb-6 relative z-10">
@@ -486,15 +469,96 @@
             </div>
             @endif
 
+            {{-- Barang Dalam Perjalanan --}}
             @if($order->status === 'in_transit')
-            <div class="bg-emerald-50 border border-emerald-100 rounded-[2rem] p-6 mb-6 shadow-sm">
+            <div class="bg-blue-50 border border-blue-200 rounded-[2rem] p-6 shadow-sm">
                 <div class="flex items-start gap-4">
-                    <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-2xl shadow-sm shrink-0">🚚</div>
+                    <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-2xl shadow-sm shrink-0">🚛</div>
                     <div>
-                        <h3 class="font-black text-emerald-800 text-lg tracking-tight">DP Telah Diverifikasi</h3>
-                        <p class="text-xs text-emerald-700/80 font-medium leading-relaxed mt-1">
-                            Pembayaran DP Anda sudah diverifikasi. Barang sedang dikirim dan armada dalam perjalanan.
+                        <h3 class="font-black text-blue-800 text-lg tracking-tight">Barang Dalam Perjalanan</h3>
+                        <p class="text-xs text-blue-700/80 font-medium leading-relaxed mt-1">
+                            Armada APM sedang menuju lokasi Anda. Saat tiba, Anda akan diminta untuk inspeksi barang bersama driver.
                         </p>
+                        @if($order->driver_name)
+                        <div class="mt-3 bg-white rounded-xl p-3 border border-blue-100">
+                            <p class="text-[10px] font-bold text-blue-500 uppercase tracking-wide mb-1">Info Driver</p>
+                            <p class="text-xs text-gray-700 font-semibold">{{ $order->driver_name }} · {{ $order->driver_phone }}</p>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            {{-- Barang Tiba — Form Inspeksi --}}
+            @if($order->status === 'arrived')
+            <div class="bg-indigo-50 border border-indigo-200 rounded-[2rem] p-6 mb-4 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">📍</span>
+                    <div>
+                        <h3 class="font-black text-indigo-800 text-sm">Barang Sudah Tiba!</h3>
+                        <p class="text-[10px] text-indigo-600">Tiba {{ $order->arrived_at?->format('d M Y, H:i') }} WIB. Silakan inspeksi bersama driver.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-[2rem] border border-indigo-200 shadow-sm p-8">
+                <h3 class="font-black text-gray-900 text-lg mb-2 tracking-tight">🔍 Inspeksi Barang</h3>
+                <p class="text-xs text-gray-400 mb-6 font-medium leading-relaxed">Periksa kondisi barang bersama driver. Jika ada kerusakan, APM akan menanggung melalui asuransi pengiriman.</p>
+                
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-6">
+                    <p class="text-[10px] text-amber-800 font-bold">🛡️ DILINDUNGI ASURANSI PENGIRIMAN</p>
+                    <p class="text-[10px] text-amber-700">Setiap pembelian B2B dilindungi asuransi pengiriman APM. Jika terjadi kerusakan selama pengiriman, seluruh kerugian ditanggung oleh APM.</p>
+                </div>
+
+                <form method="POST" action="{{ route('b2b.orders.inspect-goods', $order->order_number) }}" enctype="multipart/form-data">
+                    @csrf
+                    <div class="mb-4">
+                        <label class="text-xs font-bold text-gray-600 block mb-2">Kondisi Barang</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="relative">
+                                <input type="radio" name="inspection_status" value="good" class="peer sr-only" checked>
+                                <div class="peer-checked:border-green-500 peer-checked:bg-green-50 border-2 border-gray-200 rounded-xl p-4 text-center cursor-pointer transition hover:border-green-300">
+                                    <span class="text-2xl block mb-1">✅</span>
+                                    <span class="text-xs font-black text-gray-700">Barang Baik</span>
+                                    <p class="text-[10px] text-gray-400 mt-1">Semua produk sesuai pesanan</p>
+                                </div>
+                            </label>
+                            <label class="relative">
+                                <input type="radio" name="inspection_status" value="damaged" class="peer sr-only">
+                                <div class="peer-checked:border-orange-500 peer-checked:bg-orange-50 border-2 border-gray-200 rounded-xl p-4 text-center cursor-pointer transition hover:border-orange-300">
+                                    <span class="text-2xl block mb-1">⚠️</span>
+                                    <span class="text-xs font-black text-gray-700">Ada Kerusakan</span>
+                                    <p class="text-[10px] text-gray-400 mt-1">Ditanggung asuransi APM</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="text-xs font-bold text-gray-600 block mb-1">Catatan Inspeksi</label>
+                        <textarea name="inspection_notes" rows="3" placeholder="Deskripsikan kondisi barang yang diterima. Wajib jika ada kerusakan." class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm resize-none focus:ring-2 focus:ring-indigo-200 focus:outline-none"></textarea>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="text-xs font-bold text-gray-600 block mb-1">Foto Bukti Kondisi <span class="text-gray-400 font-normal">(Opsional, maks 5 foto)</span></label>
+                        <input type="file" name="inspection_images[]" multiple accept="image/*" class="w-full text-xs text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100">
+                    </div>
+
+                    <button type="submit" onclick="return confirm('Konfirmasi inspeksi? Pastikan semua sudah dicek bersama driver.')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 rounded-2xl transition-all shadow-md text-xs uppercase tracking-widest">
+                        Konfirmasi Inspeksi
+                    </button>
+                </form>
+            </div>
+            @endif
+
+            {{-- Barang Diterima — Upload Pelunasan --}}
+            @if($order->status === 'goods_accepted')
+            <div class="bg-green-50 border border-green-200 rounded-[2rem] p-4 mb-4 shadow-sm">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">✅</span>
+                    <div>
+                        <p class="font-bold text-green-800 text-sm">Barang Diterima</p>
+                        <p class="text-[10px] text-green-600">Inspeksi: {{ $order->inspection_status === 'good' ? 'Baik' : 'Ada Kerusakan — Klaim Asuransi APM' }}</p>
                     </div>
                 </div>
             </div>
@@ -517,8 +581,8 @@
             @endif
 
             <div class="bg-white rounded-[2rem] border border-purple-200 shadow-sm p-8">
-                <h3 class="font-black text-gray-900 text-lg mb-2 tracking-tight">Upload Pelunasan</h3>
-                <p class="text-xs text-gray-400 mb-6 font-medium leading-relaxed">Sisa tagihan: <strong class="text-purple-600">Rp {{ number_format($order->settlement_amount, 0, ',', '.') }}</strong>. Bisa transfer/bayar ke driver.</p>
+                <h3 class="font-black text-gray-900 text-lg mb-2 tracking-tight">Upload Pelunasan 50%</h3>
+                <p class="text-xs text-gray-400 mb-6 font-medium leading-relaxed">Sisa tagihan: <strong class="text-purple-600">Rp {{ number_format($order->settlement_amount, 0, ',', '.') }}</strong>. Silakan transfer sisa pembayaran.</p>
                 <form method="POST" action="{{ route('b2b.orders.upload-settlement', $order->order_number) }}" enctype="multipart/form-data">
                     @csrf
                     <label class="block w-full border-2 border-dashed border-purple-200 rounded-[1.5rem] p-8 text-center cursor-pointer hover:border-purple-400 hover:bg-purple-50/30 transition-all mb-6">
@@ -545,23 +609,23 @@
             @if($order->status === 'settlement_uploaded')
             <div class="bg-purple-50 border border-purple-100 rounded-[2rem] p-8 text-center">
                 <div class="w-16 h-16 bg-white rounded-[1.5rem] flex items-center justify-center text-3xl shadow-sm mx-auto mb-4">🕒</div>
-                <h3 class="font-black text-purple-800 mb-1">Cek Pembayaran</h3>
-                <p class="text-xs text-purple-700/70 font-medium">Driver sedang mengonfirmasi dana masuk. Mohon tunggu sejenak.</p>
+                <h3 class="font-black text-purple-800 mb-1">Pelunasan Sedang Diverifikasi</h3>
+                <p class="text-xs text-purple-700/70 font-medium">Admin sedang memverifikasi bukti pelunasan Anda. Mohon tunggu sejenak.</p>
             </div>
             @endif
 
-            @if($order->status === 'delivered')
-            <div class="bg-indigo-50 border border-indigo-100 rounded-[2rem] p-8 text-center">
-                <div class="w-16 h-16 bg-white rounded-[1.5rem] flex items-center justify-center text-3xl shadow-sm mx-auto mb-4">🏠</div>
-                <h3 class="font-black text-indigo-800 mb-1">Barang Diterima</h3>
-                <p class="text-xs text-indigo-700/70 font-medium leading-relaxed">Konfirmasi berhasil. Admin sedang memfinalisasi dokumen SPB Anda.</p>
+            @if($order->status === 'settlement_verified')
+            <div class="bg-teal-50 border border-teal-100 rounded-[2rem] p-8 text-center">
+                <div class="w-16 h-16 bg-white rounded-[1.5rem] flex items-center justify-center text-3xl shadow-sm mx-auto mb-4">✅</div>
+                <h3 class="font-black text-teal-800 mb-1">Pembayaran Lunas</h3>
+                <p class="text-xs text-teal-700/70 font-medium leading-relaxed">Seluruh pembayaran telah lunas. Admin sedang memfinalisasi dokumen SPB Anda.</p>
             </div>
             @endif
 
             @if($order->status === 'completed' && $order->spb_path)
             <div class="bg-white rounded-[2rem] border border-green-100 shadow-sm p-10 text-center">
                 <div class="w-20 h-20 bg-green-50 text-green-500 rounded-[1.5rem] flex items-center justify-center text-4xl shadow-sm mx-auto mb-6">📦</div>
-                <h3 class="font-black text-gray-900 mb-6 tracking-tight text-xl">Dokumen TTD</h3>
+                <h3 class="font-black text-gray-900 mb-6 tracking-tight text-xl">Dokumen SPB</h3>
                 <a href="{{ Storage::url($order->spb_path) }}" target="_blank"
                    class="inline-flex items-center justify-center gap-3 w-full bg-green-600 hover:bg-green-700 text-white font-black py-5 rounded-2xl transition-all shadow-md text-xs uppercase tracking-widest">
                     <span>Download SPB</span>
