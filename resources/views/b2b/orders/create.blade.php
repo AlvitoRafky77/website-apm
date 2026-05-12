@@ -59,8 +59,8 @@
                         <select name="products[0][id]" class="product-select w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#CD422B]/20" required onchange="updateProductInfo(this)">
                             <option value="">-- Pilih Produk --</option>
                             @foreach($products as $p)
-                            <option value="{{ $p->id }}" data-price="{{ $p->price }}" data-unit="{{ $p->unit }}" data-stock="{{ $p->stock_b2b }}">
-                                {{ $p->name }} ({{ $p->category->name ?? '-' }}) — Rp {{ number_format($p->price, 0, ',', '.') }}/KG
+                            <option value="{{ $p->id }}" data-price="{{ $p->price_b2b }}" data-unit="{{ $p->unit }}" data-stock="{{ $p->stock_b2b }}">
+                                {{ $p->name }} ({{ $p->category->name ?? '-' }}) — Rp {{ number_format($p->price_b2b, 0, ',', '.') }}/KG
                             </option>
                             @endforeach
                         </select>
@@ -153,7 +153,7 @@
 <script>
 let lineIndex = 1;
 
-const productsData = @json($products->map(fn($p) => ['id' => $p->id, 'name' => $p->name, 'price' => $p->price]));
+const productsData = @json($products->map(fn($p) => ['id' => $p->id, 'name' => $p->name, 'price' => $p->price_b2b]));
 
 function formatRp(num) {
     return 'Rp ' + Math.round(num).toLocaleString('id-ID');

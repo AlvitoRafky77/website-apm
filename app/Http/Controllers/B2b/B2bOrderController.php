@@ -104,7 +104,7 @@ class B2bOrderController extends Controller
                     ]);
                 }
 
-                $lineTotal = $product->price * $qtyKg;
+                $lineTotal = $product->price_b2b * $qtyKg;
                 $subtotal += $lineTotal;
 
                 $items[] = [
@@ -114,7 +114,7 @@ class B2bOrderController extends Controller
                     'unit'         => $product->unit,
                     'qty_ton'      => $qtyTon,
                     'qty_kg'       => $qtyKg,
-                    'price_per_kg' => $product->price,
+                    'price_per_kg' => $product->price_b2b,
                     'subtotal'     => $lineTotal,
                 ];
 
