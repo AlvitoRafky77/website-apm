@@ -8,11 +8,15 @@
         <input type="date" name="date_from" value="{{ request('date_from') }}" class="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#CD422B]/20 focus:border-[#CD422B]">
         <input type="date" name="date_to" value="{{ request('date_to') }}" class="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#CD422B]/20 focus:border-[#CD422B]">
 
+        @if(!request('customer_type'))
         <select name="customer_type" class="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#CD422B]/20 focus:border-[#CD422B]">
             <option value="">Semua Customer</option>
             <option value="b2c" @selected(request('customer_type') === 'b2c')>B2C</option>
             <option value="b2b" @selected(request('customer_type') === 'b2b')>B2B</option>
         </select>
+        @else
+        <input type="hidden" name="customer_type" value="{{ request('customer_type') }}">
+        @endif
 
         <select name="payment_type" class="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#CD422B]/20 focus:border-[#CD422B]">
             <option value="">Semua Metode Bayar</option>
@@ -44,7 +48,7 @@
     </div>
 </div>
 
-<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4 mb-6">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
     <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
         <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide">Gross Income</p>
         <p class="mt-2 text-2xl font-black text-gray-900">Rp{{ number_format($summary['gross_income'], 0, ',', '.') }}</p>
@@ -56,14 +60,6 @@
     <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
         <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide">Shipping Collected</p>
         <p class="mt-2 text-2xl font-black text-gray-900">Rp{{ number_format($summary['shipping_collected'], 0, ',', '.') }}</p>
-    </div>
-    <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-        <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide">Refunded</p>
-        <p class="mt-2 text-2xl font-black text-red-600">Rp{{ number_format($summary['refunded_amount'], 0, ',', '.') }}</p>
-    </div>
-    <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-        <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide">Net After Refund</p>
-        <p class="mt-2 text-2xl font-black text-emerald-600">Rp{{ number_format($summary['net_after_refund'], 0, ',', '.') }}</p>
     </div>
 </div>
 

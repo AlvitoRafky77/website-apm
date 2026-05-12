@@ -82,6 +82,12 @@
 </div>
 
 {{-- Meta Info --}}
+@php
+    $driverName    = $order->driver_name    ?: request('driver_name', '-');
+    $driverPhone   = $order->driver_phone   ?: request('driver_phone', '-');
+    $deliveryDate  = $order->delivery_date  ?: request('delivery_date');
+    $waybillNumber = $order->waybill_number ?: request('waybill_number', '-');
+@endphp
 <div class="meta-grid">
     <div class="meta-box">
         <h3>Informasi Mitra Penerima</h3>
@@ -95,10 +101,10 @@
     <div class="meta-box">
         <h3>Informasi Pengiriman</h3>
         <div class="meta-row"><span class="meta-label">No. Order</span><span class="meta-value">{{ $order->order_number }}</span></div>
-        <div class="meta-row"><span class="meta-label">Tgl. Kirim</span><span class="meta-value">{{ $order->delivery_date ? \Carbon\Carbon::parse($order->delivery_date)->format('d F Y') : '-' }}</span></div>
-        <div class="meta-row"><span class="meta-label">Driver</span><span class="meta-value">{{ $order->driver_name ?? '-' }}</span></div>
-        <div class="meta-row"><span class="meta-label">No. HP Driver</span><span class="meta-value">{{ $order->driver_phone ?? '-' }}</span></div>
-        <div class="meta-row"><span class="meta-label">No. Surat Jalan</span><span class="meta-value">{{ $order->waybill_number ?? '-' }}</span></div>
+        <div class="meta-row"><span class="meta-label">Tgl. Kirim</span><span class="meta-value">{{ $deliveryDate ? \Carbon\Carbon::parse($deliveryDate)->format('d F Y') : '-' }}</span></div>
+        <div class="meta-row"><span class="meta-label">Driver</span><span class="meta-value">{{ $driverName }}</span></div>
+        <div class="meta-row"><span class="meta-label">No. HP Driver</span><span class="meta-value">{{ $driverPhone }}</span></div>
+        <div class="meta-row"><span class="meta-label">No. Surat Jalan</span><span class="meta-value">{{ $waybillNumber }}</span></div>
         <div class="meta-row"><span class="meta-label">Dicetak</span><span class="meta-value">{{ now()->format('d/m/Y H:i') }}</span></div>
     </div>
 </div>
@@ -158,12 +164,12 @@
 <div class="sign-grid">
     <div class="sign-box">
         <h3>Dikirim Oleh<br>(Armada APM)</h3>
-        <div class="sign-line">{{ $order->driver_name ?? '___________________' }}</div>
+        <div class="sign-line">{{ $driverName !== '-' ? $driverName : '___________________' }}</div>
         <div class="sign-sub">Driver / Pengirim</div>
     </div>
     <div class="sign-box">
         <h3>Pelunasan Diterima Oleh<br>(Driver di Lokasi)</h3>
-        <div class="sign-line">{{ $order->driver_name ?? '___________________' }}</div>
+        <div class="sign-line">{{ $driverName !== '-' ? $driverName : '___________________' }}</div>
         <div class="sign-sub">Tanda tangan + stempel</div>
     </div>
     <div class="sign-box">

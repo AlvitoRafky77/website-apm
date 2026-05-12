@@ -37,6 +37,9 @@ class B2bOrder extends Model
         'dispute_status', 'dispute_reason', 'dispute_images',
         'dispute_at', 'dispute_admin_notes', 'dispute_resolved_at', 'dispute_resolved_by',
 
+        // Potongan Kerusakan
+        'damage_deduction', 'damage_notes', 'damage_set_by', 'damage_set_at',
+
         // Lainnya
         'status', 'cancel_reason', 'notes',
     ];
@@ -50,6 +53,8 @@ class B2bOrder extends Model
         'total'                 => 'float',
         'dp_amount'             => 'float',
         'settlement_amount'     => 'float',
+        'damage_deduction'      => 'float',
+        'damage_set_at'         => 'datetime',
         'dp_uploaded_at'        => 'datetime',
         'dp_verified_at'        => 'datetime',
         'settlement_uploaded_at'=> 'datetime',
@@ -94,7 +99,9 @@ class B2bOrder extends Model
             'dp_verified'          => 'DP Terverifikasi — Siapkan Armada',
             'in_transit'           => 'Dalam Pengiriman',
             'arrived'              => 'Barang Tiba — Inspeksi',
-            'goods_accepted'       => 'Barang Diterima Baik',
+            'goods_accepted'       => $this->inspection_status === 'damaged'
+                                        ? 'Barang Diterima — Ada Kerusakan'
+                                        : 'Barang Diterima Baik',
             'settlement_uploaded'  => 'Pelunasan Menunggu Verifikasi',
             'settlement_verified'  => 'Pembayaran Lunas',
             'completed'            => 'Pesanan Selesai',
@@ -112,7 +119,7 @@ class B2bOrder extends Model
             'dp_verified'          => 'teal',
             'in_transit'           => 'blue',
             'arrived'              => 'indigo',
-            'goods_accepted'       => 'teal',
+            'goods_accepted'       => $this->inspection_status === 'damaged' ? 'orange' : 'teal',
             'settlement_uploaded'  => 'purple',
             'settlement_verified'  => 'teal',
             'completed'            => 'green',
@@ -156,9 +163,18 @@ class B2bOrder extends Model
         return in_array($this->status, ['settlement_verified'], true);
     }
 
-    public function canConfirmReceived(): bool
+    /** Pelunasan setelah dikurangi potongan kerusakan **/
+    public function getAdjustedSettlementAttribute(): float
     {
-        return false; // Tidak dipakai lagi, diganti inspeksi
+        return max(0, $this->settlement_amount - ($this->damage_deduction ?? 0));
+    }
+
+    /** Admin bisa set potongan kerusakan saat inspeksi menunjukkan kerusakan **/
+    public function canSetDamageDeduction(): bool
+    {
+        return $this->status === 'goods_accepted'
+            && $this->inspection_status === 'damaged'
+            && $this->damage_deduction == 0;
     }
 
     public function canDispute(): bool

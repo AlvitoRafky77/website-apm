@@ -102,12 +102,32 @@
                 @endif
             </a>
 
-            <!-- Keuangan -->
-            <a href="{{ route('admin.finances.index') }}"
-               class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-gray-600 hover:bg-red-50 hover:text-[#CD422B] transition-all group {{ request()->routeIs('admin.finances*') ? 'active' : '' }}">
-                <svg class="w-5 h-5 text-gray-400 group-hover:text-[#CD422B] transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-10V6m0 12v2m8-8a8 8 0 11-16 0 8 8 0 0116 0z"/></svg>
-                <span class="flex-1">Keuangan</span>
-            </a>
+            <!-- Keuangan (with submenu) -->
+            <div x-data="{ open: {{ request()->routeIs('admin.finances*') ? 'true' : 'false' }} }">
+                <button @click="open = !open" type="button"
+                   class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-gray-600 hover:bg-red-50 hover:text-[#CD422B] transition-all group {{ request()->routeIs('admin.finances*') ? 'active' : '' }}">
+                    <svg class="w-5 h-5 text-gray-400 group-hover:text-[#CD422B] transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-10V6m0 12v2m8-8a8 8 0 11-16 0 8 8 0 0116 0z"/></svg>
+                    <span class="flex-1 text-left">Keuangan</span>
+                    <svg class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div x-show="open" x-transition.duration.200ms class="ml-8 mt-1 space-y-0.5">
+                    <a href="{{ route('admin.finances.index') }}"
+                       class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-gray-500 hover:bg-red-50 hover:text-[#CD422B] transition {{ request()->routeIs('admin.finances.index') && !request('customer_type') ? 'text-[#CD422B] bg-red-50/60' : '' }}">
+                        <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+                        Semua
+                    </a>
+                    <a href="{{ route('admin.finances.index', ['customer_type' => 'b2c']) }}"
+                       class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-gray-500 hover:bg-red-50 hover:text-[#CD422B] transition {{ request('customer_type') === 'b2c' ? 'text-[#CD422B] bg-red-50/60' : '' }}">
+                        <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+                        Keuangan B2C
+                    </a>
+                    <a href="{{ route('admin.finances.index', ['customer_type' => 'b2b']) }}"
+                       class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-gray-500 hover:bg-red-50 hover:text-[#CD422B] transition {{ request('customer_type') === 'b2b' ? 'text-[#CD422B] bg-red-50/60' : '' }}">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                        Keuangan B2B
+                    </a>
+                </div>
+            </div>
 
             <!-- Pesan Kontak -->
             <a href="{{ route('admin.contact-messages.index') }}"

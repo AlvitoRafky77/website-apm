@@ -85,7 +85,13 @@
                     <span class="font-black text-[#CD422B]">Rp {{ number_format($order->total, 0, ',', '.') }}</span>
                 </div>
                 <div class="flex justify-between"><span class="text-gray-500">DP 50%</span><span class="font-bold text-blue-700">Rp {{ number_format($order->dp_amount, 0, ',', '.') }}</span></div>
+                @if($order->damage_deduction > 0)
+                <div class="flex justify-between"><span class="text-gray-500">Pelunasan 50%</span><span class="font-bold text-gray-400 line-through">Rp {{ number_format($order->settlement_amount, 0, ',', '.') }}</span></div>
+                <div class="flex justify-between"><span class="text-orange-600 text-xs">🛡️ Potongan Kerusakan</span><span class="font-bold text-orange-600">- Rp {{ number_format($order->damage_deduction, 0, ',', '.') }}</span></div>
+                <div class="flex justify-between bg-green-50 rounded-lg px-3 py-1.5 -mx-1"><span class="font-bold text-green-700">Pelunasan Akhir</span><span class="font-black text-green-700">Rp {{ number_format($order->adjusted_settlement, 0, ',', '.') }}</span></div>
+                @else
                 <div class="flex justify-between"><span class="text-gray-500">Pelunasan 50%</span><span class="font-bold text-purple-700">Rp {{ number_format($order->settlement_amount, 0, ',', '.') }}</span></div>
+                @endif
             </div>
         </div>
 
@@ -441,26 +447,112 @@
         </div>
         @endif
 
+        {{-- Form Potongan Kerusakan (hanya jika inspeksi rusak) --}}
+        @if($order->canSetDamageDeduction())
+        <div class="bg-white rounded-2xl border border-orange-200 shadow-sm p-6">
+            <h3 class="font-bold text-gray-900 text-sm mb-2">🛡️ Tetapkan Potongan Kerusakan</h3>
+            <p class="text-xs text-gray-500 mb-4">Inspeksi menunjukkan ada kerusakan. Tentukan potongan dari pelunasan mitra. Kerugian ini ditanggung asuransi pengiriman APM.</p>
+            
+            <div class="bg-gray-50 rounded-xl p-3 mb-4 text-xs">
+                <div class="flex justify-between mb-1"><span class="text-gray-500">Pelunasan Awal (50%)</span><span class="font-bold">Rp {{ number_format($order->settlement_amount, 0, ',', '.') }}</span></div>
+                <div class="flex justify-between text-orange-600"><span>Potongan Kerusakan</span><span class="font-bold" id="preview-deduction">- Rp 0</span></div>
+                <div class="flex justify-between border-t border-gray-200 mt-2 pt-2"><span class="font-bold text-gray-700">Yang Harus Dilunasi</span><span class="font-black text-green-700" id="preview-final">Rp {{ number_format($order->settlement_amount, 0, ',', '.') }}</span></div>
+            </div>
+
+            <form method="POST" action="{{ route('admin.b2b.orders.set-damage-deduction', $order->order_number) }}">
+                @csrf
+                <div class="mb-3">
+                    <label class="text-xs font-semibold text-gray-600 block mb-1">Nominal Potongan (Rp)</label>
+                    <input type="number" name="damage_deduction" id="input-deduction" required min="0" max="{{ (int) $order->settlement_amount }}" placeholder="Contoh: 1400000"
+                           class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-200 focus:outline-none"
+                           oninput="updateDeductionPreview()">
+                </div>
+                <div class="mb-4">
+                    <label class="text-xs font-semibold text-gray-600 block mb-1">Catatan Kerusakan</label>
+                    <textarea name="damage_notes" rows="2" required placeholder="Contoh: 10 KG Kepiting Soka rusak saat pengiriman, potongan senilai 10 KG × Rp 140.000" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm resize-none"></textarea>
+                </div>
+                <button type="submit" onclick="return confirm('Tetapkan potongan kerusakan? Pelunasan mitra akan otomatis disesuaikan.')" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 rounded-xl transition text-sm shadow-md">
+                    Tetapkan Potongan
+                </button>
+            </form>
+        </div>
+        <script>
+            function updateDeductionPreview() {
+                const val = parseFloat(document.getElementById('input-deduction').value) || 0;
+                const settlement = {{ (int) $order->settlement_amount }};
+                const final_amount = Math.max(0, settlement - val);
+                document.getElementById('preview-deduction').textContent = '- Rp ' + new Intl.NumberFormat('id-ID').format(val);
+                document.getElementById('preview-final').textContent = 'Rp ' + new Intl.NumberFormat('id-ID').format(final_amount);
+            }
+        </script>
+        @endif
+
+        {{-- Info Potongan Kerusakan (sudah ditetapkan) --}}
+        @if($order->damage_deduction > 0)
+        <div class="bg-orange-50 border border-orange-200 rounded-2xl p-5">
+            <h3 class="font-bold text-gray-900 text-sm mb-3">🛡️ Potongan Kerusakan</h3>
+            <div class="text-xs space-y-1.5">
+                <div class="flex justify-between"><span class="text-gray-500">Pelunasan Awal</span><span class="font-bold line-through text-gray-400">Rp {{ number_format($order->settlement_amount, 0, ',', '.') }}</span></div>
+                <div class="flex justify-between text-orange-700"><span>Potongan Kerusakan</span><span class="font-bold">- Rp {{ number_format($order->damage_deduction, 0, ',', '.') }}</span></div>
+                <div class="flex justify-between border-t border-orange-200 pt-2"><span class="font-bold text-gray-700">Pelunasan Akhir</span><span class="font-black text-green-700">Rp {{ number_format($order->adjusted_settlement, 0, ',', '.') }}</span></div>
+            </div>
+            @if($order->damage_notes)
+            <div class="mt-3 bg-white rounded-lg p-2.5 border border-orange-100">
+                <p class="text-[10px] font-bold text-orange-500 uppercase mb-0.5">Catatan:</p>
+                <p class="text-xs text-gray-700">{{ $order->damage_notes }}</p>
+            </div>
+            @endif
+            <p class="text-[10px] text-gray-400 mt-2">Ditetapkan: {{ $order->damage_set_at?->format('d M Y, H:i') }}</p>
+        </div>
+        @endif
+
         {{-- Cetak Surat Jalan (Hanya muncul saat persiapan kirim) --}}
         @if($order->status === 'dp_verified')
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <h3 class="font-bold text-gray-900 text-sm mb-3">📄 Dokumen Pengiriman</h3>
-            <a href="{{ route('admin.b2b.orders.print-surat-jalan', $order->order_number) }}" target="_blank"
-               class="flex items-center justify-center gap-2 w-full bg-[#1a1a2e] hover:bg-black text-white font-bold py-3 rounded-xl transition text-sm shadow-md">
+            <h3 class="font-bold text-gray-900 text-sm mb-3">📄 Cetak Surat Jalan</h3>
+            <p class="text-xs text-gray-500 mb-3">Isi data driver di atas terlebih dahulu, lalu cetak surat jalan. Informasi driver akan otomatis terisi di dokumen.</p>
+            <button type="button" id="btn-cetak-sj"
+               class="flex items-center justify-center gap-2 w-full bg-[#1a1a2e] hover:bg-black text-white font-bold py-3 rounded-xl transition text-sm shadow-md cursor-pointer">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                 Cetak Surat Jalan (Print PDF)
-            </a>
+            </button>
             <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 mt-3">
-                <p class="text-[10px] text-amber-700 font-bold">⚠️ Cetak dokumen ini dan berikan kepada driver <strong>SEBELUM</strong> dispatch armada.</p>
+                <p class="text-[10px] text-amber-700 font-bold">⚠️ Alur yang benar: <strong>Isi data driver → Cetak surat jalan → Berikan ke driver → Dispatch armada</strong></p>
             </div>
         </div>
+        <script>
+            document.getElementById('btn-cetak-sj').addEventListener('click', function() {
+                const driverName = document.querySelector('input[name="driver_name"]')?.value || '';
+                const driverPhone = document.querySelector('input[name="driver_phone"]')?.value || '';
+                const deliveryDate = document.querySelector('input[name="delivery_date"]')?.value || '';
+                const waybillNumber = document.querySelector('input[name="waybill_number"]')?.value || '';
+
+                let url = "{{ route('admin.b2b.orders.print-surat-jalan', $order->order_number) }}";
+                const params = new URLSearchParams();
+                if (driverName) params.set('driver_name', driverName);
+                if (driverPhone) params.set('driver_phone', driverPhone);
+                if (deliveryDate) params.set('delivery_date', deliveryDate);
+                if (waybillNumber) params.set('waybill_number', waybillNumber);
+
+                if (params.toString()) url += '?' + params.toString();
+                window.open(url, '_blank');
+            });
+        </script>
         @endif
 
         {{-- Verifikasi Pelunasan --}}
         @if($order->status === 'settlement_uploaded')
         <div class="bg-white rounded-2xl border border-purple-200 shadow-sm p-6">
             <h3 class="font-bold text-gray-900 text-sm mb-4">💰 Konfirmasi Pelunasan</h3>
+            @if($order->damage_deduction > 0)
+            <div class="bg-orange-50 rounded-xl p-3 mb-4 text-xs space-y-1">
+                <div class="flex justify-between"><span class="text-gray-500">Pelunasan Awal</span><span class="font-bold line-through text-gray-400">Rp {{ number_format($order->settlement_amount, 0, ',', '.') }}</span></div>
+                <div class="flex justify-between text-orange-700"><span>Potongan Kerusakan</span><span class="font-bold">- Rp {{ number_format($order->damage_deduction, 0, ',', '.') }}</span></div>
+                <div class="flex justify-between border-t border-orange-200 pt-1.5"><span class="font-bold">Yang Harus Dilunasi</span><span class="font-black text-green-700">Rp {{ number_format($order->adjusted_settlement, 0, ',', '.') }}</span></div>
+            </div>
+            @else
             <p class="text-xs text-gray-500 mb-4">Sisa yang harus dilunasi: <strong>Rp {{ number_format($order->settlement_amount, 0, ',', '.') }}</strong></p>
+            @endif
             <form method="POST" action="{{ route('admin.b2b.orders.verify-settlement', $order->order_number) }}">
                 @csrf
                 <div class="mb-4">

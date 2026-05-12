@@ -161,6 +161,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/{orderNumber}/dispatch-armada',        [AdminB2bOrderController::class, 'dispatchArmada'])->name('dispatch-armada');
         Route::post('/{orderNumber}/mark-arrived',           [AdminB2bOrderController::class, 'markArrived'])->name('mark-arrived');
         Route::post('/{orderNumber}/verify-settlement',     [AdminB2bOrderController::class, 'verifySettlement'])->name('verify-settlement');
+        Route::post('/{orderNumber}/set-damage-deduction',   [AdminB2bOrderController::class, 'setDamageDeduction'])->name('set-damage-deduction');
         Route::post('/{orderNumber}/upload-spb',            [AdminB2bOrderController::class, 'uploadSpb'])->name('upload-spb');
         Route::post('/{orderNumber}/dispute',               [AdminB2bOrderController::class, 'handleDispute'])->name('dispute');
         Route::post('/{orderNumber}/cancel',                [AdminB2bOrderController::class, 'cancel'])->name('cancel');

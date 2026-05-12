@@ -329,14 +329,20 @@
                             'cancelled' => 'status-failed',
                             default => 'status-pending',
                         };
+                        if ($paymentStatus === 'goods_accepted' && $order->inspection_status === 'damaged') {
+                            $badgeClass = 'status-failed';
+                        }
                         $statusLabel = match ($paymentStatus) {
                             'completed' => 'Selesai',
                             'delivered' => 'Diterima',
                             'settlement_verified' => 'Lunas Terverifikasi',
                             'cancelled' => 'Dibatalkan',
                             'in_transit' => 'Dalam Pengiriman',
+                            'arrived' => 'Barang Tiba — Inspeksi',
+                            'goods_accepted' => $order->inspection_status === 'damaged' ? 'Barang Diterima — Ada Kerusakan' : 'Barang Diterima Baik',
                             'settlement_uploaded' => 'Pelunasan Menunggu Verifikasi',
                             'dp_uploaded' => 'DP Menunggu Verifikasi',
+                            'dp_verified' => 'DP Terverifikasi',
                             'waiting_dp' => 'Menunggu DP',
                             'waiting_settlement' => 'Menunggu Pelunasan',
                             'draft' => 'Draft',
@@ -456,15 +462,30 @@
                         <td class="label">DP 50%</td>
                         <td class="value">Rp{{ number_format((float) $order->dp_amount, 0, ',', '.') }}</td>
                     </tr>
+                    @if($order->damage_deduction > 0)
+                    <tr>
+                        <td class="label">Pelunasan Awal</td>
+                        <td class="value" style="text-decoration: line-through; color: #9ca3af;">Rp{{ number_format((float) $order->settlement_amount, 0, ',', '.') }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label" style="color: #ea580c;">Potongan Kerusakan</td>
+                        <td class="value" style="color: #ea580c;">- Rp{{ number_format((float) $order->damage_deduction, 0, ',', '.') }}</td>
+                    </tr>
+                    <tr style="border-top: 2px solid #e5e7eb;">
+                        <td class="label" style="font-weight: 700;">Pelunasan Akhir</td>
+                        <td class="value" style="color: #166534; font-weight: 900;">Rp{{ number_format((float) $order->adjusted_settlement, 0, ',', '.') }}</td>
+                    </tr>
+                    @else
                     <tr>
                         <td class="label">Pelunasan 50%</td>
                         <td class="value">Rp{{ number_format((float) $order->settlement_amount, 0, ',', '.') }}</td>
                     </tr>
+                    @endif
                 </table>
 
                 <div class="grand-total">
                     <span class="gt-label">Total Tagihan</span>
-                    <span class="gt-value">Rp{{ number_format((float) $order->total, 0, ',', '.') }}</span>
+                    <span class="gt-value">Rp{{ number_format((float) ($order->damage_deduction > 0 ? $order->total - $order->damage_deduction : $order->total), 0, ',', '.') }}</span>
                     <div class="clear"></div>
                 </div>
             </td>

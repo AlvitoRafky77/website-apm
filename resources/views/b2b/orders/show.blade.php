@@ -203,7 +203,14 @@
                             </div>
                             <div class="pt-4 border-t border-gray-50 flex justify-between items-end">
                                 <span class="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Total Bill</span>
+                                @if($order->damage_deduction > 0)
+                                <div class="text-right">
+                                    <span class="text-sm font-bold text-gray-400 line-through block">Rp {{ number_format($order->total, 0, ',', '.') }}</span>
+                                    <span class="text-2xl font-black text-green-700">Rp {{ number_format($order->total - $order->damage_deduction, 0, ',', '.') }}</span>
+                                </div>
+                                @else
                                 <span class="text-2xl font-black text-[#CD422B]">Rp {{ number_format($order->total, 0, ',', '.') }}</span>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -213,9 +220,14 @@
                             <p class="text-[9px] font-black text-blue-400 uppercase mb-1">DP (50%)</p>
                             <p class="font-black text-blue-700 text-sm">Rp {{ number_format($order->dp_amount, 0, ',', '.') }}</p>
                         </div>
-                        <div class="bg-purple-50/50 rounded-2xl p-4">
-                            <p class="text-[9px] font-black text-purple-400 uppercase mb-1">Pelunasan</p>
-                            <p class="font-black text-purple-700 text-sm">Rp {{ number_format($order->settlement_amount, 0, ',', '.') }}</p>
+                        <div class="{{ $order->damage_deduction > 0 ? 'bg-orange-50/50' : 'bg-purple-50/50' }} rounded-2xl p-4">
+                            <p class="text-[9px] font-black {{ $order->damage_deduction > 0 ? 'text-orange-400' : 'text-purple-400' }} uppercase mb-1">Pelunasan</p>
+                            @if($order->damage_deduction > 0)
+                                <p class="font-bold text-gray-400 text-xs line-through">Rp {{ number_format($order->settlement_amount, 0, ',', '.') }}</p>
+                                <p class="font-black text-green-700 text-sm">Rp {{ number_format($order->adjusted_settlement, 0, ',', '.') }}</p>
+                            @else
+                                <p class="font-black text-purple-700 text-sm">Rp {{ number_format($order->settlement_amount, 0, ',', '.') }}</p>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -553,15 +565,51 @@
 
             {{-- Barang Diterima — Upload Pelunasan --}}
             @if($order->status === 'goods_accepted')
-            <div class="bg-green-50 border border-green-200 rounded-[2rem] p-4 mb-4 shadow-sm">
+            <div class="{{ $order->inspection_status === 'damaged' ? 'bg-orange-50 border-orange-200' : 'bg-green-50 border-green-200' }} border rounded-[2rem] p-4 mb-4 shadow-sm">
                 <div class="flex items-center gap-2">
-                    <span class="text-xl">✅</span>
+                    <span class="text-xl">{{ $order->inspection_status === 'damaged' ? '⚠️' : '✅' }}</span>
                     <div>
-                        <p class="font-bold text-green-800 text-sm">Barang Diterima</p>
-                        <p class="text-[10px] text-green-600">Inspeksi: {{ $order->inspection_status === 'good' ? 'Baik' : 'Ada Kerusakan — Klaim Asuransi APM' }}</p>
+                        <p class="font-bold {{ $order->inspection_status === 'damaged' ? 'text-orange-800' : 'text-green-800' }} text-sm">
+                            {{ $order->inspection_status === 'damaged' ? 'Barang Diterima — Ada Kerusakan' : 'Barang Diterima' }}
+                        </p>
+                        <p class="text-[10px] {{ $order->inspection_status === 'damaged' ? 'text-orange-600' : 'text-green-600' }}">
+                            {{ $order->inspection_status === 'good' ? 'Inspeksi: Semua barang dalam kondisi baik' : 'Kerusakan ditanggung asuransi APM — pelunasan akan disesuaikan' }}
+                        </p>
                     </div>
                 </div>
             </div>
+
+            {{-- Info Potongan Kerusakan (jika sudah ditetapkan admin) --}}
+            @if($order->damage_deduction > 0)
+            <div class="bg-orange-50 border border-orange-200 rounded-[2rem] p-6 mb-4 shadow-sm">
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-xl shadow-sm shrink-0">🛡️</div>
+                    <div class="flex-1">
+                        <h3 class="font-black text-orange-800 text-sm mb-2">Potongan Kerusakan Diterapkan</h3>
+                        <p class="text-xs text-orange-700/80 font-medium mb-3">Pelunasan Anda telah disesuaikan karena ada kerusakan yang ditanggung asuransi pengiriman APM.</p>
+                        <div class="bg-white rounded-xl p-3 border border-orange-100 text-xs space-y-1.5">
+                            <div class="flex justify-between"><span class="text-gray-500">Pelunasan Awal</span><span class="font-bold line-through text-gray-400">Rp {{ number_format($order->settlement_amount, 0, ',', '.') }}</span></div>
+                            <div class="flex justify-between text-orange-700"><span>Potongan Kerusakan</span><span class="font-bold">- Rp {{ number_format($order->damage_deduction, 0, ',', '.') }}</span></div>
+                            <div class="flex justify-between border-t border-orange-100 pt-2"><span class="font-bold text-gray-700">Yang Harus Dilunasi</span><span class="font-black text-green-700 text-sm">Rp {{ number_format($order->adjusted_settlement, 0, ',', '.') }}</span></div>
+                        </div>
+                        @if($order->damage_notes)
+                        <div class="mt-2 text-[10px] text-orange-600"><strong>Catatan:</strong> {{ $order->damage_notes }}</div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @elseif($order->inspection_status === 'damaged')
+            {{-- Menunggu admin set potongan --}}
+            <div class="bg-amber-50 border border-amber-200 rounded-[2rem] p-6 mb-4 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-xl shadow-sm shrink-0">⏳</div>
+                    <div>
+                        <p class="font-bold text-amber-800 text-sm">Menunggu Penyesuaian Pelunasan</p>
+                        <p class="text-[10px] text-amber-700">Admin sedang memproses potongan kerusakan. Pelunasan Anda akan disesuaikan sebelum bisa melakukan pembayaran.</p>
+                    </div>
+                </div>
+            </div>
+            @endif
 
             {{-- Show rejection notice if settlement was previously rejected --}}
             @if($order->settlement_admin_notes && !$order->settlement_proof_path)
@@ -580,9 +628,13 @@
             </div>
             @endif
 
+            {{-- Upload form: hanya tampil jika barang baik ATAU potongan sudah ditetapkan --}}
+            @if($order->inspection_status === 'good' || $order->damage_deduction > 0)
             <div class="bg-white rounded-[2rem] border border-purple-200 shadow-sm p-8">
-                <h3 class="font-black text-gray-900 text-lg mb-2 tracking-tight">Upload Pelunasan 50%</h3>
-                <p class="text-xs text-gray-400 mb-6 font-medium leading-relaxed">Sisa tagihan: <strong class="text-purple-600">Rp {{ number_format($order->settlement_amount, 0, ',', '.') }}</strong>. Silakan transfer sisa pembayaran.</p>
+                <h3 class="font-black text-gray-900 text-lg mb-2 tracking-tight">Upload Pelunasan</h3>
+                <p class="text-xs text-gray-400 mb-6 font-medium leading-relaxed">
+                    Sisa tagihan: <strong class="text-purple-600">Rp {{ number_format($order->damage_deduction > 0 ? $order->adjusted_settlement : $order->settlement_amount, 0, ',', '.') }}</strong>. Silakan transfer sisa pembayaran.
+                </p>
                 <form method="POST" action="{{ route('b2b.orders.upload-settlement', $order->order_number) }}" enctype="multipart/form-data">
                     @csrf
                     <label class="block w-full border-2 border-dashed border-purple-200 rounded-[1.5rem] p-8 text-center cursor-pointer hover:border-purple-400 hover:bg-purple-50/30 transition-all mb-6">
@@ -595,6 +647,7 @@
                     </button>
                 </form>
             </div>
+            @endif
             @endif
 
             {{-- Status Waiting Messages --}}

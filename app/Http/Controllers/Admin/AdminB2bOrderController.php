@@ -8,6 +8,8 @@ use App\Models\ShippingRate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use App\Models\Product;
 
 class AdminB2bOrderController extends Controller
 {
@@ -178,7 +180,7 @@ class AdminB2bOrderController extends Controller
             ->with(['user', 'b2bRegistration'])
             ->firstOrFail();
 
-        if (!in_array($order->status, ['in_transit', 'arrived', 'goods_accepted', 'settlement_uploaded', 'settlement_verified', 'completed'])) {
+        if (!in_array($order->status, ['dp_verified', 'in_transit', 'arrived', 'goods_accepted', 'settlement_uploaded', 'settlement_verified', 'completed'])) {
             return back()->with('error', 'Surat jalan hanya tersedia setelah DP diverifikasi.');
         }
 
@@ -224,6 +226,30 @@ class AdminB2bOrderController extends Controller
 
             return back()->with('success', 'Pelunasan ditolak. Mitra akan diminta untuk mengupload ulang bukti pelunasan.');
         }
+    }
+
+    // ─── Set Potongan Kerusakan ──────────────────────────────────────
+    public function setDamageDeduction(Request $request, $orderNumber)
+    {
+        $order = B2bOrder::where('order_number', $orderNumber)->firstOrFail();
+
+        if (!$order->canSetDamageDeduction()) {
+            return back()->with('error', 'Potongan kerusakan tidak dapat diatur untuk pesanan ini.');
+        }
+
+        $request->validate([
+            'damage_deduction' => 'required|numeric|min:0|max:' . $order->settlement_amount,
+            'damage_notes'     => 'required|string|max:1000',
+        ]);
+
+        $order->update([
+            'damage_deduction' => $request->damage_deduction,
+            'damage_notes'     => $request->damage_notes,
+            'damage_set_by'    => Auth::id(),
+            'damage_set_at'    => now(),
+        ]);
+
+        return back()->with('success', 'Potongan kerusakan Rp ' . number_format($request->damage_deduction, 0, ',', '.') . ' berhasil ditetapkan. Pelunasan mitra disesuaikan.');
     }
 
     // ─── Upload SPB ───────────────────────────────────────────────────
@@ -299,11 +325,11 @@ class AdminB2bOrderController extends Controller
             return back()->with('error', 'Order tidak dapat dibatalkan setelah barang dikirim.');
         }
 
-        \DB::transaction(function () use ($order, $request) {
+        DB::transaction(function () use ($order, $request) {
             // Balikkan stok ke produk
             if (is_array($order->items)) {
                 foreach ($order->items as $item) {
-                    $product = \App\Models\Product::find($item['product_id']);
+                    $product = Product::find($item['product_id']);
                     if ($product) {
                         $product->increment('stock_b2b', $item['qty_kg']);
                     }
