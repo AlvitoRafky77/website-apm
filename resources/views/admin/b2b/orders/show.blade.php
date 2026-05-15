@@ -18,6 +18,16 @@
     <div class="mb-5 bg-red-50 border border-red-200 text-red-800 px-5 py-3 rounded-xl text-sm font-semibold">❌ {{ session('error') }}</div>
 @endif
 
+@if($errors->any())
+    <div class="mb-5 bg-red-50 border border-red-200 rounded-xl p-4">
+        <ul class="list-disc list-inside text-sm text-red-700 space-y-1 font-semibold">
+            @foreach($errors->all() as $err)
+                <li>{{ $err }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
 {{-- Header --}}
 @php
     $colorMap = [
@@ -394,14 +404,49 @@
         @if($order->status === 'in_transit')
         <div class="bg-white rounded-2xl border border-blue-200 shadow-sm p-6">
             <h3 class="font-bold text-gray-900 text-sm mb-2">📍 Barang Tiba di Lokasi?</h3>
-            <p class="text-xs text-gray-500 mb-4">Tandai bahwa armada sudah sampai di lokasi mitra. Mitra akan diminta melakukan inspeksi barang bersama driver.</p>
+            <p class="text-xs text-gray-500 mb-4">Salin link di bawah dan kirim ke WhatsApp Driver. Driver cukup membuka link tersebut untuk mengonfirmasi kedatangan (tanpa perlu login).</p>
+            
+            @php
+                $driverLink = URL::signedRoute('driver.order.show', ['orderNumber' => $order->order_number]);
+            @endphp
+            <div class="flex items-center gap-2 mb-4">
+                <input type="text" readonly value="{{ $driverLink }}" id="driver-link" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-xs text-gray-500 focus:outline-none">
+                <button type="button" onclick="copyDriverLink()" class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold px-4 py-2.5 rounded-lg transition text-xs whitespace-nowrap flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    Salin Link
+                </button>
+            </div>
+
+            <div class="relative flex py-3 items-center">
+                <div class="flex-grow border-t border-gray-100"></div>
+                <span class="flex-shrink-0 mx-4 text-gray-400 text-[10px] font-bold uppercase tracking-wider">ATAU ADMIN TANDAI MANUAL</span>
+                <div class="flex-grow border-t border-gray-100"></div>
+            </div>
+
             <form method="POST" action="{{ route('admin.b2b.orders.mark-arrived', $order->order_number) }}">
                 @csrf
-                <button type="submit" onclick="return confirm('Tandai barang sudah tiba? Mitra akan diminta inspeksi.')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition text-sm shadow-md flex items-center justify-center gap-2">
-                    📍 Tandai Barang Tiba
+                <button type="submit" onclick="return confirm('Tandai barang sudah tiba? Mitra akan diminta inspeksi.')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition text-sm shadow-md flex items-center justify-center gap-2 mt-2">
+                    📍 Tandai Barang Tiba Manual
                 </button>
             </form>
         </div>
+
+        <script>
+            function copyDriverLink() {
+                var copyText = document.getElementById("driver-link");
+                copyText.select();
+                copyText.setSelectionRange(0, 99999);
+                navigator.clipboard.writeText(copyText.value);
+                
+                // Ganti teks tombol sementara
+                var btn = event.currentTarget;
+                var originalText = btn.innerHTML;
+                btn.innerHTML = '✅ Tersalin!';
+                setTimeout(function() {
+                    btn.innerHTML = originalText;
+                }, 2000);
+            }
+        </script>
         @endif
 
         {{-- Menunggu Inspeksi --}}
@@ -512,7 +557,7 @@
             <h3 class="font-bold text-gray-900 text-sm mb-3">📄 Cetak Surat Jalan</h3>
             <p class="text-xs text-gray-500 mb-3">Isi data driver di atas terlebih dahulu, lalu cetak surat jalan. Informasi driver akan otomatis terisi di dokumen.</p>
             <button type="button" id="btn-cetak-sj"
-               class="flex items-center justify-center gap-2 w-full bg-[#1a1a2e] hover:bg-black text-white font-bold py-3 rounded-xl transition text-sm shadow-md cursor-pointer">
+               class="flex items-center justify-center gap-2 w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition text-sm shadow-md cursor-pointer">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                 Cetak Surat Jalan (Print PDF)
             </button>
@@ -604,7 +649,7 @@
             <h3 class="font-bold text-gray-900 text-sm mb-3">Batalkan Order</h3>
             <form method="POST" action="{{ route('admin.b2b.orders.cancel', $order->order_number) }}">
                 @csrf
-                <textarea name="cancel_reason" rows="2" required placeholder="Alasan pembatalan..." class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none resize-none mb-3"></textarea>
+                <textarea name="cancel_reason" rows="2" required minlength="10" placeholder="Alasan pembatalan (minimal 10 karakter)..." class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none resize-none mb-3">{{ old('cancel_reason') }}</textarea>
                 <button type="submit" onclick="return confirm('Yakin membatalkan order ini?')"
                         class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl transition text-sm">
                     Batalkan Order

@@ -42,8 +42,9 @@
     #apmChatBox {
         position: absolute;
         bottom: 76px; right: 0;
-        width: 420px;
-        max-height: 620px;
+        width: 380px;
+        height: calc(100vh - 120px);
+        max-height: 600px;
         background: #fff;
         border-radius: 20px;
         box-shadow: 0 20px 60px rgba(0,0,0,.15), 0 4px 16px rgba(0,0,0,.08);

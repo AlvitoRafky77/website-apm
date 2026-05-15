@@ -149,6 +149,10 @@ Route::middleware('auth')->group(function () {
 
         // B2B Product Detail (khusus stok & info B2B)
         Route::get('/products/{slug}', [\App\Http\Controllers\B2bController::class, 'productShow'])->name('products.show');
+
+        // B2B Contact Admin
+        Route::get('/contact', [\App\Http\Controllers\B2bContactController::class, 'index'])->name('contact.index');
+        Route::post('/contact', [\App\Http\Controllers\B2bContactController::class, 'store'])->name('contact.store');
     });
 
     // Admin B2B Order Management
@@ -175,6 +179,12 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{rate}',    [AdminShippingRateController::class, 'destroy'])->name('destroy');
         Route::post('/calculate',   [AdminShippingRateController::class, 'calculate'])->name('calculate');
     });
+});
+
+// Driver Route (Signed URL)
+Route::middleware(['signed'])->prefix('driver/order')->name('driver.order.')->group(function () {
+    Route::get('/{orderNumber}/arrive', [\App\Http\Controllers\DriverOrderController::class, 'show'])->name('show');
+    Route::post('/{orderNumber}/arrive', [\App\Http\Controllers\DriverOrderController::class, 'markArrived'])->name('mark-arrived');
 });
 
 require __DIR__.'/auth.php';

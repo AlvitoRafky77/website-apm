@@ -130,12 +130,20 @@
             </div>
 
             <!-- Pesan Kontak -->
+            @php
+                $unreadMessages = \App\Models\ContactMessage::where('status', 'new')->count();
+            @endphp
             <a href="{{ route('admin.contact-messages.index') }}"
                class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-gray-600 hover:bg-red-50 hover:text-[#CD422B] transition-all group {{ request()->routeIs('admin.contact-messages*') ? 'active' : '' }}">
                 <svg class="w-5 h-5 text-gray-400 group-hover:text-[#CD422B] transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h6m-6 8h10a2 2 0 002-2V6a2 2 0 00-2-2H7a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
                 <span class="flex-1">Pesan Kontak</span>
+                @if($unreadMessages > 0)
+                    <span class="bg-[#CD422B] text-white text-[10px] font-black px-2 py-0.5 rounded-full leading-none shadow-sm" title="Ada Pesan Baru">
+                        {{ $unreadMessages > 99 ? '99+' : $unreadMessages }}
+                    </span>
+                @endif
             </a>
 
             <!-- Registrasi B2B -->

@@ -73,8 +73,9 @@
             position: absolute;
             bottom: 76px;
             right: 0;
-            width: 420px;
-            max-height: 620px;
+            width: 380px;
+            height: calc(100vh - 120px);
+            max-height: 600px;
             background: #fff;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,.15), 0 4px 16px rgba(0,0,0,.08);
@@ -428,16 +429,16 @@
             </div>
 
             {{-- Hubungi AM --}}
-            <a href="https://wa.me/6281234567890" target="_blank"
-               class="flex items-center gap-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl p-4 transition group">
-                <div class="w-10 h-10 bg-white/15 rounded-xl flex items-center justify-center shrink-0">
-                    <svg class="w-5 h-5" viewBox="0 0 32 32" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M16 0C7.163 0 0 7.163 0 16c0 2.822.737 5.469 2.027 7.773L0 32l8.479-2.003A15.926 15.926 0 0016 32c8.837 0 16-7.163 16-16S24.837 0 16 0zm0 29.333a13.28 13.28 0 01-6.773-1.853l-.487-.288-4.987 1.179 1.23-4.847-.32-.499A13.27 13.27 0 012.667 16C2.667 8.636 8.636 2.667 16 2.667S29.333 8.636 29.333 16 23.364 29.333 16 29.333zm7.405-9.867c-.405-.203-2.4-1.184-2.771-1.32-.373-.136-.645-.203-.917.203-.272.405-1.048 1.32-1.285 1.593-.237.271-.475.305-.88.101-.405-.203-1.711-.63-3.26-2.013-1.204-1.073-2.018-2.4-2.254-2.805-.237-.405-.025-.624.178-.827.181-.181.405-.473.608-.71.203-.237.271-.405.405-.676.136-.272.068-.508-.033-.71-.101-.203-.917-2.207-1.255-3.023-.329-.796-.665-.688-.917-.7-.237-.012-.508-.015-.78-.015s-.71.101-1.084.508c-.372.405-1.421 1.389-1.421 3.389s1.455 3.931 1.658 4.203c.203.272 2.865 4.372 6.94 6.128.968.419 1.724.668 2.313.856.972.307 1.857.264 2.557.16.78-.117 2.4-.981 2.74-1.929.337-.947.337-1.759.236-1.929-.1-.169-.372-.271-.78-.473z"/>
+            <a href="{{ route('b2b.contact.index') }}"
+               class="flex items-center gap-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl p-4 transition group shadow-lg shadow-emerald-900/20">
+                <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                     </svg>
                 </div>
                 <div>
                     <p class="font-bold text-sm">Hubungi Account Manager</p>
-                    <p class="text-xs text-white/70">Konsultasi & kustomisasi order</p>
+                    <p class="text-[11px] text-white/80 mt-0.5">Kirim tiket pesan prioritas B2B</p>
                 </div>
                 <svg class="w-4 h-4 ml-auto opacity-60 group-hover:translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
             </a>

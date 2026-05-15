@@ -69,7 +69,7 @@
                         <label class="text-xs font-semibold text-gray-600 block mb-1.5">Kuantitas (Ton)</label>
                         <div class="flex items-center gap-2">
                             <input type="number" name="products[0][qty_ton]" min="1" max="10" step="0.5" placeholder="Min 1"
-                                   class="qty-input w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#CD422B]/20" required oninput="recalculate()">
+                                   class="qty-input w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#CD422B]/20" required oninput="recalculate()" onblur="clampQty(this)">
                             <button type="button" onclick="removeLine(this)" class="text-red-400 hover:text-red-600 transition p-1 shrink-0" title="Hapus baris">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                             </button>
@@ -141,8 +141,8 @@
             </div>
         </div>
 
-        <button type="submit"
-                class="w-full bg-[#CD422B] hover:bg-red-700 text-white font-black py-4 rounded-2xl transition shadow-lg text-base flex items-center justify-center gap-2 group">
+        <button type="submit" id="submitBtn"
+                class="w-full bg-[#CD422B] hover:bg-red-700 text-white font-black py-4 rounded-2xl transition shadow-lg text-base flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#CD422B]">
             <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             Kirim Order Pengadaan
         </button>
@@ -181,6 +181,8 @@ function recalculate() {
     });
 
     const summary = document.getElementById('orderSummary');
+    const submitBtn = document.getElementById('submitBtn');
+
     if (totalWeight > 0) {
         summary.classList.remove('hidden');
         document.getElementById('totalWeight').textContent = totalWeight + ' Ton';
@@ -196,7 +198,10 @@ function recalculate() {
         }
     } else {
         summary.classList.add('hidden');
+        valid = false; // Disable button if total weight is 0
     }
+
+    submitBtn.disabled = !valid;
 }
 
 function addProductLine() {
@@ -214,7 +219,7 @@ function addProductLine() {
                 <label class="text-xs font-semibold text-gray-600 block mb-1.5">Kuantitas (Ton)</label>
                 <div class="flex items-center gap-2">
                     <input type="number" name="products[${lineIndex}][qty_ton]" min="1" max="10" step="0.5" placeholder="Min 1"
-                           class="qty-input w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#CD422B]/20" required oninput="recalculate()">
+                           class="qty-input w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#CD422B]/20" required oninput="recalculate()" onblur="clampQty(this)">
                     <button type="button" onclick="removeLine(this)" class="text-red-400 hover:text-red-600 transition p-1 shrink-0">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
@@ -236,6 +241,26 @@ function removeLine(btn) {
 function updateProductInfo(select) {
     recalculate();
 }
+
+function clampQty(input) {
+    let v = parseFloat(input.value);
+    if (isNaN(v)) return;
+    if (v < 1) input.value = 1;
+    if (v > 10) input.value = 10;
+    recalculate();
+}
+
+document.getElementById('b2bOrderForm').addEventListener('submit', function(e) {
+    let totalWeight = 0;
+    document.querySelectorAll('.qty-input').forEach(input => {
+        totalWeight += parseFloat(input.value) || 0;
+    });
+
+    if (totalWeight < 1 || totalWeight > 10) {
+        e.preventDefault();
+        alert('Total pesanan harus antara 1 Ton sampai 10 Ton!');
+    }
+});
 </script>
 
 @include('partials._footer')
