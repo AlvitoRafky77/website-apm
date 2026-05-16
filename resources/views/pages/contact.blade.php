@@ -99,22 +99,22 @@
 						<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 							<div>
 								<label for="name" class="block text-sm font-semibold text-gray-700 mb-1.5">Nama Lengkap</label>
-								<input id="name" name="name" type="text" required class="w-full rounded-xl border-gray-200 focus:border-[#B83B3B] focus:ring-[#B83B3B]" placeholder="Nama Anda">
+								<input id="name" name="name" type="text" required class="w-full rounded-xl border-gray-200 focus:border-[#B83B3B] focus:ring-[#B83B3B]" placeholder="Nama Anda" value="{{ old('name', auth()->user()->name ?? '') }}">
 							</div>
 							<div>
 								<label for="company" class="block text-sm font-semibold text-gray-700 mb-1.5">Perusahaan</label>
-								<input id="company" name="company" type="text" class="w-full rounded-xl border-gray-200 focus:border-[#B83B3B] focus:ring-[#B83B3B]" placeholder="Nama perusahaan">
+								<input id="company" name="company" type="text" class="w-full rounded-xl border-gray-200 focus:border-[#B83B3B] focus:ring-[#B83B3B]" placeholder="Nama perusahaan" value="{{ old('company', auth()->user()->b2bRegistration->company_name ?? '') }}">
 							</div>
 						</div>
 
 						<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 							<div>
 								<label for="email" class="block text-sm font-semibold text-gray-700 mb-1.5">Email</label>
-								<input id="email" name="email" type="email" required class="w-full rounded-xl border-gray-200 focus:border-[#B83B3B] focus:ring-[#B83B3B]" placeholder="nama@perusahaan.com">
+								<input id="email" name="email" type="email" required class="w-full rounded-xl border-gray-200 focus:border-[#B83B3B] focus:ring-[#B83B3B]" placeholder="nama@perusahaan.com" value="{{ old('email', auth()->user()->email ?? '') }}">
 							</div>
 							<div>
 								<label for="phone" class="block text-sm font-semibold text-gray-700 mb-1.5">No. WhatsApp</label>
-								<input id="phone" name="phone" type="tel" required class="w-full rounded-xl border-gray-200 focus:border-[#B83B3B] focus:ring-[#B83B3B]" placeholder="08xxxxxxxxxx">
+								<input id="phone" name="phone" type="tel" required class="w-full rounded-xl border-gray-200 focus:border-[#B83B3B] focus:ring-[#B83B3B]" placeholder="08xxxxxxxxxx" value="{{ old('phone', auth()->user()->phone ?? '') }}">
 							</div>
 						</div>
 
