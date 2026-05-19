@@ -6,7 +6,7 @@
     <div class="absolute inset-0 bg-gray-900/90"></div>
 
     {{-- Content --}}
-    <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 pt-16 pb-6">
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 pt-12 sm:pt-16 pb-6">
 
         {{-- Top grid --}}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8 pb-12">
@@ -26,10 +26,10 @@
                     Pekan Baru, Riau
                 </p>
                 {{-- Certifications --}}
-                <div class="flex items-center gap-4">
-                    <img src="{{ asset('images/Halal-Logo.webp') }}" class="h-12 w-auto object-contain" alt="Halal">
-                    <img src="{{ asset('images/Badan-Pom.webp') }}" class="h-12 w-auto object-contain" alt="BPOM">
-                    <img src="{{ asset('images/NKV-Logo.webp') }}" class="h-16 w-auto object-contain bg-white rounded-md p-1" alt="NKV">
+                <div class="flex items-center gap-3 flex-wrap">
+                    <img src="{{ asset('images/Halal-Logo.webp') }}" class="h-10 sm:h-12 w-auto object-contain" alt="Halal">
+                    <img src="{{ asset('images/Badan-Pom.webp') }}" class="h-10 sm:h-12 w-auto object-contain" alt="BPOM">
+                    <img src="{{ asset('images/NKV-Logo.webp') }}" class="h-12 sm:h-16 w-auto object-contain bg-white rounded-md p-1" alt="NKV">
                 </div>
             </div>
 

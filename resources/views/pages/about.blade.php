@@ -30,24 +30,24 @@
 
     {{-- ===== 1. HERO — "Tentang Kami" ===== --}}
     <section class="w-full bg-gradient-to-r from-[#A82818] via-[#CD422B] to-[#E3542B] relative">
-        <div class="max-w-7xl mx-auto px-6 lg:px-12 pt-28 pb-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 pt-24 sm:pt-28 pb-4">
             {{-- Title --}}
-            <div class="text-center mb-16">
-                <h1 class="text-4xl lg:text-5xl font-black text-white drop-shadow-sm tracking-wide">Tentang Kami</h1>
+            <div class="text-center mb-10 sm:mb-16">
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white drop-shadow-sm tracking-wide">Tentang Kami</h1>
             </div>
 
             {{-- 4 Photo Grid - Staggered layout hanging over the bottom --}}
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 relative z-10 translate-y-20">
-                <div class="rounded-3xl overflow-hidden h-48 md:h-60 shadow-2xl translate-y-12">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 relative z-10 translate-y-10 sm:translate-y-20">
+                <div class="rounded-2xl sm:rounded-3xl overflow-hidden h-36 sm:h-48 md:h-60 shadow-2xl translate-y-6 sm:translate-y-12">
                     <img src="{{ asset('images/About 1 Head.webp') }}" alt="APM 1" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
                 </div>
-                <div class="rounded-3xl overflow-hidden h-48 md:h-60 shadow-2xl -translate-y-4">
+                <div class="rounded-2xl sm:rounded-3xl overflow-hidden h-36 sm:h-48 md:h-60 shadow-2xl -translate-y-2 sm:-translate-y-4">
                     <img src="{{ asset('images/About 2 Head.webp') }}" alt="APM 2" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
                 </div>
-                <div class="rounded-3xl overflow-hidden h-48 md:h-60 shadow-2xl translate-y-6">
+                <div class="rounded-2xl sm:rounded-3xl overflow-hidden h-36 sm:h-48 md:h-60 shadow-2xl translate-y-3 sm:translate-y-6">
                     <img src="{{ asset('images/About 3 Head.webp') }}" alt="APM 3" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
                 </div>
-                <div class="rounded-3xl overflow-hidden h-48 md:h-60 shadow-2xl translate-y-16">
+                <div class="rounded-2xl sm:rounded-3xl overflow-hidden h-36 sm:h-48 md:h-60 shadow-2xl translate-y-8 sm:translate-y-16">
                     <img src="{{ asset('images/About 4 Head.webp') }}" alt="APM 4" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
                 </div>
             </div>
@@ -55,7 +55,7 @@
     </section>
 
     {{-- ===== 2. SEKILAS TENTANG PT. AGRO PANGAN MAJU ===== --}}
-    <section class="bg-white pt-40 pb-16 relative z-0">
+    <section class="bg-white pt-28 sm:pt-40 pb-16 relative z-0">
         <div class="max-w-7xl mx-auto px-6 lg:px-12">
             <div class="text-center max-w-3xl mx-auto mb-16">
                 <h2 class="text-3xl lg:text-4xl font-black text-gray-900 mb-6 tracking-tight">

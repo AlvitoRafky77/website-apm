@@ -32,16 +32,16 @@
             <div class="absolute top-10 left-10 w-40 h-40 border-2 border-white rounded-full"></div>
             <div class="absolute bottom-5 right-20 w-60 h-60 border border-white rounded-full"></div>
         </div>
-        <div class="max-w-7xl mx-auto px-6 lg:px-12 pt-32 pb-16 relative z-10 text-center">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 pt-28 sm:pt-32 pb-12 sm:pb-16 relative z-10 text-center">
             <p class="text-xs font-bold uppercase tracking-[0.2em] text-white/60 mb-3">Pusat Bantuan</p>
-            <h1 class="text-4xl lg:text-5xl font-black text-white drop-shadow-sm tracking-wide mb-4">Pertanyaan Umum (FAQ)</h1>
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white drop-shadow-sm tracking-wide mb-4">Pertanyaan Umum (FAQ)</h1>
             <p class="text-white/80 max-w-xl mx-auto text-sm lg:text-base leading-relaxed">Temukan jawaban atas pertanyaan yang paling sering ditanyakan seputar layanan, produk, dan kemitraan bersama PT. Agro Pangan Maju.</p>
         </div>
     </section>
 
     {{-- FAQ CONTENT --}}
     <section class="py-16 lg:py-20 bg-white">
-        <div class="max-w-4xl mx-auto px-6 lg:px-12">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-12">
 
             {{-- Category Tabs --}}
             <div class="flex flex-wrap justify-center gap-2 mb-10">

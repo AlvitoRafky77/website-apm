@@ -1,15 +1,16 @@
-<header class="w-full bg-white/95 backdrop-blur-md px-6 lg:px-12 py-5 z-50 sticky top-0 shadow-sm border-b border-gray-100">
+<header class="w-full bg-white/95 backdrop-blur-md px-4 sm:px-6 lg:px-12 py-4 sm:py-5 z-50 sticky top-0 shadow-sm border-b border-gray-100">
     <div class="max-w-7xl mx-auto flex justify-between items-center">
-        <div class="flex items-center gap-4">
-            <a href="{{ route('b2b.dashboard') }}" class="flex items-center gap-3 group">
-                <img src="{{ asset('images/APM_Logo.webp') }}" alt="Logo APM" class="h-12 w-12 object-contain">
+        <div class="flex items-center gap-3 sm:gap-4">
+            <a href="{{ route('b2b.dashboard') }}" class="flex items-center gap-2 sm:gap-3 group">
+                <img src="{{ asset('images/APM_Logo.webp') }}" alt="Logo APM" class="h-9 w-9 sm:h-12 sm:w-12 object-contain">
                 <div class="flex flex-col">
-                    <span class="text-lg font-bold text-[#CD422B] tracking-tight leading-none">Agro Pangan Maju</span>
-                    <span class="text-xs uppercase font-black text-gray-500 tracking-widest mt-1">B2B Portal</span>
+                    <span class="text-sm sm:text-lg font-bold text-[#CD422B] tracking-tight leading-none">Agro Pangan Maju</span>
+                    <span class="text-[10px] sm:text-xs uppercase font-black text-gray-500 tracking-widest mt-0.5 sm:mt-1">B2B Portal</span>
                 </div>
             </a>
         </div>
         
+        {{-- Desktop Nav --}}
         <nav class="hidden md:flex items-center gap-8">
             <a href="{{ route('b2b.dashboard') }}" class="text-base font-bold {{ request()->routeIs('b2b.dashboard') ? 'text-[#CD422B] border-b-2 border-[#CD422B] pb-1' : 'text-gray-500 hover:text-gray-900 transition' }}">Dashboard</a>
             <a href="{{ route('b2b.orders.index') }}" class="text-base font-semibold {{ request()->routeIs('b2b.orders.index') || request()->routeIs('b2b.orders.show') ? 'text-[#CD422B] border-b-2 border-[#CD422B] pb-1' : 'text-gray-500 hover:text-gray-900 transition' }}">Pesanan B2B</a>
@@ -39,5 +40,47 @@
                 </x-dropdown>
             </div>
         </nav>
+
+        {{-- Mobile Hamburger --}}
+        <button id="b2b-mobile-btn" class="md:hidden text-gray-700 p-2 rounded-lg hover:bg-gray-100 transition" aria-label="Menu">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </button>
+    </div>
+
+    {{-- Mobile Menu --}}
+    <div id="b2b-mobile-menu" class="hidden md:hidden mt-3 pb-3 border-t border-gray-100">
+        <nav class="flex flex-col gap-1 pt-3">
+            <a href="{{ route('b2b.dashboard') }}" class="px-4 py-2.5 rounded-xl text-sm font-semibold {{ request()->routeIs('b2b.dashboard') ? 'text-[#CD422B] bg-red-50' : 'text-gray-700 hover:bg-red-50 hover:text-[#CD422B]' }} transition">Dashboard</a>
+            <a href="{{ route('b2b.orders.index') }}" class="px-4 py-2.5 rounded-xl text-sm font-semibold {{ request()->routeIs('b2b.orders.*') ? 'text-[#CD422B] bg-red-50' : 'text-gray-700 hover:bg-red-50 hover:text-[#CD422B]' }} transition">Pesanan B2B</a>
+            <a href="{{ route('b2b.orders.create') }}" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-red-50 hover:text-[#CD422B] transition">+ Order Baru</a>
+            <a href="{{ route('b2b.contact.index') }}" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-red-50 hover:text-[#CD422B] transition">Hubungi AM</a>
+
+            <div class="flex items-center gap-3 px-4 py-2.5 mt-1 border-t border-gray-100 pt-3">
+                <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=1e293b&color=fff&bold=true" class="w-8 h-8 rounded-full" alt="Avatar">
+                <div>
+                    <p class="font-semibold text-gray-800 text-sm">{{ Auth::user()->name }}</p>
+                    <p class="text-xs text-gray-400">Mitra B2B</p>
+                </div>
+            </div>
+            <a href="{{ route('profile.edit') }}" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">Profil Akses</a>
+            <form method="POST" action="{{ route('logout') }}" class="px-4">
+                @csrf
+                <button type="submit" class="w-full mt-1 py-2.5 bg-red-50 text-[#CD422B] rounded-xl text-sm font-semibold hover:bg-red-100 transition text-center">
+                    Keluar
+                </button>
+            </form>
+        </nav>
     </div>
 </header>
+
+<script>
+(function() {
+    var btn = document.getElementById('b2b-mobile-btn');
+    var menu = document.getElementById('b2b-mobile-menu');
+    if (btn && menu) {
+        btn.addEventListener('click', function() { menu.classList.toggle('hidden'); });
+    }
+})();
+</script>

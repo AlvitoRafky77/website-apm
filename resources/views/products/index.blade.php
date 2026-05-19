@@ -20,10 +20,10 @@
         <!-- 2. Hero Banner Produk -->
         <section class="w-full px-4 lg:px-12 mt-6">
             <div class="max-w-7xl mx-auto">
-            <div class="w-full bg-[#CD422B] rounded-3xl h-[360px] relative overflow-hidden flex items-center shadow-xl">
+            <div class="w-full bg-[#CD422B] rounded-2xl sm:rounded-3xl h-[200px] sm:h-[280px] lg:h-[360px] relative overflow-hidden flex items-center shadow-xl">
                 <!-- Title -->
-                <div class="w-1/2 pl-12 lg:pl-20 z-10">
-                    <h1 class="text-white text-5xl lg:text-6xl font-extrabold tracking-wide drop-shadow">Produk</h1>
+                <div class="w-full sm:w-1/2 pl-6 sm:pl-12 lg:pl-20 z-10">
+                    <h1 class="text-white text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-wide drop-shadow">Produk</h1>
                 </div>
 
                 <!-- Right Composition -->
@@ -69,7 +69,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-10 justify-items-center">
                 @foreach($featuredProducts as $item)
-                <div class="relative w-[300px] h-[440px]">
+                <div class="relative w-[260px] sm:w-[300px] h-[400px] sm:h-[440px]">
                     <!-- Arch Background (Solid Pinkish) -->
                     <div class="absolute top-0 w-full h-[350px] bg-[#FAD9D1] rounded-t-[150px] rounded-b-xl px-8 pt-14 shadow-sm text-center">
                         <h3 class="font-bold text-gray-900 text-lg leading-tight mb-2">
@@ -123,7 +123,7 @@
                         <div x-ref="slider{{$category->id}}" class="flex gap-6 overflow-x-auto snap-x snap-mandatory py-4 scrollbar-hide px-2 md:px-4" style="scrollbar-width: none; -ms-overflow-style: none;">
                             @foreach($category->products as $item)
                                 <!-- Product Card (Minimalist) -->
-                                <a href="{{ route('product.show', $item->slug) }}" class="shrink-0 w-[280px] bg-white rounded-2xl shadow-sm hover:shadow-lg transition-transform duration-300 snap-start overflow-hidden group/item cursor-pointer block transform hover:-translate-y-2">
+                                <a href="{{ route('product.show', $item->slug) }}" class="shrink-0 w-[240px] sm:w-[280px] bg-white rounded-2xl shadow-sm hover:shadow-lg transition-transform duration-300 snap-start overflow-hidden group/item cursor-pointer block transform hover:-translate-y-2">
                                     <div class="h-48 w-full bg-gray-100 overflow-hidden relative border-b border-gray-100">
                                         @if($item->image)
                                             <img src="{{ $item->image }}" class="w-full h-full object-cover group-hover/item:scale-105 transition-transform duration-500" alt="{{ $item->name }}">

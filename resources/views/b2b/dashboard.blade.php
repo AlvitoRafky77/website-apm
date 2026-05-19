@@ -37,10 +37,16 @@
             z-index: 9999;
             font-family: 'Poppins', sans-serif;
         }
+        @media (max-width: 639px) {
+            #b2bChatWidget {
+                bottom: 20px;
+                right: 16px;
+            }
+        }
 
         #b2bChatToggle {
-            width: 64px;
-            height: 64px;
+            width: 52px;
+            height: 52px;
             background: linear-gradient(135deg, #1a1a2e, #CD422B);
             border-radius: 50%;
             border: none;
@@ -51,6 +57,9 @@
             box-shadow: 0 8px 25px rgba(26, 26, 46, .35);
             transition: transform .25s, box-shadow .25s;
             position: relative;
+        }
+        @media (min-width: 640px) {
+            #b2bChatToggle { width: 64px; height: 64px; }
         }
         #b2bChatToggle:hover {
             transform: scale(1.08);
@@ -260,7 +269,17 @@
 
         @media (max-width: 460px) {
             #b2bChatBox { width: calc(100vw - 32px); right: 0; }
-            #b2bChatWidget { right: 16px; bottom: 16px; }
+        }
+        @media (max-width: 639px) {
+            #b2bChatBox {
+                position: fixed;
+                bottom: 0; right: 0; left: 0;
+                width: 100%;
+                height: calc(100vh - 60px);
+                max-height: none;
+                border-radius: 20px 20px 0 0;
+                transform-origin: bottom center;
+            }
         }
     </style>
 </head>
@@ -271,13 +290,13 @@
 {{-- ── HERO ── --}}
 <div class="relative bg-[#1a1a2e] overflow-hidden">
     <div class="absolute inset-0 opacity-30" style="background: radial-gradient(ellipse at 80% 50%, #CD422B 0%, transparent 60%), radial-gradient(ellipse at 10% 80%, #2d6a4f 0%, transparent 55%);"></div>
-    <div class="relative max-w-7xl mx-auto px-6 lg:px-12 py-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-8 sm:py-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6">
         <div class="fade-up fade-up-1">
             <div class="inline-flex items-center gap-2 bg-white/10 border border-white/15 rounded-full px-3 py-1 text-xs text-white/80 font-semibold mb-4">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                 Mitra Aktif · {{ $user->b2bRegistration->company_name ?? 'B2B Portal' }}
             </div>
-            <h1 class="text-2xl lg:text-3xl font-extrabold text-white tracking-tight">Selamat Datang, {{ $user->name }}</h1>
+            <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-white tracking-tight">Selamat Datang, {{ $user->name }}</h1>
             <p class="text-white/50 text-sm mt-1 max-w-md">Portal eksklusif pengadaan bahan baku partai besar. Min. 1 Ton · Maks. 10 Ton per transaksi.</p>
         </div>
         <div class="flex gap-3 flex-wrap fade-up fade-up-2">
@@ -295,7 +314,7 @@
     </div>
 </div>
 
-<div class="max-w-7xl mx-auto px-6 lg:px-12 py-8 space-y-8">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-6 sm:py-8 space-y-6 sm:space-y-8">
 
     {{-- ── STAT CARDS ── --}}
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -308,11 +327,11 @@
             ];
         @endphp
         @foreach($statItems as $i => $s)
-        <div class="stat-card fade-up fade-up-{{ $i+1 }} {{ $s['color'] }} rounded-2xl p-5 flex items-center gap-4">
-            <div class="text-3xl leading-none">{{ $s['icon'] }}</div>
+        <div class="stat-card fade-up fade-up-{{ $i+1 }} {{ $s['color'] }} rounded-2xl p-4 sm:p-5 flex items-center gap-3 sm:gap-4">
+            <div class="text-2xl sm:text-3xl leading-none">{{ $s['icon'] }}</div>
             <div>
-                <p class="text-3xl font-black {{ $s['text'] }}">{{ $s['value'] }}</p>
-                <p class="{{ $s['text'] }} opacity-70 text-xs font-medium mt-0.5">{{ $s['label'] }}</p>
+                <p class="text-2xl sm:text-3xl font-black {{ $s['text'] }}">{{ $s['value'] }}</p>
+                <p class="{{ $s['text'] }} opacity-70 text-[10px] sm:text-xs font-medium mt-0.5">{{ $s['label'] }}</p>
             </div>
         </div>
         @endforeach
@@ -447,17 +466,53 @@
 
     {{-- ── KATALOG B2B ── --}}
     <div class="fade-up fade-up-5 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-            <div>
+        <div class="px-4 sm:px-6 py-4 border-b border-gray-100 flex items-center justify-between gap-3">
+            <div class="min-w-0">
                 <h2 class="font-bold text-gray-900 text-sm">Katalog Produk B2B</h2>
-                <p class="text-xs text-gray-400 mt-0.5">Harga per KG · Min. 1 Ton · Maks. 10 Ton per produk per order</p>
+                <p class="text-[10px] sm:text-xs text-gray-400 mt-0.5 truncate">Harga per KG · Min. 1 Ton · Maks. 10 Ton</p>
             </div>
             <a href="{{ route('b2b.orders.create') }}"
-               class="text-xs font-bold bg-[#CD422B] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition">
+               class="text-[10px] sm:text-xs font-bold bg-[#CD422B] text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-red-700 transition shrink-0">
                 + Buat Order
             </a>
         </div>
-        <div class="overflow-x-auto">
+
+        {{-- Mobile: Card Layout --}}
+        <div class="sm:hidden divide-y divide-gray-50">
+            @forelse($b2bProducts as $p)
+            @php
+                $catColors = ['Poultry'=>'bg-amber-100 text-amber-800','Seafood'=>'bg-blue-100 text-blue-800','Meat'=>'bg-red-100 text-red-800','Sayuran'=>'bg-green-100 text-green-800','Buah'=>'bg-orange-100 text-orange-800'];
+                $catName = $p->category->name ?? '-';
+                $catColor = $catColors[$catName] ?? 'bg-purple-100 text-purple-800';
+                $stockTon = $p->stock_b2b / 1000;
+            @endphp
+            <a href="{{ route('b2b.products.show', $p->slug) }}" class="flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 transition">
+                <div class="w-12 h-12 rounded-xl bg-gray-100 overflow-hidden shrink-0">
+                    @if($p->image)
+                        <img src="{{ $p->image }}" class="w-full h-full object-cover" alt="{{ $p->name }}">
+                    @else
+                        <div class="w-full h-full flex items-center justify-center text-gray-300 text-lg">📦</div>
+                    @endif
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="font-bold text-gray-900 text-sm truncate">{{ $p->name }}</p>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="text-[10px] {{ $catColor }} px-1.5 py-0.5 rounded-full font-semibold">{{ $catName }}</span>
+                        <span class="text-[10px] text-gray-400">{{ number_format($stockTon, 1, ',', '.') }} Ton</span>
+                    </div>
+                </div>
+                <div class="text-right shrink-0">
+                    <p class="font-black text-[#CD422B] text-sm">Rp {{ number_format($p->price_b2b ?? $p->price, 0, ',', '.') }}</p>
+                    <p class="text-[10px] text-gray-400">/ KG</p>
+                </div>
+            </a>
+            @empty
+            <div class="px-4 py-10 text-center text-gray-400 text-sm">Belum ada produk B2B tersedia</div>
+            @endforelse
+        </div>
+
+        {{-- Desktop: Table Layout --}}
+        <div class="hidden sm:block overflow-x-auto">
             <table class="w-full text-left">
                 <thead>
                     <tr class="bg-gray-50 text-gray-400 text-[11px] uppercase tracking-wider font-semibold border-b border-gray-100">
@@ -471,6 +526,12 @@
                 </thead>
                 <tbody class="divide-y divide-gray-50">
                     @forelse($b2bProducts as $p)
+                    @php
+                        $catColors = ['Poultry'=>'bg-amber-100 text-amber-800','Seafood'=>'bg-blue-100 text-blue-800','Meat'=>'bg-red-100 text-red-800','Sayuran'=>'bg-green-100 text-green-800','Buah'=>'bg-orange-100 text-orange-800'];
+                        $catName = $p->category->name ?? '-';
+                        $catColor = $catColors[$catName] ?? 'bg-purple-100 text-purple-800';
+                        $stockTon = $p->stock_b2b / 1000;
+                    @endphp
                     <tr class="product-row">
                         <td class="px-6 py-3.5">
                             <div class="flex items-center gap-3">
@@ -489,21 +550,9 @@
                             </div>
                         </td>
                         <td class="px-6 py-3.5">
-                            @php
-                                $catColors = [
-                                    'Poultry'  => 'bg-amber-100 text-amber-800',
-                                    'Seafood'  => 'bg-blue-100 text-blue-800',
-                                    'Meat'     => 'bg-red-100 text-red-800',
-                                    'Sayuran'  => 'bg-green-100 text-green-800',
-                                    'Buah'     => 'bg-orange-100 text-orange-800',
-                                ];
-                                $catName  = $p->category->name ?? '-';
-                                $catColor = $catColors[$catName] ?? 'bg-purple-100 text-purple-800';
-                            @endphp
                             <span class="text-xs {{ $catColor }} px-2.5 py-1 rounded-full font-semibold">{{ $catName }}</span>
                         </td>
                         <td class="px-6 py-3.5">
-                            @php $stockTon = $p->stock_b2b / 1000; @endphp
                             <span class="text-sm font-bold text-gray-700">{{ number_format($stockTon, 1, ',', '.') }} Ton</span>
                             <p class="text-[10px] text-gray-400">{{ number_format($p->stock_b2b, 0, ',', '.') }} KG</p>
                         </td>
@@ -523,7 +572,7 @@
                         </td>
                     </tr>
                     @empty
-                    <tr><td colspan="5" class="px-6 py-10 text-center text-gray-400 text-sm">Belum ada produk B2B tersedia</td></tr>
+                    <tr><td colspan="6" class="px-6 py-10 text-center text-gray-400 text-sm">Belum ada produk B2B tersedia</td></tr>
                     @endforelse
                 </tbody>
             </table>

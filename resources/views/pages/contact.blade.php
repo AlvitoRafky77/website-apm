@@ -18,12 +18,12 @@
 		<div class="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-white/15 blur-2xl"></div>
 		<div class="absolute -left-24 bottom-0 h-64 w-64 rounded-full bg-black/10 blur-2xl"></div>
 
-		<div class="relative max-w-7xl mx-auto px-6 lg:px-12 pt-24 pb-24 lg:pt-28 lg:pb-28">
+		<div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 pt-20 pb-16 sm:pt-24 sm:pb-24 lg:pt-28 lg:pb-28">
 			<div class="max-w-3xl">
 				<p class="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-xs font-semibold tracking-wider text-white/90 uppercase">
 					Contact Center APM
 				</p>
-				<h1 class="mt-5 text-4xl lg:text-6xl font-black leading-tight text-white tracking-tight">
+				<h1 class="mt-5 text-3xl sm:text-4xl lg:text-6xl font-black leading-tight text-white tracking-tight">
 					Hubungi Tim Kami
 				</h1>
 				<p class="mt-5 text-base lg:text-lg leading-relaxed text-white/90 max-w-2xl">

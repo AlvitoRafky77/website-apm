@@ -12,10 +12,16 @@
         z-index: 9999;
         font-family: 'Poppins', sans-serif;
     }
+    @media (max-width: 639px) {
+        #apmChatWidget {
+            bottom: 100px;
+            right: 16px;
+        }
+    }
 
     /* ── Toggle bubble button ─────────────────────── */
     #apmChatToggle {
-        width: 64px; height: 64px;
+        width: 56px; height: 56px;
         background: linear-gradient(135deg, #CD422B, #a83220);
         border-radius: 50%;
         border: none;
@@ -24,6 +30,9 @@
         box-shadow: 0 8px 25px rgba(205,66,43,.45);
         transition: transform .25s, box-shadow .25s;
         position: relative;
+    }
+    @media (min-width: 640px) {
+        #apmChatToggle { width: 64px; height: 64px; }
     }
     #apmChatToggle:hover { transform: scale(1.08); box-shadow: 0 12px 32px rgba(205,66,43,.55); }
     #apmChatToggle .pulse-ring {
@@ -41,7 +50,7 @@
     /* ── Chat popup ────────────────────────────────── */
     #apmChatBox {
         position: absolute;
-        bottom: 76px; right: 0;
+        bottom: 66px; right: 0;
         width: 380px;
         height: calc(100vh - 120px);
         max-height: 600px;
@@ -55,6 +64,17 @@
         pointer-events: none;
         transition: transform .3s cubic-bezier(.34,1.56,.64,1), opacity .25s;
         transform-origin: bottom right;
+    }
+    @media (max-width: 639px) {
+        #apmChatBox {
+            position: fixed;
+            bottom: 0; right: 0; left: 0;
+            width: 100%;
+            height: calc(100vh - 60px);
+            max-height: none;
+            border-radius: 20px 20px 0 0;
+            transform-origin: bottom center;
+        }
     }
     #apmChatBox.open {
         transform: scale(1) translateY(0);

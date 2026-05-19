@@ -21,17 +21,17 @@
     <!-- 2. Hero Section -->
     <section class="w-full px-4 lg:px-12 mt-4 lg:mt-10 mb-20 relative">
         <div class="max-w-7xl mx-auto relative">
-        <div class="w-full bg-[#CD422B] rounded-l-3xl rounded-br-[6rem] relative flex items-center min-h-[450px] lg:h-[500px]">
+        <div class="w-full bg-[#CD422B] rounded-3xl lg:rounded-l-3xl lg:rounded-r-none lg:rounded-br-[6rem] relative flex items-center min-h-[350px] lg:h-[500px] overflow-hidden">
             <!-- Red Area Content -->
-            <div class="w-full lg:w-1/2 p-10 lg:pl-16 z-10 text-white">
-                <h1 class="text-4xl lg:text-5xl font-extrabold leading-tight mb-2 tracking-wide">
+            <div class="w-full lg:w-1/2 p-6 sm:p-10 lg:pl-16 z-10 text-white">
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight mb-2 tracking-wide">
                     PT. AGRO<br>PANGAN<br>MAJU
                 </h1>
-                <p class="text-lg lg:text-xl font-light italic mt-4 opacity-90">The Best Supplier on Earth</p>
+                <p class="text-base sm:text-lg lg:text-xl font-light italic mt-4 opacity-90">The Best Supplier on Earth</p>
                 <div class="w-16 h-1 bg-white mt-6 rounded-full opacity-60 mb-10"></div>
                 
                 <!-- CTA Button -->
-                <a href="{{ route('products.index') }}" class="inline-flex items-center justify-center px-8 py-4 bg-white text-[#CD422B] font-black text-sm uppercase tracking-widest rounded-md hover:bg-gray-100 hover:scale-105 transition-all duration-300 shadow-2xl gap-3 ring-4 ring-white/20 group">
+                <a href="{{ route('products.index') }}" class="inline-flex items-center justify-center px-5 sm:px-8 py-3 sm:py-4 bg-white text-[#CD422B] font-black text-xs sm:text-sm uppercase tracking-widest rounded-md hover:bg-gray-100 hover:scale-105 transition-all duration-300 shadow-2xl gap-2 sm:gap-3 ring-4 ring-white/20 group">
                     Lihat Katalog Produk
                     <svg class="w-5 h-5 group-hover:translate-x-1.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"></path>
@@ -154,7 +154,7 @@
                     @endphp
 
                     @foreach($allReviews as $r)
-                    <div class="w-[320px] md:w-[450px] bg-white rounded-2xl p-8 shadow-2xl flex flex-col justify-between shrink-0">
+                    <div class="w-[280px] sm:w-[320px] md:w-[450px] bg-white rounded-2xl p-6 sm:p-8 shadow-2xl flex flex-col justify-between shrink-0">
                         <div class="flex flex-col items-center justify-center mb-6 h-16">
                             <img src="{{ asset('images/' . $r['logo']) }}" alt="{{ $r['name'] }}" class="h-14 w-auto object-contain">
                         </div>
@@ -252,7 +252,7 @@
             PT. Agro Pangan Maju secara aktif telah bermitra dengan lebih dari 10.000 konsumen berstatus "repeat booking" di beberapa kota dan kepulauan strategis Indonesia.
         </p>
 
-        <div class="w-full flex items-center justify-center mt-10">
+        <div class="w-full flex items-center justify-center mt-10 overflow-hidden px-2">
             <img src="{{ asset('images/Peta-Distribusi.webp') }}" class="w-full max-w-5xl object-contain drop-shadow-xl" alt="Peta Distribusi Agro Pangan Maju">
         </div>
     </section>
