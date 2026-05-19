@@ -611,6 +611,6 @@
     </div> {{-- End of Grid --}}
 </div> {{-- End of Main Container --}}
 
-@include('partials._footer')
+
 </body>
 </html>

@@ -532,7 +532,6 @@
 
 </div>
 
-@include('partials._footer')
 
 {{-- ── B2B CHATBOT ── --}}
 <div id="b2bChatWidget">

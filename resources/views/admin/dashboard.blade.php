@@ -56,13 +56,29 @@
     </div>
 </div>
 
-<!-- Aksi Cepat Menu (Sekarang di Bawah Statistik) -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
     <a href="{{ route('admin.orders.index') }}" class="flex items-center gap-3 p-4 bg-[#CD422B] text-white rounded-2xl hover:bg-red-700 transition shadow-sm group">
         <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
         </div>
-        <span class="font-bold text-sm">Validasi Pesanan</span>
+        <div>
+            <span class="font-bold text-sm block">Verifikasi Pesanan B2C</span>
+            @if($pendingOrdersCount > 0)
+            <span class="text-[10px] bg-white/25 rounded-full px-2 py-0.5 font-bold">{{ $pendingOrdersCount }} menunggu</span>
+            @endif
+        </div>
+    </a>
+
+    <a href="{{ route('admin.b2b.orders.index') }}" class="flex items-center gap-3 p-4 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition shadow-sm group">
+        <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+        </div>
+        <div>
+            <span class="font-bold text-sm block">Verifikasi Pesanan B2B</span>
+            @if($pendingB2bOrdersCount > 0)
+            <span class="text-[10px] bg-white/25 rounded-full px-2 py-0.5 font-bold">{{ $pendingB2bOrdersCount }} menunggu</span>
+            @endif
+        </div>
     </a>
 
     <a href="{{ route('admin.products.create') }}" class="flex items-center gap-3 p-4 bg-white border border-gray-100 text-gray-700 rounded-2xl hover:bg-gray-50 transition shadow-sm group">
@@ -74,7 +90,7 @@
 
     <a href="{{ route('admin.b2b.index') }}" class="flex items-center gap-3 p-4 bg-white border border-gray-100 text-gray-700 rounded-2xl hover:bg-gray-50 transition shadow-sm group">
         <div class="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 group-hover:text-blue-600 transition">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5"/></svg>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
         </div>
         <span class="font-bold text-sm">Cek Registrasi B2B</span>
     </a>
@@ -157,6 +173,72 @@
             <p class="text-center text-xs text-gray-400 py-4">Belum ada data.</p>
             @endforelse
         </div>
+    </div>
+</div>
+
+<!-- Monitoring Stok Produk -->
+<div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-10">
+    <div class="flex items-center justify-between mb-5">
+        <h3 class="font-bold text-gray-800 text-sm flex items-center gap-2">
+            <span class="w-1.5 h-6 bg-amber-500 rounded-full"></span>
+            📦 Monitoring Stok Produk
+        </h3>
+        @php
+            $lowCount = $allProducts->filter(fn($p) => $p->stock_b2c <= 50 || $p->stock_b2b <= 5000)->count();
+        @endphp
+        @if($lowCount > 0)
+        <span class="text-[10px] bg-red-100 text-red-700 font-bold px-3 py-1 rounded-full animate-pulse">⚠️ {{ $lowCount }} produk stok rendah</span>
+        @else
+        <span class="text-[10px] bg-green-100 text-green-700 font-bold px-3 py-1 rounded-full">✅ Semua stok aman</span>
+        @endif
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-xs">
+            <thead>
+                <tr class="text-left text-gray-400 font-bold uppercase tracking-wider border-b border-gray-100">
+                    <th class="pb-3 pr-4">Produk</th>
+                    <th class="pb-3 pr-4 text-center">Stok B2C (Retail)</th>
+                    <th class="pb-3 pr-4 text-center">Stok B2B (Mitra)</th>
+                    <th class="pb-3 text-center">Status</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+                @foreach($allProducts as $product)
+                @php
+                    $b2cLow = $product->stock_b2c <= 50;
+                    $b2bLow = $product->stock_b2b <= 5000;
+                    $b2bTon = $product->stock_b2b / 1000;
+                @endphp
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="py-3 pr-4">
+                        <span class="font-bold text-gray-800">{{ $product->name }}</span>
+                        <span class="text-[10px] text-gray-400 block">{{ $product->category->name ?? '-' }}</span>
+                    </td>
+                    <td class="py-3 pr-4 text-center">
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold {{ $b2cLow ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' }}">
+                            {{ number_format($product->stock_b2c, 0, ',', '.') }} KG
+                        </span>
+                    </td>
+                    <td class="py-3 pr-4 text-center">
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold {{ $b2bLow ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' }}">
+                            {{ number_format($b2bTon, 1, ',', '.') }} Ton
+                        </span>
+                    </td>
+                    <td class="py-3 text-center">
+                        @if($b2cLow && $b2bLow)
+                            <span class="text-[10px] font-black text-red-600 bg-red-50 px-2 py-1 rounded-lg">🔴 KRITIS</span>
+                        @elseif($b2cLow)
+                            <span class="text-[10px] font-black text-amber-600 bg-amber-50 px-2 py-1 rounded-lg">⚠️ B2C Rendah</span>
+                        @elseif($b2bLow)
+                            <span class="text-[10px] font-black text-amber-600 bg-amber-50 px-2 py-1 rounded-lg">⚠️ B2B Rendah</span>
+                        @else
+                            <span class="text-[10px] font-black text-green-600 bg-green-50 px-2 py-1 rounded-lg">✅ Aman</span>
+                        @endif
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
 </div>
 

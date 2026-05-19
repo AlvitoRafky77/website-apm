@@ -221,5 +221,7 @@
     </div>
 </div>
 
+@if(!auth()->user()->isB2b())
 @include('partials._footer')
+@endif
 </x-app-layout>

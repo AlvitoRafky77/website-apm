@@ -56,7 +56,7 @@
             <div class="lg:col-span-3">
                 <h5 class="font-bold text-white mb-6 uppercase tracking-wider text-sm">SUPPORT</h5>
                 <ul class="space-y-4 text-[#D1D5DB] font-light mb-8">
-                    <li><a href="#" class="hover:text-white transition-colors">FaQ</a></li>
+                    <li><a href="{{ route('faq') }}" class="hover:text-white transition-colors">FaQ</a></li>
                     <li><a href="{{ route('contact') }}" class="hover:text-white transition-colors">Contact</a></li>
                     <li><a href="#" class="hover:text-white transition-colors">Sales</a></li>
                     <li><a href="#" class="hover:text-white transition-colors">Report</a></li>

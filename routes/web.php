@@ -65,6 +65,7 @@ Route::post('/contact', [ContactMessageController::class, 'store'])->name('conta
 // Public Pages
 Route::get('/about', fn() => view('pages.about'))->name('about');
 Route::get('/contact', fn() => view('pages.contact'))->name('contact');
+Route::get('/faq', fn() => view('pages.faq'))->name('faq');
 
 // Cart public data (for navbar hover, no auth required so guest can see empty state)
 Route::get('/cart/data', [CartController::class, 'cartData'])->name('cart.data');

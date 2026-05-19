@@ -263,6 +263,6 @@ document.getElementById('b2bOrderForm').addEventListener('submit', function(e) {
 });
 </script>
 
-@include('partials._footer')
+
 </body>
 </html>

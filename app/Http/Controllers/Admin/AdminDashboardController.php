@@ -18,6 +18,13 @@ class AdminDashboardController extends Controller
         $featuredCount = Product::where('is_featured', true)->count();
         $pendingB2bCount = B2bRegistration::where('status', 'pending')->count();
         $pendingOrdersCount = Order::where('status', 'pending')->where('payment_status', 'paid')->count();
+        $pendingB2bOrdersCount = B2bOrder::whereIn('status', ['pending_review', 'dp_uploaded'])->count();
+
+        // All products stock monitoring
+        $allProducts = Product::where('is_active', true)
+            ->with('category')
+            ->orderBy('stock_b2c')
+            ->get();
 
         $salesData = [];
         $b2bSalesData = [];
@@ -88,6 +95,8 @@ class AdminDashboardController extends Controller
             'featuredCount',
             'pendingB2bCount',
             'pendingOrdersCount',
+            'pendingB2bOrdersCount',
+            'allProducts',
             'labels',
             'salesData',
             'b2bSalesData',
