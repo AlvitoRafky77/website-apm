@@ -47,12 +47,13 @@ class LalamoveService
     ): array {
         $vehicleType = $this->determineVehicle($totalWeightKg);
 
-        // If no API key, use mock calculation
-        if (empty($this->apiKey) || $this->isSandbox) {
+        // Jika API key kosong, gunakan mock (hitungan lokal)
+        // Jika API key ada (termasuk sandbox), panggil API Lalamove
+        if (empty($this->apiKey)) {
             return $this->mockQuotation($destLat, $destLng, $vehicleType);
         }
 
-        // Real Lalamove API call
+        // Real Lalamove API call (sandbox atau production, tergantung base_url)
         return $this->realQuotation($destLat, $destLng, $vehicleType, $destAddress);
     }
 
@@ -67,7 +68,8 @@ class LalamoveService
         float  $destLat,
         float  $destLng
     ): array {
-        if (empty($this->apiKey) || $this->isSandbox) {
+        // Jika API key kosong ATAU quotation ID dari mock, gunakan mock
+        if (empty($this->apiKey) || str_starts_with($quotationId, 'MOCK-')) {
             return $this->mockPlaceOrder($recipientName, $recipientPhone);
         }
 
@@ -81,7 +83,7 @@ class LalamoveService
      ───────────────────────────────────────────────────────── */
     public function getOrderStatus(string $lalamoveOrderId): array
     {
-        if (empty($this->apiKey) || $this->isSandbox) {
+        if (empty($this->apiKey)) {
             return ['status' => 'PICKING_UP', 'driver' => null];
         }
 
@@ -214,7 +216,14 @@ class LalamoveService
                 'is_mock'        => false,
             ];
         } catch (\Exception $e) {
-            Log::error('Lalamove quotation error: ' . $e->getMessage());
+            Log::warning('Lalamove API error, falling back to mock: ' . $e->getMessage());
+
+            // Fallback ke estimasi lokal jika API sandbox menolak
+            // (misal: area di luar jangkauan sandbox Lalamove)
+            if ($this->isSandbox) {
+                return $this->mockQuotation($destLat, $destLng, $vehicleType);
+            }
+
             return ['success' => false, 'message' => 'Gagal menghitung ongkir. Coba lagi.'];
         }
     }
@@ -266,7 +275,13 @@ class LalamoveService
                 'is_mock'      => false,
             ];
         } catch (\Exception $e) {
-            Log::error('Lalamove placeOrder error: ' . $e->getMessage());
+            Log::warning('Lalamove placeOrder error, falling back to mock: ' . $e->getMessage());
+
+            // Fallback ke mock jika sandbox
+            if ($this->isSandbox) {
+                return $this->mockPlaceOrder($recipientName, $recipientPhone);
+            }
+
             return ['success' => false, 'message' => 'Gagal memanggil driver Lalamove.'];
         }
     }

@@ -89,7 +89,9 @@
 
             <!-- Manajemen Pesanan -->
             @php
-                $pendingOrders = \App\Models\Order::whereIn('status', ['pending', 'confirmed', 'processing'])->count();
+                $pendingOrders = \App\Models\Order::whereIn('status', ['pending', 'confirmed', 'processing'])
+                    ->whereNotIn('payment_status', ['expired', 'failed'])
+                    ->count();
             @endphp
             <a href="{{ route('admin.orders.index') }}"
                class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-gray-600 hover:bg-red-50 hover:text-[#CD422B] transition-all group {{ request()->routeIs('admin.orders*') ? 'active' : '' }}">

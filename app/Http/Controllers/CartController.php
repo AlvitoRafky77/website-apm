@@ -501,11 +501,18 @@ class CartController extends Controller
                 $paymentStatus = 'pending';
             }
 
+            // Tentukan status order berdasarkan hasil pembayaran
+            $newOrderStatus = match(true) {
+                $paymentStatus === 'paid'                          => 'confirmed',
+                in_array($paymentStatus, ['failed', 'expired'])   => 'cancelled',
+                default                                           => $order->status,
+            };
+
             $order->update([
                 'payment_status'          => $paymentStatus,
                 'midtrans_transaction_id' => $transactionId,
                 'midtrans_payment_type'   => $paymentType,
-                'status'                  => $paymentStatus === 'paid' ? 'confirmed' : $order->status,
+                'status'                  => $newOrderStatus,
                 'paid_at'                 => $paymentStatus === 'paid' ? now() : null,
             ]);
 
