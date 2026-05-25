@@ -18,8 +18,9 @@ Route::get('/', function () {
 
     $user = auth()->user();
 
+    // Admin bisa melihat halaman utama — akses dashboard via sidebar
     if ($user->hasRole('admin')) {
-        return redirect()->route('admin.dashboard');
+        return view('welcome');
     }
 
     if ($user->isB2b()) {

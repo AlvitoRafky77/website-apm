@@ -206,13 +206,37 @@
                     <p class="text-xs text-gray-400 truncate">Administrator</p>
                 </div>
             </div>
-            <div class="flex gap-2">
-                <a href="{{ route('home') }}" class="flex-1 text-center text-xs text-gray-500 hover:text-[#CD422B] py-2 px-3 rounded-lg hover:bg-red-50 transition">
-                    ← Website
-                </a>
-                <form method="POST" action="{{ route('logout') }}" class="flex-1">
+            <div class="space-y-2">
+                {{-- Lihat Website --}}
+                <div x-data="{ open: false }" class="relative">
+                    <button @click="open = !open" type="button"
+                        class="w-full flex items-center justify-center gap-2 text-xs text-gray-500 hover:text-[#CD422B] py-2 px-3 rounded-lg hover:bg-red-50 transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        Lihat Website
+                        <svg class="w-3 h-3 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div x-show="open" x-transition @click.away="open = false"
+                         class="mt-1 bg-gray-50 rounded-xl border border-gray-100 overflow-hidden">
+                        <a href="{{ route('home') }}" target="_blank"
+                           class="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-gray-600 hover:bg-red-50 hover:text-[#CD422B] transition">
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                            Halaman Utama
+                            <svg class="w-3 h-3 ml-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        </a>
+                        <a href="{{ route('b2b.dashboard') }}" target="_blank"
+                           class="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-gray-600 hover:bg-red-50 hover:text-[#CD422B] transition border-t border-gray-100">
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                            Dashboard Mitra
+                            <svg class="w-3 h-3 ml-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        </a>
+                    </div>
+                </div>
+
+                {{-- Logout --}}
+                <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="w-full text-xs text-gray-500 hover:text-red-600 py-2 px-3 rounded-lg hover:bg-red-50 transition">
+                    <button type="submit" class="w-full flex items-center justify-center gap-2 text-xs text-gray-500 hover:text-red-600 py-2 px-3 rounded-lg hover:bg-red-50 transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                         Logout
                     </button>
                 </form>

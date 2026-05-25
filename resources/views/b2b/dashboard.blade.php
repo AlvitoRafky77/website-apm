@@ -293,13 +293,14 @@
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-8 sm:py-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6">
         <div class="fade-up fade-up-1">
             <div class="inline-flex items-center gap-2 bg-white/10 border border-white/15 rounded-full px-3 py-1 text-xs text-white/80 font-semibold mb-4">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                Mitra Aktif · {{ $user->b2bRegistration->company_name ?? 'B2B Portal' }}
+                <span class="w-1.5 h-1.5 rounded-full {{ !empty($isAdminPreview) ? 'bg-blue-400' : 'bg-emerald-400' }} animate-pulse"></span>
+                {{ !empty($isAdminPreview) ? 'Mode Preview Admin' : 'Mitra Aktif · ' . ($user->b2bRegistration->company_name ?? 'B2B Portal') }}
             </div>
             <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-white tracking-tight">Selamat Datang, {{ $user->name }}</h1>
             <p class="text-white/50 text-sm mt-1 max-w-md">Portal eksklusif pengadaan bahan baku partai besar. Min. 1 Ton · Maks. 10 Ton per transaksi.</p>
         </div>
         <div class="flex gap-3 flex-wrap fade-up fade-up-2">
+            @if(empty($isAdminPreview))
             <a href="{{ route('b2b.orders.create') }}"
                class="inline-flex items-center gap-2 bg-[#CD422B] hover:bg-red-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition shadow-lg shadow-red-900/30">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
@@ -310,6 +311,13 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                 Riwayat Pesanan
             </a>
+            @else
+            <a href="{{ route('admin.dashboard') }}"
+               class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/15 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                Kembali ke Admin
+            </a>
+            @endif
         </div>
     </div>
 </div>
@@ -408,8 +416,9 @@
 
             {{-- Profil Perusahaan --}}
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Profil Mitra</p>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">{{ !empty($isAdminPreview) ? 'Mode Preview' : 'Profil Mitra' }}</p>
                 @php $reg = $user->b2bRegistration; @endphp
+                @if($reg)
                 <div class="flex items-center gap-3 mb-4">
                     <div class="w-11 h-11 rounded-xl bg-[#1a1a2e] flex items-center justify-center text-white font-black text-lg">
                         {{ strtoupper(substr($reg->company_name ?? 'M', 0, 1)) }}
@@ -429,6 +438,18 @@
                         </span>
                     </div>
                 </div>
+                @else
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-11 h-11 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-lg">
+                        👁️
+                    </div>
+                    <div class="min-w-0">
+                        <p class="font-bold text-gray-900 text-sm leading-tight">Admin Preview</p>
+                        <p class="text-xs text-gray-500">Melihat sebagai monitoring</p>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-400">Anda melihat dashboard ini dalam mode preview. Data yang ditampilkan adalah seluruh order B2B dari semua mitra.</p>
+                @endif
             </div>
 
             {{-- Info Pembayaran --}}
@@ -448,6 +469,7 @@
             </div>
 
             {{-- Hubungi AM --}}
+            @if(empty($isAdminPreview))
             <a href="{{ route('b2b.contact.index') }}"
                class="flex items-center gap-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl p-4 transition group shadow-lg shadow-emerald-900/20">
                 <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center shrink-0">
@@ -461,6 +483,7 @@
                 </div>
                 <svg class="w-4 h-4 ml-auto opacity-60 group-hover:translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
             </a>
+            @endif
         </div>
     </div>
 
@@ -471,10 +494,12 @@
                 <h2 class="font-bold text-gray-900 text-sm">Katalog Produk B2B</h2>
                 <p class="text-[10px] sm:text-xs text-gray-400 mt-0.5 truncate">Harga per KG · Min. 1 Ton · Maks. 10 Ton</p>
             </div>
+            @if(empty($isAdminPreview))
             <a href="{{ route('b2b.orders.create') }}"
                class="text-[10px] sm:text-xs font-bold bg-[#CD422B] text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-red-700 transition shrink-0">
                 + Buat Order
             </a>
+            @endif
         </div>
 
         {{-- Mobile: Card Layout --}}

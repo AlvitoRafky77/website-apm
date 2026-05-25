@@ -11,9 +11,12 @@ class B2bController extends Controller
     {
         $user = Auth::user();
 
-        if (!$user->isB2b()) {
+        // Admin boleh melihat dashboard B2B untuk monitoring
+        if (!$user->isB2b() && !$user->hasRole('admin')) {
             return redirect()->route('home')->with('error', 'Akses ditolak. Anda bukan Mitra B2B.');
         }
+
+        $isAdminPreview = $user->hasRole('admin') && !$user->isB2b();
 
         $b2bProducts = \App\Models\Product::query()
             ->where('is_active', true)
@@ -22,8 +25,13 @@ class B2bController extends Controller
             ->orderBy('name')
             ->get();
 
-        $ordersQuery = \App\Models\B2bOrder::query()
-            ->where('user_id', $user->id);
+        // Admin preview: tampilkan semua order B2B untuk monitoring
+        if ($isAdminPreview) {
+            $ordersQuery = \App\Models\B2bOrder::query();
+        } else {
+            $ordersQuery = \App\Models\B2bOrder::query()
+                ->where('user_id', $user->id);
+        }
 
         $stats = [
             'total'       => (clone $ordersQuery)->count(),
@@ -37,13 +45,14 @@ class B2bController extends Controller
             ->take(5)
             ->get();
 
-        return view('b2b.dashboard', compact('user', 'b2bProducts', 'stats', 'recentOrders'));
+        return view('b2b.dashboard', compact('user', 'b2bProducts', 'stats', 'recentOrders', 'isAdminPreview'));
     }
 
     public function productShow(string $slug)
     {
         $user = Auth::user();
-        if (!$user->isB2b()) {
+        // Admin boleh melihat detail produk B2B
+        if (!$user->isB2b() && !$user->hasRole('admin')) {
             return redirect()->route('home')->with('error', 'Akses ditolak.');
         }
 

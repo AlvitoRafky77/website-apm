@@ -121,7 +121,13 @@
                     <!-- ==== AREA PEMBELIAN (Desktop) ==== -->
                     <div class="hidden sm:block mt-auto pt-2 w-full">
                         @auth
-                            @if(Auth::user()->isB2b())
+                            @if(Auth::user()->hasRole('admin') && !Auth::user()->isB2b())
+                                {{-- Admin Preview --}}
+                                <div class="bg-blue-50 border border-blue-200 rounded-xl px-5 py-4 flex flex-col items-center justify-center text-center gap-2 mb-3">
+                                    <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-xl">👁️</div>
+                                    <p class="text-sm text-blue-800 font-medium leading-relaxed">Anda sedang dalam mode <strong>Admin Preview</strong>.<br>Admin tidak dapat melakukan pesanan.</p>
+                                </div>
+                            @elseif(Auth::user()->isB2b())
                                 {{-- B2B User — arahkan ke portal B2B --}}
                                 <div class="bg-gray-50 border border-gray-200 rounded-xl px-5 py-3 flex items-center gap-3 mb-3">
                                     <svg class="w-5 h-5 text-gray-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -308,7 +314,11 @@
         <!-- Mobile Sticky Bottom Bar -->
         <div class="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 shadow-lg z-50 p-4">
             @auth
-                @if(Auth::user()->isB2b())
+                @if(Auth::user()->hasRole('admin') && !Auth::user()->isB2b())
+                    <div class="w-full bg-blue-50 text-blue-800 font-bold py-3.5 px-4 rounded-xl text-center border border-blue-200">
+                        Admin Preview Mode
+                    </div>
+                @elseif(Auth::user()->isB2b())
                     <a href="{{ route('b2b.dashboard') }}"
                        class="w-full bg-gray-900 text-white font-bold py-3.5 px-4 rounded-xl text-center flex items-center justify-center gap-2 transition">
                         Pesan via Portal B2B
