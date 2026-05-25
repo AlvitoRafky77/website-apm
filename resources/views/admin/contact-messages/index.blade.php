@@ -130,16 +130,6 @@
                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#CD422B] bg-red-50 hover:bg-[#CD422B] hover:text-white rounded-lg transition-colors">
                                         Lihat
                                     </a>
-
-                                    @if($message->status !== 'replied')
-                                        <form method="POST" action="{{ route('admin.contact-messages.replied', $message) }}">
-                                            @csrf
-                                            <button type="submit"
-                                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-600 hover:text-white rounded-lg transition-colors">
-                                                Tandai Dibalas
-                                            </button>
-                                        </form>
-                                    @endif
                                 </div>
                             </td>
                         </tr>
