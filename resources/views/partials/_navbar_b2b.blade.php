@@ -32,10 +32,9 @@
                     </x-slot>
                     <x-slot name="content">
                         <x-dropdown-link :href="route('profile.edit')" class="text-sm py-2">Profil Akses</x-dropdown-link>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();" class="text-sm py-2">Keluar</x-dropdown-link>
-                        </form>
+                        <button type="button" onclick="window.dispatchEvent(new CustomEvent('open-logout-modal'))" class="block w-full px-4 py-2 text-start text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out">
+                            Keluar
+                        </button>
                     </x-slot>
                 </x-dropdown>
             </div>
@@ -65,12 +64,9 @@
                 </div>
             </div>
             <a href="{{ route('profile.edit') }}" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">Profil Akses</a>
-            <form method="POST" action="{{ route('logout') }}" class="px-4">
-                @csrf
-                <button type="submit" class="w-full mt-1 py-2.5 bg-red-50 text-[#CD422B] rounded-xl text-sm font-semibold hover:bg-red-100 transition text-center">
-                    Keluar
-                </button>
-            </form>
+            <button type="button" onclick="window.dispatchEvent(new CustomEvent('open-logout-modal'))" class="w-full mt-1 py-2.5 bg-red-50 text-[#CD422B] rounded-xl text-sm font-semibold hover:bg-red-100 transition text-center">
+                Keluar
+            </button>
         </nav>
     </div>
 </header>
@@ -84,3 +80,8 @@
     }
 })();
 </script>
+
+{{-- ===== Logout Confirmation Modal ===== --}}
+@auth
+    @include('partials._logout_modal')
+@endauth

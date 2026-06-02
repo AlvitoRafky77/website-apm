@@ -185,13 +185,9 @@
                                 <x-dropdown-link :href="route('admin.dashboard')">Admin CMS</x-dropdown-link>
                             @endif
                             <div class="border-t border-gray-100 my-1"></div>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault(); this.closest('form').submit();">
-                                    Keluar
-                                </x-dropdown-link>
-                            </form>
+                            <button type="button" onclick="window.dispatchEvent(new CustomEvent('open-logout-modal'))" class="block w-full px-4 py-2 text-start text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out">
+                                Keluar
+                            </button>
                         </x-slot>
                     </x-dropdown>
                 @else
@@ -246,12 +242,9 @@
                     <a href="{{ route('admin.dashboard') }}" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-blue-700 hover:bg-blue-50 transition">Admin CMS</a>
                 @endif
                 <a href="{{ route('profile.edit') }}" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">Profil Saya</a>
-                <form method="POST" action="{{ route('logout') }}" class="px-4">
-                    @csrf
-                    <button type="submit" class="w-full mt-1 py-2.5 bg-red-50 text-[#CD422B] rounded-xl text-sm font-semibold hover:bg-red-100 transition text-center">
-                        Keluar
-                    </button>
-                </form>
+                <button type="button" onclick="window.dispatchEvent(new CustomEvent('open-logout-modal'))" class="w-full mt-1 py-2.5 bg-red-50 text-[#CD422B] rounded-xl text-sm font-semibold hover:bg-red-100 transition text-center">
+                    Keluar
+                </button>
             @else
                 <div class="flex gap-3 pt-2 px-4">
                     <a href="{{ route('login') }}" class="flex-1 text-center py-2 border border-gray-200 rounded-xl text-sm font-semibold text-gray-600 hover:border-[#CD422B] hover:text-[#CD422B] transition">Log in</a>
@@ -394,3 +387,8 @@ function switchCartTab(tab) {
 
 {{-- ===== Chatbot Widget (muncul di semua halaman) ===== --}}
 @include('partials._chatbot')
+
+{{-- ===== Logout Confirmation Modal ===== --}}
+@auth
+    @include('partials._logout_modal')
+@endauth
