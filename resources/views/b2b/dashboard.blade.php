@@ -729,7 +729,13 @@
         if (role === 'user') {
             bubble.textContent = text;
         } else {
-            bubble.innerHTML = escapeHtml(text).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            // Server responses already contain safe HTML (from our own controller)
+            // so we render them directly. Only apply markdown-style bold for plain text.
+            if (text.indexOf('<') !== -1 && text.indexOf('>') !== -1) {
+                bubble.innerHTML = text;
+            } else {
+                bubble.innerHTML = escapeHtml(text).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+            }
         }
 
         wrap.appendChild(bubble);

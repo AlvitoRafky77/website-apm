@@ -286,19 +286,19 @@ class B2bChatbotController extends Controller
         $registration = $user?->b2bRegistration ?? B2bRegistration::where('user_id', $user?->id)->first();
 
         if (!$registration) {
-            return "🏢 **Profil Mitra**\n\nData kemitraan belum ditemukan. Silakan lengkapi pendaftaran B2B Anda.";
+            return '<strong>🏢 Profil Mitra</strong><br><br>Data kemitraan belum ditemukan. Silakan lengkapi pendaftaran B2B Anda.';
         }
 
         $approvedAt = $registration->approved_at
             ? $registration->approved_at->format('d M Y H:i')
             : '-';
 
-        return "🏢 **Profil Mitra Anda**\n\n"
-            . "• Perusahaan: {$registration->company_name}\n"
-            . "• PIC: {$registration->pic_name}\n"
-            . "• Status: {$registration->statusLabel}\n"
-            . "• Kelengkapan dokumen: {$registration->completeness}%\n"
-            . "• Disetujui pada: {$approvedAt}\n\n"
-            . "Jika ada data yang perlu diperbarui, silakan hubungi admin B2B.";
+        return '<strong>🏢 Profil Mitra Anda</strong><br><br><ul class="list-disc pl-5 space-y-1">'
+            . '<li>Perusahaan: <strong>' . e($registration->company_name) . '</strong></li>'
+            . '<li>PIC: ' . e($registration->pic_name) . '</li>'
+            . '<li>Status: ' . e($registration->statusLabel) . '</li>'
+            . '<li>Kelengkapan dokumen: <strong>' . $registration->completeness . '%</strong></li>'
+            . '<li>Disetujui pada: ' . e($approvedAt) . '</li>'
+            . '</ul><br><span class="text-xs text-gray-500">Jika ada data yang perlu diperbarui, silakan hubungi admin B2B.</span>';
     }
 }
