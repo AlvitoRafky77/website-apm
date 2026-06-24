@@ -150,7 +150,7 @@ class AdminB2bOrderController extends Controller
         $request->validate([
             'delivery_date'  => 'required|date|after_or_equal:today',
             'driver_name'    => 'required|string|max:100',
-            'driver_phone'   => 'required|string|max:20',
+            'driver_phone'   => ['required', 'string', 'regex:/^[0-9]+$/', 'min:10', 'max:13'],
             'waybill_number' => 'nullable|string|max:50',
             'dp_admin_notes' => 'nullable|string|max:500',
         ]);

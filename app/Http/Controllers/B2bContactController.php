@@ -19,7 +19,7 @@ class B2bContactController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'company' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
-            'phone' => ['required', 'string', 'max:30'],
+            'phone' => ['required', 'string', 'regex:/^[0-9]+$/', 'min:10', 'max:13'],
             'topic' => ['required', 'string', 'max:100'],
             'message' => ['required', 'string', 'max:5000'],
         ]);

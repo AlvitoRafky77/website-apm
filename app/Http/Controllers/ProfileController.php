@@ -57,7 +57,7 @@ class ProfileController extends Controller
         $validated = $request->validate([
             'pic_name'             => 'required|string|max:255',
             'pic_position'         => 'nullable|string|max:100',
-            'phone'                => 'required|string|max:20',
+            'phone'                => ['required', 'string', 'regex:/^[0-9]+$/', 'min:10', 'max:13'],
             'company_name'         => 'required|string|max:255',
             'company_type'         => 'nullable|string|max:100',
             'npwp'                 => 'nullable|string|max:30',

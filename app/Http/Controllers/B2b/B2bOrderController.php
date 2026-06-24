@@ -60,7 +60,7 @@ class B2bOrderController extends Controller
             'products.*.id'         => 'required|integer|distinct|exists:products,id',
             'products.*.qty_ton'    => 'required|numeric|min:1|max:10',
             'recipient_name'        => 'required|string|max:255',
-            'recipient_phone'       => 'required|string|max:20',
+            'recipient_phone'       => ['required', 'string', 'regex:/^[0-9]+$/', 'min:10', 'max:13'],
             'recipient_address'     => 'required|string',
             'recipient_city'        => 'required|string|max:100',
             'notes'                 => 'nullable|string|max:1000',

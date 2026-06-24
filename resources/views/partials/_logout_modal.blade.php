@@ -2,7 +2,7 @@
 <div x-data="{ show: false }"
      x-on:open-logout-modal.window="show = true"
      x-cloak
-     class="relative z-[99999]">
+     class="relative z-[50000]">
 
     {{-- Backdrop --}}
     <div x-show="show"

@@ -28,12 +28,18 @@
             <p class="mt-4 text-[10px] font-black text-[#CD422B] tracking-[0.2em] uppercase animate-pulse">Memuat...</p>
         </div>
         <script>
-            window.addEventListener('load', function () {
+            function hidePreloader() {
                 const loader = document.getElementById('apm-preloader');
-                if (loader) {
+                if (loader && loader.style.display !== 'none') {
+                    loader.style.pointerEvents = 'none';
                     loader.style.opacity = '0';
                     setTimeout(() => { loader.style.display = 'none'; }, 500);
                 }
+            }
+            window.addEventListener('load', hidePreloader);
+            // Fallback: hide preloader after 3s max even if 'load' hasn't fired
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(hidePreloader, 3000);
             });
         </script>
 

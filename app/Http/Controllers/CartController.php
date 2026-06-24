@@ -317,7 +317,7 @@ class CartController extends Controller
     {
         $request->validate([
             'recipient_name'        => 'required|string|max:255',
-            'recipient_phone'       => 'required|string|max:20',
+            'recipient_phone'       => ['required', 'string', 'regex:/^[0-9]+$/', 'min:10', 'max:13'],
             'recipient_address'     => 'required|string',
             'recipient_city'        => 'nullable|string|max:100',
             'recipient_lat'         => 'required|numeric',
