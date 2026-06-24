@@ -185,7 +185,7 @@
                                     class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-[#CD422B] hover:bg-red-50/50 transition-all group">
                                     <svg class="w-6 h-6 text-gray-300 group-hover:text-[#CD422B] mb-1 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
                                     <span class="text-xs text-gray-400 group-hover:text-[#CD422B] transition-colors">Klik untuk upload</span>
-                                    <span id="file-company-name" class="text-xs text-green-600 font-medium mt-1 hidden"></span>
+                                    <span id="file-company-name" class="text-xs text-green-600 font-medium mt-1 hidden block max-w-full overflow-hidden text-ellipsis whitespace-nowrap px-2"></span>
                                 </label>
                                 <input id="company_profile" type="file" name="company_profile"
                                     accept=".pdf,.jpg,.jpeg,.png" class="hidden"
@@ -203,7 +203,7 @@
                                     class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-[#CD422B] hover:bg-red-50/50 transition-all group">
                                     <svg class="w-6 h-6 text-gray-300 group-hover:text-[#CD422B] mb-1 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
                                     <span class="text-xs text-gray-400 group-hover:text-[#CD422B] transition-colors">Klik untuk upload</span>
-                                    <span id="file-siup-name" class="text-xs text-green-600 font-medium mt-1 hidden"></span>
+                                    <span id="file-siup-name" class="text-xs text-green-600 font-medium mt-1 hidden block max-w-full overflow-hidden text-ellipsis whitespace-nowrap px-2"></span>
                                 </label>
                                 <input id="siup" type="file" name="siup"
                                     accept=".pdf,.jpg,.jpeg,.png" class="hidden"
@@ -221,7 +221,7 @@
                                     class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-[#CD422B] hover:bg-red-50/50 transition-all group">
                                     <svg class="w-6 h-6 text-gray-300 group-hover:text-[#CD422B] mb-1 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
                                     <span class="text-xs text-gray-400 group-hover:text-[#CD422B] transition-colors">Klik untuk upload</span>
-                                    <span id="file-akta-name" class="text-xs text-green-600 font-medium mt-1 hidden"></span>
+                                    <span id="file-akta-name" class="text-xs text-green-600 font-medium mt-1 hidden block max-w-full overflow-hidden text-ellipsis whitespace-nowrap px-2"></span>
                                 </label>
                                 <input id="akta" type="file" name="akta"
                                     accept=".pdf,.jpg,.jpeg,.png" class="hidden"
@@ -285,7 +285,20 @@
         function showFileName(input, targetId) {
             const label = document.getElementById(targetId);
             if (input.files && input.files[0]) {
-                label.textContent = '✓ ' + input.files[0].name;
+                const fullName = input.files[0].name;
+                const maxLen = 25;
+                let displayName = fullName;
+
+                if (fullName.length > maxLen) {
+                    const ext = fullName.lastIndexOf('.') !== -1
+                        ? fullName.substring(fullName.lastIndexOf('.'))
+                        : '';
+                    const nameWithoutExt = fullName.substring(0, fullName.length - ext.length);
+                    const charsToShow = maxLen - ext.length - 3; // 3 for "..."
+                    displayName = nameWithoutExt.substring(0, charsToShow) + '...' + ext;
+                }
+
+                label.textContent = '✓ ' + displayName;
                 label.classList.remove('hidden');
             }
         }

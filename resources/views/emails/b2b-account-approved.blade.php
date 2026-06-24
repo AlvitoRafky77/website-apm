@@ -48,7 +48,7 @@
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             opacity: 0.1;
-            background-image: url('https://www.transparenttextures.com/patterns/cubes.png');
+            background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 2px, transparent 2px, transparent 8px);
         }
         .logo-circle {
             width: 84px;
