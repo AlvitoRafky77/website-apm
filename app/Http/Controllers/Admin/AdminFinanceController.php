@@ -23,6 +23,11 @@ class AdminFinanceController extends Controller
 
     public function index(Request $request)
     {
+        $request->validate([
+            'date_from' => ['nullable', 'date', 'after_or_equal:' . now()->subYears(5)->format('Y-m-d'), 'before_or_equal:today'],
+            'date_to'   => ['nullable', 'date', 'after_or_equal:date_from', 'after_or_equal:' . now()->subYears(5)->format('Y-m-d'), 'before_or_equal:today'],
+        ]);
+
         $summary = $this->finance->getSummary($request);
         $timeSeries = $this->finance->getTimeSeries($request);
         $methodBreakdown = $this->finance->getPaymentMethodBreakdown($request);
@@ -33,6 +38,11 @@ class AdminFinanceController extends Controller
 
     public function transactions(Request $request)
     {
+        $request->validate([
+            'date_from' => ['nullable', 'date', 'after_or_equal:' . now()->subYears(5)->format('Y-m-d'), 'before_or_equal:today'],
+            'date_to'   => ['nullable', 'date', 'after_or_equal:date_from', 'after_or_equal:' . now()->subYears(5)->format('Y-m-d'), 'before_or_equal:today'],
+        ]);
+
         $transactions = $this->finance->getTransactionsPaginated($request, 25);
 
         return view('admin.finances.transactions', compact('transactions'));
@@ -97,8 +107,8 @@ class AdminFinanceController extends Controller
     public function syncMidtrans(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'date_from' => 'nullable|date',
-            'date_to' => 'nullable|date|after_or_equal:date_from',
+            'date_from' => ['nullable', 'date', 'after_or_equal:' . now()->subYears(5)->format('Y-m-d'), 'before_or_equal:today'],
+            'date_to'   => ['nullable', 'date', 'after_or_equal:date_from', 'after_or_equal:' . now()->subYears(5)->format('Y-m-d'), 'before_or_equal:today'],
         ]);
 
         $query = Order::query()->where('payment_method', 'midtrans');

@@ -5,8 +5,8 @@
 @section('content')
 <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-6">
     <form method="GET" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
-        <input type="date" name="date_from" value="{{ request('date_from') }}" class="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#CD422B]/20 focus:border-[#CD422B]">
-        <input type="date" name="date_to" value="{{ request('date_to') }}" class="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#CD422B]/20 focus:border-[#CD422B]">
+        <input type="date" name="date_from" value="{{ request('date_from') }}" min="{{ now()->subYears(5)->format('Y-m-d') }}" max="{{ now()->format('Y-m-d') }}" class="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#CD422B]/20 focus:border-[#CD422B]">
+        <input type="date" name="date_to" value="{{ request('date_to') }}" min="{{ now()->subYears(5)->format('Y-m-d') }}" max="{{ now()->format('Y-m-d') }}" class="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#CD422B]/20 focus:border-[#CD422B]">
 
         @if(!request('customer_type'))
         <select name="customer_type" class="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#CD422B]/20 focus:border-[#CD422B]">
