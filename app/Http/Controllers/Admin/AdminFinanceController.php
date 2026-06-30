@@ -199,12 +199,13 @@ class AdminFinanceController extends Controller
             'notes' => $failed > 0 ? implode("\n", $errorMessages) : 'Sinkronisasi berhasil.',
         ]);
 
-        return back()->with(
-            $failed > 0 ? 'error' : 'success',
-            $failed > 0
-                ? "Sync Midtrans selesai parsial. Berhasil: {$synced}, Gagal: {$failed}."
-                : "Sync Midtrans berhasil. Total transaksi tersinkron: {$synced}."
-        );
+        if ($failed > 0 && $synced > 0) {
+            return back()->with('warning', "Sync Midtrans selesai. Berhasil: {$synced}, Dilewati: {$failed} (transaksi expired/tidak ditemukan di Midtrans).");
+        } elseif ($failed > 0 && $synced === 0) {
+            return back()->with('error', "Sync Midtrans gagal. Semua {$failed} transaksi tidak ditemukan di server Midtrans.");
+        }
+
+        return back()->with('success', "Sync Midtrans berhasil. Total transaksi tersinkron: {$synced}.");
     }
 
     private function mapMidtransPaymentStatus(?string $transactionStatus, ?string $fraudStatus): string
