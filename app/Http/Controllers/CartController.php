@@ -472,13 +472,12 @@ class CartController extends Controller
     // Midtrans Payment Notification Webhook
     // ────────────────────────────────────────────────────────
 
-    public function notification(Request $request): JsonResponse
+    public function notification(Request $request, Notification $notif): JsonResponse
     {
         MidtransConfig::$serverKey    = config('midtrans.server_key');
         MidtransConfig::$isProduction = config('midtrans.is_production');
 
         try {
-            $notif = new Notification();
 
             $orderId           = $notif->order_id;
             $transactionStatus = $notif->transaction_status;
