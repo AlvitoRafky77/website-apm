@@ -7,14 +7,28 @@ use Illuminate\Http\Request;
 
 class B2bContactController extends Controller
 {
+    private function ensureB2bAccess(): void
+    {
+        abort_unless(
+            auth()->check()
+                && auth()->user()->isB2b()
+                && auth()->user()->b2bRegistration,
+            403,
+            'Akses ditolak. Halaman ini hanya untuk Mitra B2B.'
+        );
+    }
+
     public function index()
     {
+        $this->ensureB2bAccess();
+
         $user = auth()->user();
         return view('b2b.contact.index', compact('user'));
     }
 
     public function store(Request $request)
     {
+        $this->ensureB2bAccess();
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'company' => ['required', 'string', 'max:255'],

@@ -11,7 +11,7 @@ class ProductController extends Controller
     {
         $categories = \App\Models\Category::with([
             'products' => function ($query) {
-                $query->where('is_active', true);
+                $query->where('is_active', true)->limit(12);
             },
         ])->get();
 

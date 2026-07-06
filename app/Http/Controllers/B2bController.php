@@ -23,7 +23,7 @@ class B2bController extends Controller
             ->where('stock_b2b', '>', 0)
             ->with('category')
             ->orderBy('name')
-            ->get();
+            ->paginate(10);
 
         // Admin preview: tampilkan semua order B2B untuk monitoring
         if ($isAdminPreview) {

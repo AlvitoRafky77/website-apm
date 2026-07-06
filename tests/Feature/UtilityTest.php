@@ -96,4 +96,42 @@ class UtilityTest extends TestCase
 
         $response->assertSessionHasErrors(['date_from', 'date_to']);
     }
+
+    /**
+     * Sc Req 001 & Sc Req 002: Memastikan pelanggan B2C ditolak (403) saat mencoba membuka B2B Contact
+     */
+    public function test_b2c_user_is_blocked_from_b2b_contact(): void
+    {
+        $b2cUser = User::factory()->create(['user_type' => 'b2c']);
+        $b2cUser->assignRole('b2c_customer');
+
+        $response = $this->actingAs($b2cUser)->get('/b2b/contact');
+        $response->assertStatus(403);
+    }
+
+    /**
+     * Sc Req 001 & Sc Req 002: Memastikan Mitra B2B terverifikasi diizinkan membuka halaman B2B Contact
+     */
+    public function test_b2b_user_can_access_b2b_contact(): void
+    {
+        $registration = \App\Models\B2bRegistration::create([
+            'company_name' => 'Mitra B2B Baru',
+            'company_type' => 'CV',
+            'company_address' => 'Jl. Sudirman No. 10',
+            'pic_name' => 'Sandi',
+            'email' => 'sandi@mitrab2b.com',
+            'phone' => '081234567890',
+            'password' => bcrypt('password123'),
+            'status' => 'approved',
+        ]);
+
+        $b2bUser = User::factory()->create([
+            'user_type' => 'b2b',
+            'b2b_registration_id' => $registration->id,
+        ]);
+        $b2bUser->assignRole('b2b_customer');
+
+        $response = $this->actingAs($b2bUser)->get('/b2b/contact');
+        $response->assertStatus(200);
+    }
 }
