@@ -15,14 +15,15 @@
 <body class="antialiased bg-gray-50 text-gray-800 min-h-screen">
 
     {{-- Top Navbar Minimal --}}
-    <header class="w-full bg-white border-b border-gray-100 px-6 py-3 sticky top-0 z-40 shadow-sm">
+    <header class="w-full bg-white border-b border-gray-100 px-4 sm:px-6 py-3 sticky top-0 z-40 shadow-sm">
         <div class="max-w-5xl mx-auto flex items-center justify-between">
-            <a href="{{ route('home') }}" class="flex items-center gap-3 group">
-                <img src="{{ asset('images/APM_Logo.webp') }}" alt="APM" class="h-9 w-9 object-contain">
-                <span class="font-bold text-[#CD422B] tracking-tight text-sm">Agro Pangan Maju</span>
+            <a href="{{ route('home') }}" class="flex items-center gap-2 sm:gap-3 group">
+                <img src="{{ asset('images/APM_Logo.webp') }}" alt="APM" class="h-8 w-8 sm:h-9 sm:w-9 object-contain">
+                <span class="font-bold text-[#CD422B] tracking-tight text-xs sm:text-sm">Agro Pangan Maju</span>
             </a>
-            <a href="{{ route('login') }}" class="text-sm text-gray-500 hover:text-[#CD422B] font-semibold transition-colors">
-                Sudah punya akun? <span class="text-[#CD422B]">Masuk →</span>
+            <a href="{{ route('login') }}" class="text-xs sm:text-sm text-gray-500 hover:text-[#CD422B] font-semibold transition-colors">
+                <span class="hidden sm:inline text-gray-400 font-normal">Sudah punya akun? </span>
+                <span class="text-[#CD422B] hover:underline">Masuk →</span>
             </a>
         </div>
     </header>

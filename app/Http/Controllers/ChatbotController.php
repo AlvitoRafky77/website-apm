@@ -10,12 +10,15 @@ class ChatbotController extends Controller
 {
     // ─── Keyword → flow mapping ────────────────────────────
     private array $keywordMap = [
-        'welcome'          => ['halo', 'hai', 'hello', 'hi', 'selamat', 'pagi', 'siang', 'sore', 'malam', 'mulai', 'start', 'menu', 'bantuan', 'help'],
-        'stok_kategori'    => ['stok', 'stock', 'tersedia', 'ada gak', 'ada ga', 'ketersediaan', 'cek stok', 'mau beli', 'mau pesan'],
-        'info_harga'       => ['harga', 'price', 'berapa', 'biaya', 'tarif', 'mahal', 'murah', 'diskon', 'promo'],
-        'daftar_b2b'       => ['b2b', 'mitra', 'partner', 'grosir', 'partai', 'daftar', 'registrasi', 'syarat', 'dokumen', 'perusahaan'],
-        'info_pengiriman'  => ['kirim', 'pengiriman', 'delivery', 'ongkir', 'jarak', 'armada', 'mobil', 'truck', 'cold', 'antar'],
-        'hubungi_admin'    => ['admin', 'cs', 'customer service', 'kontak', 'contact', 'whatsapp', 'wa', 'telepon', 'phone', 'email', 'hubungi', 'tanya'],
+        'welcome'            => ['halo', 'hai', 'hello', 'hi', 'selamat', 'pagi', 'siang', 'sore', 'malam', 'mulai', 'start', 'menu', 'bantuan', 'help', 'helo', 'hallo', 'pigi', 'malem', 'woi', 'infonya', 'assistant', 'bot', 'asisten'],
+        'stok_kategori'      => ['stok', 'stock', 'tersedia', 'ada gak', 'ada ga', 'ketersediaan', 'cek stok', 'mau beli', 'mau pesan', 'daging', 'seafood', 'poultry', 'ayam', 'sapi', 'udang', 'ikan', 'cumi', 'bebek', 'ceker', 'fillet'],
+        'info_harga'         => ['harga', 'price', 'berapa', 'biaya', 'tarif', 'mahal', 'murah', 'diskon', 'promo', 'pricelist', 'daftar harga', 'potongan'],
+        'daftar_b2b'         => ['b2b', 'mitra', 'partner', 'grosir', 'partai', 'daftar', 'registrasi', 'syarat', 'dokumen', 'perusahaan', 'kemitraan', 'mou', 'kontrak', 'kerja sama', 'pengadaan'],
+        'info_pengiriman'    => ['kirim', 'pengiriman', 'delivery', 'ongkir', 'jarak', 'armada', 'mobil', 'truck', 'cold', 'antar', 'lalamove', 'kurir', 'ongkos kirim', 'transport'],
+        'hubungi_admin'      => ['admin', 'cs', 'customer service', 'kontak', 'contact', 'whatsapp', 'wa', 'telepon', 'phone', 'email', 'hubungi', 'tanya', 'nomor hp', 'no hp', 'call center'],
+        'sertifikasi'        => ['halal', 'nkv', 'bpom', 'sertifikat', 'bersih', 'higienis', 'higenis', 'veteriner', 'sehat', 'kualitas', 'segar', 'fresh', 'sertifikasi', 'mui'],
+        'lokasi_operasional' => ['alamat', 'lokasi', 'dimana', 'gudang', 'kantor', 'pekanbaru', 'panam', 'jam buka', 'jam operasional', 'hari apa', 'tutup', 'operasional', 'alamatnya', 'posisi', 'map', 'maps', 'rute'],
+        'minimal_order'      => ['minimal', 'minimum', 'paling sedikit', 'eceran', 'ecer', 'kg', 'ton', 'kilo', 'tonase', 'minimal order', 'min order', 'qty', 'kuantitas', 'pembelian'],
     ];
 
     // ─── Static flow definitions ───────────────────────────
@@ -23,11 +26,14 @@ class ChatbotController extends Controller
         'welcome' => [
             'message' => "Halo! 👋 Saya **APM Assistant**, siap membantu Anda.\n\nPilih topik di bawah atau ketik pertanyaan Anda:",
             'buttons' => [
-                ['label' => '📦 Cek Stok Produk',  'flow' => 'stok_kategori'],
-                ['label' => '💰 Info Harga',         'flow' => 'info_harga'],
-                ['label' => '🏢 Daftar Mitra B2B',  'flow' => 'daftar_b2b'],
-                ['label' => '🚚 Info Pengiriman',    'flow' => 'info_pengiriman'],
-                ['label' => '📞 Hubungi Admin',      'flow' => 'hubungi_admin'],
+                ['label' => '📦 Cek Stok Produk',    'flow' => 'stok_kategori'],
+                ['label' => '💰 Info Harga & Katalog', 'flow' => 'info_harga'],
+                ['label' => '🏢 Daftar Mitra B2B',    'flow' => 'daftar_b2b'],
+                ['label' => '🚚 Info Pengiriman',      'flow' => 'info_pengiriman'],
+                ['label' => '🏅 Halal, NKV & Higienitas', 'flow' => 'sertifikasi'],
+                ['label' => '📍 Alamat & Jam Kerja',   'flow' => 'lokasi_operasional'],
+                ['label' => '⚖️ Ketentuan Min. Order', 'flow' => 'minimal_order'],
+                ['label' => '📞 Hubungi Admin',        'flow' => 'hubungi_admin'],
             ],
         ],
 
@@ -69,6 +75,31 @@ class ChatbotController extends Controller
             'message' => "📦 **Cek Stok Produk**\n\nPilih kategori produk yang ingin Anda cek:",
             'dynamic' => 'categories', // will be resolved dynamically
         ],
+
+        'sertifikasi' => [
+            'message' => "🏅 **Sertifikasi & Kualitas Produk APM**\n\nSeluruh produk Meat, Poultry, dan Seafood PT. Agro Pangan Maju dijamin kesegaran dan kebersihannya:\n\n• ✅ **Sertifikasi Halal MUI**: Menjamin seluruh produk daging dan unggas halal dikonsumsi.\n• ✅ **Nomor Kontrol Veteriner (NKV)**: Bukti terpenuhinya syarat kelayakan higienis-sanitasi sebagai jaminan keamanan pangan asal hewan.\n• 🧊 **Cold Chain System**: Produk disimpan di cold storage suhu -18°C hingga -20°C.",
+            'buttons' => [
+                ['label' => '📞 Hubungi Admin', 'flow' => 'hubungi_admin'],
+                ['label' => '🏠 Menu Utama',     'flow' => 'welcome'],
+            ],
+        ],
+
+        'lokasi_operasional' => [
+            'message' => "📍 **Lokasi & Jam Operasional APM**\n\n🏢 **Alamat Gudang Utama:**\nPergudangan Panam Bizpark No. B-19, Jl. HR. Subrantas, Pekanbaru, Riau.\n\n🕐 **Jam Operasional:**\nSenin – Sabtu: 08.00 – 17.00 WIB\n*(Minggu dan Hari Libur Nasional tutup)*\n\n📌 *Disarankan menghubungi admin via WhatsApp terlebih dahulu sebelum melakukan pengambilan langsung ke gudang.*",
+            'buttons' => [
+                ['label' => '📞 Chat WhatsApp', 'flow' => 'hubungi_admin'],
+                ['label' => '🏠 Menu Utama',     'flow' => 'welcome'],
+            ],
+        ],
+
+        'minimal_order' => [
+            'message' => "⚖️ **Ketentuan Batas Pembelian (Minimum Order)**\n\n• 🛒 **Pelanggan Retail (B2C):** Tidak ada minimal order untuk pembelian eceran, namun pembelian produk tertentu diatur minimal 10 KG dan maksimal 50 KG per checkout.\n• 🏢 **Mitra Bisnis (B2B):** Minimum order adalah **1 Ton (1.000 KG)** dan maksimal **10 Ton (10.000 KG)** per transaksi pengadaan.",
+            'buttons' => [
+                ['label' => '📋 Katalog Produk B2C', 'link' => '/products'],
+                ['label' => '🏢 Pendaftaran B2B',     'flow' => 'daftar_b2b'],
+                ['label' => '🏠 Menu Utama',          'flow' => 'welcome'],
+            ],
+        ],
     ];
 
     // ─── Main Handler ──────────────────────────────────────
@@ -84,11 +115,15 @@ class ChatbotController extends Controller
             return $this->resolveFlow($flow);
         }
 
-        // 2. Free text: find matching flow via keyword
-        if ($message) {
+        // 2. Free text: find matching flow via keyword with word-boundary check
+        if ($message !== '') {
+            // Clean punctuation and wrap in spaces for exact word boundary match
+            $cleanMessage = ' ' . str_replace(['?', '.', ',', '!', '-', '_'], ' ', $message) . ' ';
+            $cleanMessage = preg_replace('/\s+/', ' ', $cleanMessage);
+
             foreach ($this->keywordMap as $flowId => $keywords) {
                 foreach ($keywords as $kw) {
-                    if (str_contains($message, $kw)) {
+                    if (str_contains($cleanMessage, ' ' . $kw . ' ')) {
                         return $this->resolveFlow($flowId);
                     }
                 }

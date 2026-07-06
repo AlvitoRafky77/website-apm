@@ -14,13 +14,13 @@
 
 <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-    <div class="flex items-center justify-between mb-8">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
             <h1 class="text-2xl font-black text-gray-900">Pesanan B2B Saya</h1>
             <p class="text-sm text-gray-500 mt-1">Kelola dan pantau seluruh transaksi pengadaan Anda</p>
         </div>
         <a href="{{ route('b2b.orders.create') }}"
-           class="bg-[#CD422B] hover:bg-red-700 text-white font-bold px-5 py-2.5 rounded-xl transition shadow-md flex items-center gap-2 text-sm">
+           class="bg-[#CD422B] hover:bg-red-700 text-white font-bold px-5 py-2.5 rounded-xl transition shadow-md flex items-center gap-2 text-sm self-start sm:self-auto shrink-0">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             Order Baru
         </a>

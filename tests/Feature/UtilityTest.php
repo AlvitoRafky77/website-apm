@@ -134,4 +134,5 @@ class UtilityTest extends TestCase
         $response = $this->actingAs($b2bUser)->get('/b2b/contact');
         $response->assertStatus(200);
     }
+
 }

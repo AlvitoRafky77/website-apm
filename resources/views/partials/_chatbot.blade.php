@@ -68,12 +68,15 @@
     @media (max-width: 639px) {
         #apmChatBox {
             position: fixed;
-            bottom: 0; right: 0; left: 0;
-            width: 100%;
-            height: calc(100vh - 60px);
-            max-height: none;
-            border-radius: 20px 20px 0 0;
-            transform-origin: bottom center;
+            bottom: 168px; /* Float above the toggle (100px bottom + 56px height + 12px margin) */
+            right: 16px;
+            left: 16px;
+            width: auto;
+            height: 520px;
+            max-height: 75vh;
+            border-radius: 20px;
+            transform-origin: bottom right;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.12);
         }
     }
     #apmChatBox.open {
@@ -229,9 +232,8 @@
     }
     #apmChatSend:hover { transform: scale(1.1); box-shadow: 0 4px 12px rgba(205,66,43,.4); }
 
-    /* ── Mobile responsive ─────────────────────────── */
     @media (max-width: 460px) {
-        #apmChatBox { width: calc(100vw - 32px); right: 0; }
+        #apmChatBox { bottom: 84px; } /* Di atas tombol toggle saat tombol pindah ke bottom: 16px (16px + 56px + 12px) */
         #apmChatWidget { right: 16px; bottom: 16px; }
     }
 </style>
@@ -306,6 +308,7 @@
     var isOpen       = false;
     var isTyping     = false;
     var hasGreeted   = false;
+    var isWelcomeFlow = false;
 
     var toggle   = document.getElementById('apmChatToggle');
     var box      = document.getElementById('apmChatBox');
@@ -332,6 +335,7 @@
         iconClose.classList.remove('hidden');
         if (!hasGreeted) {
             hasGreeted = true;
+            isWelcomeFlow = true;
             fetchFlow('welcome');
         }
         setTimeout(function () { input.focus(); }, 350);
@@ -367,6 +371,7 @@
 
     // ── Fetch by flow id ──────────────────────────────────
     function fetchFlow(flowId) {
+        isWelcomeFlow = (flowId === 'welcome');
         showTyping();
         apiFetch({ flow: flowId });
     }
@@ -473,6 +478,10 @@
     }
 
     function scrollBottom() {
+        if (isWelcomeFlow) {
+            setTimeout(function () { messages.scrollTop = 0; }, 60);
+            return;
+        }
         setTimeout(function () { messages.scrollTop = messages.scrollHeight; }, 60);
     }
 

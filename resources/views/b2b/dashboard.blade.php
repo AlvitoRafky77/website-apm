@@ -267,18 +267,18 @@
         }
         #b2bChatSend:hover { transform: scale(1.1); box-shadow: 0 4px 12px rgba(26,26,46,.28); }
 
-        @media (max-width: 460px) {
-            #b2bChatBox { width: calc(100vw - 32px); right: 0; }
-        }
         @media (max-width: 639px) {
             #b2bChatBox {
                 position: fixed;
-                bottom: 0; right: 0; left: 0;
-                width: 100%;
-                height: calc(100vh - 60px);
-                max-height: none;
-                border-radius: 20px 20px 0 0;
-                transform-origin: bottom center;
+                bottom: 84px; /* Di atas tombol toggle yang berada di bottom: 20px (20px + 52px + 12px) */
+                right: 16px;
+                left: 16px;
+                width: auto;
+                height: 520px;
+                max-height: 75vh;
+                border-radius: 20px;
+                transform-origin: bottom right;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.12);
             }
         }
     </style>
@@ -647,23 +647,7 @@
 
         <div id="b2bChatMessages" aria-live="polite"></div>
 
-        <div class="px-3 py-2 border-t border-gray-100 shrink-0">
-            <p class="text-[10px] text-gray-400 font-semibold mb-2">Pertanyaan Umum:</p>
-            <div class="flex flex-wrap gap-1.5">
-                @foreach([
-                    'Cara upload bukti DP?',
-                    'Bagaimana alur pembayaran?',
-                    'Kapan barang dikirim?',
-                    'Cara ajukan komplain?',
-                    'Batas min & maks order?',
-                ] as $faq)
-                <button type="button" onclick="sendB2bFaq('{{ $faq }}')"
-                        class="text-[10px] bg-gray-50 hover:bg-[#CD422B] hover:text-white border border-gray-200 hover:border-[#CD422B] text-gray-600 px-2 py-1 rounded-lg transition font-semibold">
-                    {{ $faq }}
-                </button>
-                @endforeach
-            </div>
-        </div>
+
 
         <div id="b2bChatInputArea">
             <input id="b2bChatInput" type="text" placeholder="Ketik pertanyaan Anda..."
@@ -707,6 +691,7 @@
     let chatOpen = false;
     let isTyping = false;
     let hasGreeted = false;
+    let isWelcomeFlow = false;
 
     function toggleB2bChat() {
         chatOpen = !chatOpen;
@@ -716,7 +701,8 @@
 
         if (chatOpen && !hasGreeted) {
             hasGreeted = true;
-            setTimeout(() => appendB2bBubble('bot', 'Halo! Saya asisten portal B2B APM. Ada yang bisa saya bantu seputar pengadaan, pembayaran, atau pengiriman? 👋'), 150);
+            isWelcomeFlow = true;
+            sendB2bFlow('welcome');
         }
 
         if (chatOpen) {
@@ -770,6 +756,7 @@
                 });
             } else if (btn.flow) {
                 el.addEventListener('click', function () {
+                    appendB2bBubble('user', btn.label);
                     sendB2bFlow(btn.flow);
                 });
             }
@@ -801,18 +788,19 @@
     }
 
     function scrollBottom() {
+        if (isWelcomeFlow) {
+            setTimeout(function () {
+                messages.scrollTop = 0;
+            }, 50);
+            return;
+        }
         setTimeout(function () {
             messages.scrollTop = messages.scrollHeight;
         }, 50);
     }
 
     function sendB2bFlow(flow) {
-        appendB2bBubble('user', 'Pilihan diproses...');
-        if (flow === 'welcome') {
-            appendB2bBubble('bot', 'Halo! Saya asisten portal B2B APM. Ada yang bisa saya bantu seputar pengadaan, pembayaran, atau pengiriman? 👋');
-            return;
-        }
-
+        isWelcomeFlow = (flow === 'welcome');
         isTyping = true;
         showTyping();
 
@@ -862,9 +850,7 @@
             .some(function (k) { return normalized.includes(k); });
 
         if (greetingMatch) {
-            setTimeout(function () {
-                appendB2bBubble('bot', 'Halo! Saya asisten portal B2B APM. Ada yang bisa saya bantu seputar pengadaan, pembayaran, atau pengiriman? 👋');
-            }, 250);
+            sendB2bFlow('welcome');
             return;
         }
 
@@ -918,10 +904,10 @@
 
     function escapeHtml(text) {
         return String(text)
-            .replace(/&/g, '&')
-            .replace(/</g, '<')
-            .replace(/>/g, '>')
-            .replace(/"/g, '"');
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
     }
 
     toggle.addEventListener('click', toggleB2bChat);
@@ -938,6 +924,8 @@
     window.sendB2bMessage = sendB2bMessage;
     window.sendB2bFlow = sendB2bFlow;
 })();
+
+
 </script>
 
 </body>

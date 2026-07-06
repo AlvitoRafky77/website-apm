@@ -13,33 +13,44 @@ class B2bChatbotController extends Controller
     private array $keywordMap = [
         'welcome' => [
             'halo', 'hai', 'hello', 'hi', 'selamat', 'pagi', 'siang', 'sore', 'malam',
-            'menu', 'bantuan', 'help', 'mulai', 'start',
+            'menu', 'bantuan', 'help', 'mulai', 'start', 'helo', 'hallo', 'asisten', 'assistant', 'bot',
         ],
         'stok_b2b' => [
             'stok', 'stock', 'ketersediaan', 'produk b2b', 'grosir', 'partai besar', 'katalog',
-            'harga grosir', 'cek produk', 'cek stok', 'barang tersedia',
+            'harga grosir', 'cek produk', 'cek stok', 'barang tersedia', 'daging', 'ayam', 'seafood',
+            'sapi', 'udang', 'ikan', 'cumi', 'bebek', 'fillet',
         ],
         'order_status' => [
             'order', 'pesanan', 'status order', 'riwayat', 'transaksi', 'tracking', 'pelacakan',
+            'orderan', 'membeli', 'pemesanan',
         ],
         'payment_info' => [
             'dp', 'down payment', 'pelunasan', 'pembayaran', 'bayar', 'transfer', 'invoice',
-            'rekening', 'bukti bayar',
+            'rekening', 'bukti bayar', 'tempo', 'termin', 'tf', 'bank bca', 'dki', 'rekening bca',
         ],
         'shipping_info' => [
             'pengiriman', 'delivery', 'kirim', 'jadwal kirim', 'driver', 'spb', 'surat jalan',
-            'logistik', 'ongkir',
+            'logistik', 'ongkir', 'armada', 'truk', 'mobil box', 'freezer', 'suhu freezer',
         ],
         'complaint_info' => [
-            'komplain', 'dispute', 'keluhan', 'retur', 'klaim', 'masalah barang',
+            'komplain', 'dispute', 'keluhan', 'retur', 'klaim', 'masalah barang', 'barang rusak',
+            'kurang timbangan', 'asuransi', 'potongan klaim', 'klaim kerusakan',
         ],
         'account_info' => [
             'akun', 'profil', 'perusahaan', 'mou', 'status mitra', 'registrasi', 'approval',
-            'pendaftaran', 'dokumen',
+            'pendaftaran', 'dokumen', 'nib', 'siup', 'npwp', 'perjanjian', 'kontrak',
         ],
         'contact_am' => [
             'admin', 'am', 'account manager', 'cs', 'customer service', 'kontak', 'whatsapp',
-            'wa', 'hubungi', 'telepon', 'email',
+            'wa', 'hubungi', 'telepon', 'email', 'am prioritias',
+        ],
+        'sertifikasi' => [
+            'halal', 'nkv', 'bpom', 'sertifikat', 'bersih', 'higienis', 'higenis', 'veteriner',
+            'sehat', 'kualitas', 'segar', 'fresh', 'sertifikasi', 'mui',
+        ],
+        'lokasi_operasional' => [
+            'alamat', 'lokasi', 'dimana', 'gudang', 'kantor', 'pekanbaru', 'panam', 'jam buka',
+            'jam operasional', 'hari apa', 'tutup', 'operasional', 'alamatnya', 'posisi', 'map', 'maps',
         ],
     ];
 
@@ -47,11 +58,30 @@ class B2bChatbotController extends Controller
         'welcome' => [
             'message' => "Halo, Mitra B2B APM 👋\n\nSaya bisa membantu Anda mengecek status order, info pembayaran, pengiriman, komplain, dan profil kemitraan.",
             'buttons' => [
-                ['label' => '📦 Status Order', 'flow' => 'order_status'],
-                ['label' => '💳 Info Pembayaran', 'flow' => 'payment_info'],
-                ['label' => '🚚 Info Pengiriman', 'flow' => 'shipping_info'],
-                ['label' => '⚠️ Komplain', 'flow' => 'complaint_info'],
-                ['label' => '🏢 Profil Mitra', 'flow' => 'account_info'],
+                ['label' => '📦 Status Order',        'flow' => 'order_status'],
+                ['label' => '💳 Info Pembayaran',     'flow' => 'payment_info'],
+                ['label' => '🚚 Info Pengiriman',     'flow' => 'shipping_info'],
+                ['label' => '⚠️ Komplain & Dispute',  'flow' => 'complaint_info'],
+                ['label' => '🏢 Profil Mitra & MoU',   'flow' => 'account_info'],
+                ['label' => '🏅 Halal, NKV & Kualitas', 'flow' => 'sertifikasi'],
+                ['label' => '📍 Alamat & Jam Kerja',   'flow' => 'lokasi_operasional'],
+                ['label' => '📞 Hubungi AM Prioritas',  'flow' => 'contact_am'],
+            ],
+        ],
+
+        'sertifikasi' => [
+            'message' => "🏅 **Sertifikasi & Kualitas Produk APM**\n\nSeluruh produk Meat, Poultry, dan Seafood PT. Agro Pangan Maju dijamin kesegaran dan kebersihannya:\n\n• ✅ **Sertifikasi Halal MUI**: Menjamin seluruh produk daging dan unggas halal dikonsumsi.\n• ✅ **Nomor Kontrol Veteriner (NKV)**: Bukti terpenuhinya syarat kelayakan higienis-sanitasi sebagai jaminan keamanan pangan asal hewan.\n• 🧊 **Cold Chain System**: Produk disimpan di cold storage suhu -18°C hingga -20°C.",
+            'buttons' => [
+                ['label' => '📞 Hubungi AM', 'flow' => 'contact_am'],
+                ['label' => '🏠 Menu Utama',  'flow' => 'welcome'],
+            ],
+        ],
+
+        'lokasi_operasional' => [
+            'message' => "📍 **Lokasi & Jam Operasional APM**\n\n🏢 **Alamat Gudang Utama:**\nPergudangan Panam Bizpark No. B-19, Jl. HR. Subrantas, Pekanbaru, Riau.\n\nSimulasi peta rute lokasi pergudangan dapat diakses di menu utama.\n\n🕐 **Jam Operasional:**\nSenin – Sabtu: 08.00 – 17.00 WIB\n*(Minggu dan Hari Libur Nasional tutup)*",
+            'buttons' => [
+                ['label' => '📞 Hubungi AM', 'flow' => 'contact_am'],
+                ['label' => '🏠 Menu Utama',  'flow' => 'welcome'],
             ],
         ],
     ];
@@ -81,9 +111,13 @@ class B2bChatbotController extends Controller
         }
 
         if ($message !== '') {
+            // Clean punctuation and wrap in spaces for exact word boundary match
+            $cleanMessage = ' ' . str_replace(['?', '.', ',', '!', '-', '_'], ' ', $message) . ' ';
+            $cleanMessage = preg_replace('/\s+/', ' ', $cleanMessage);
+
             foreach ($this->keywordMap as $flowId => $keywords) {
                 foreach ($keywords as $keyword) {
-                    if (str_contains($message, $keyword)) {
+                    if (str_contains($cleanMessage, ' ' . $keyword . ' ')) {
                         return $this->resolveFlow($flowId, $user->id);
                     }
                 }
