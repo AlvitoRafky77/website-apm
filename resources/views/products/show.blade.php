@@ -351,6 +351,17 @@
                 </a>
             @endauth
         </div>
+        
+        <style>
+            @media (max-width: 460px) {
+                #apmChatWidget {
+                    bottom: 92px !important;
+                }
+                #apmChatBox {
+                    bottom: 160px !important;
+                }
+            }
+        </style>
     </div>
 
     @push('scripts')
