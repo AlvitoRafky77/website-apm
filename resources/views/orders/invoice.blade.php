@@ -6,7 +6,7 @@
     <title>Invoice {{ $order->order_id }}</title>
     <style>
         @page { margin: 0; }
-        * {
+        body, table, tr, td, th, h1, h2, h3, h4, h5, h6, div, p, span, strong, a {
             font-family: 'Helvetica', 'Arial', sans-serif;
         }
         body { 

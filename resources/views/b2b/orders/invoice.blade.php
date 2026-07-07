@@ -9,8 +9,11 @@
             margin: 24px;
         }
 
+        body, table, tr, td, th, h1, h2, h3, h4, h5, h6, div, p, span, strong, a {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+        }
+
         body {
-            font-family: DejaVu Sans, sans-serif;
             color: #1f2937;
             font-size: 10px;
             line-height: 1.5;
