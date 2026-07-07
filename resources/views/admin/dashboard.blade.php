@@ -103,6 +103,26 @@
     </a>
 </div>
 
+<!-- Section Header & Filter Periode -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 mt-2">
+    <div>
+        <h2 class="text-base font-bold text-gray-800">Analisis Omzet Penjualan</h2>
+        <p class="text-[10px] text-gray-500">Visualisasi data harian omzet B2C dan B2B</p>
+    </div>
+    <div>
+        <form action="{{ route('admin.dashboard') }}" method="GET" id="filterForm" class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-gray-100 shadow-sm">
+            <label for="filter_month" class="text-[10px] text-gray-500 font-semibold">Filter Periode:</label>
+            <select name="filter_month" id="filter_month" onchange="document.getElementById('filterForm').submit()" 
+                    class="text-[11px] bg-white border-0 p-0 pr-6 text-gray-700 font-bold focus:outline-none focus:ring-0 cursor-pointer transition">
+                <option value="7days" {{ $selectedMonth == '7days' ? 'selected' : '' }}>7 Hari Terakhir</option>
+                @foreach($monthOptions as $val => $label)
+                    <option value="{{ $val }}" {{ $selectedMonth == $val ? 'selected' : '' }}>{{ $label }}</option>
+                @endforeach
+            </select>
+        </form>
+    </div>
+</div>
+
 <!-- Grafik Kiri Kanan -->
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
     <!-- Grafik B2C -->
@@ -110,7 +130,7 @@
         <div class="flex justify-between items-center mb-6">
             <div>
                 <h2 class="font-bold text-gray-800 text-base">Omzet B2C (Retail)</h2>
-                <p class="text-[10px] text-gray-400">7 Hari Terakhir</p>
+                <p class="text-[10px] text-gray-400">{{ $chartPeriodText }}</p>
             </div>
             <span class="w-3 h-3 rounded-full bg-[#CD422B]"></span>
         </div>
@@ -124,7 +144,7 @@
         <div class="flex justify-between items-center mb-6">
             <div>
                 <h2 class="font-bold text-gray-800 text-base">Omzet B2B (Mitra)</h2>
-                <p class="text-[10px] text-gray-400">7 Hari Terakhir (Verified DP)</p>
+                <p class="text-[10px] text-gray-400">{{ $chartPeriodText }} (Verified DP)</p>
             </div>
             <span class="w-3 h-3 rounded-full bg-blue-600"></span>
         </div>

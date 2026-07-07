@@ -26,23 +26,74 @@ class AdminDashboardController extends Controller
             ->orderBy('stock_b2c')
             ->get();
 
+        $selectedMonth = request('filter_month', '7days');
+        
+        $monthOptions = [];
+        for ($m = 0; $m < 12; $m++) {
+            $carbonMonth = now()->subMonths($m);
+            $monthVal = $carbonMonth->format('Y-m');
+            $monthLabel = $carbonMonth->translatedFormat('F Y'); // e.g. "Juli 2026"
+            $monthOptions[$monthVal] = $monthLabel;
+        }
+
+        $labels = [];
         $salesData = [];
         $b2bSalesData = [];
-        $labels = [];
 
-        for ($i = 6; $i >= 0; $i--) {
-            $date = now()->subDays($i)->format('Y-m-d');
-            $labels[] = now()->subDays($i)->format('d M');
+        if ($selectedMonth && isset($monthOptions[$selectedMonth])) {
+            $carbonSelected = \Carbon\Carbon::createFromFormat('Y-m', $selectedMonth)->startOfMonth();
+            $startDate = $carbonSelected->copy()->startOfMonth()->toDateTimeString();
+            $endDate = $carbonSelected->copy()->endOfMonth()->toDateTimeString();
 
-            $dailyTotal = Order::where('payment_status', 'paid')
-                ->whereDate('paid_at', $date)
-                ->sum('total');
-            $salesData[] = (int) $dailyTotal;
+            $b2cSales = Order::where('payment_status', 'paid')
+                ->whereBetween('paid_at', [$startDate, $endDate])
+                ->groupBy(\DB::raw('DATE(paid_at)'))
+                ->selectRaw('DATE(paid_at) as date, SUM(total) as total')
+                ->pluck('total', 'date')
+                ->toArray();
 
-            $dailyB2bTotal = B2bOrder::whereNotIn('status', ['pending_review', 'waiting_dp', 'dp_uploaded', 'cancelled'])
-                ->whereDate('dp_verified_at', $date)
-                ->sum('total');
-            $b2bSalesData[] = (int) $dailyB2bTotal;
+            $b2bSales = B2bOrder::whereNotIn('status', ['pending_review', 'waiting_dp', 'dp_uploaded', 'cancelled'])
+                ->whereBetween('dp_verified_at', [$startDate, $endDate])
+                ->groupBy(\DB::raw('DATE(dp_verified_at)'))
+                ->selectRaw('DATE(dp_verified_at) as date, SUM(total) as total')
+                ->pluck('total', 'date')
+                ->toArray();
+
+            $daysInMonth = $carbonSelected->daysInMonth;
+            for ($day = 1; $day <= $daysInMonth; $day++) {
+                $dateStr = $carbonSelected->copy()->day($day)->format('Y-m-d');
+                $labels[] = $day . ' ' . $carbonSelected->translatedFormat('M');
+                $salesData[] = (int) ($b2cSales[$dateStr] ?? 0);
+                $b2bSalesData[] = (int) ($b2bSales[$dateStr] ?? 0);
+            }
+            $chartPeriodText = "Bulan " . $monthOptions[$selectedMonth];
+        } else {
+            $selectedMonth = '7days';
+            $startDate = now()->subDays(6)->startOfDay()->toDateTimeString();
+            $endDate = now()->endOfDay()->toDateTimeString();
+
+            $b2cSales = Order::where('payment_status', 'paid')
+                ->whereBetween('paid_at', [$startDate, $endDate])
+                ->groupBy(\DB::raw('DATE(paid_at)'))
+                ->selectRaw('DATE(paid_at) as date, SUM(total) as total')
+                ->pluck('total', 'date')
+                ->toArray();
+
+            $b2bSales = B2bOrder::whereNotIn('status', ['pending_review', 'waiting_dp', 'dp_uploaded', 'cancelled'])
+                ->whereBetween('dp_verified_at', [$startDate, $endDate])
+                ->groupBy(\DB::raw('DATE(dp_verified_at)'))
+                ->selectRaw('DATE(dp_verified_at) as date, SUM(total) as total')
+                ->pluck('total', 'date')
+                ->toArray();
+
+            for ($i = 6; $i >= 0; $i--) {
+                $carbonDay = now()->subDays($i);
+                $dateStr = $carbonDay->format('Y-m-d');
+                $labels[] = $carbonDay->format('d M');
+                $salesData[] = (int) ($b2cSales[$dateStr] ?? 0);
+                $b2bSalesData[] = (int) ($b2bSales[$dateStr] ?? 0);
+            }
+            $chartPeriodText = "7 Hari Terakhir";
         }
 
         $b2cOrders = Order::whereNotIn('status', ['cancelled'])->get();
@@ -101,7 +152,10 @@ class AdminDashboardController extends Controller
             'salesData',
             'b2bSalesData',
             'b2cTopProducts',
-            'b2bTopProducts'
+            'b2bTopProducts',
+            'monthOptions',
+            'selectedMonth',
+            'chartPeriodText'
         ));
     }
 }

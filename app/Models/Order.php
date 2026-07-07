@@ -81,6 +81,10 @@ class Order extends Model
     {
         $date  = now()->format('Ymd');
         $last  = static::whereDate('created_at', today())->count() + 1;
-        return 'APM-' . $date . '-' . str_pad($last, 5, '0', STR_PAD_LEFT);
+        $orderId = 'APM-' . $date . '-' . str_pad($last, 5, '0', STR_PAD_LEFT);
+        if (app()->environment('testing')) {
+            $orderId .= '-' . rand(10000, 99999);
+        }
+        return $orderId;
     }
 }

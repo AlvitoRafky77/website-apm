@@ -6,8 +6,10 @@
     <title>Invoice {{ $order->order_id }}</title>
     <style>
         @page { margin: 0; }
+        * {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+        }
         body { 
-            font-family: 'Helvetica', 'Arial', sans-serif; 
             font-size: 11px; 
             color: #1e293b; 
             line-height: 1.5;
@@ -99,7 +101,7 @@
 
         /* Extra Info */
         .notes-area { width: 55%; padding-top: 10px; }
-        .thank-you { font-family: 'Times New Roman', serif; font-style: italic; color: #CD422B; font-size: 16px; margin-top: 35px; }
+        .thank-you { font-style: italic; color: #CD422B; font-size: 14px; margin-top: 35px; }
 
         /* Footer */
         .footer { margin-top: 80px; text-align: center; color: #94a3b8; font-size: 10px; border-top: 1px solid #f1f5f9; padding-top: 25px; }
@@ -125,9 +127,9 @@
                     <h1 class="invoice-text" style="color: #cbd5e1;">INVOICE</h1> <!-- Dipertegas kontrasnya ke Slate-300 -->
                     <div class="invoice-id-text">#{{ $order->order_id }}</div>
                     @if($order->payment_status === 'paid')
-                        <span class="badge badge-paid">✓ SUDAH LUNAS</span>
+                        <span class="badge badge-paid">SUDAH LUNAS</span>
                     @else
-                        <span class="badge badge-pending">⌛ MENUNGGU BAYAR</span>
+                        <span class="badge badge-pending">MENUNGGU BAYAR</span>
                     @endif
                 </td>
             </tr>
