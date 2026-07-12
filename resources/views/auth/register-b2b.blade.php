@@ -1,4 +1,25 @@
 <x-guest-b2b-layout>
+    <style>
+        .field-hint {
+            max-height: 0;
+            opacity: 0;
+            transform: translateY(-5px);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            font-size: 11px;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 4px;
+        }
+        input:focus ~ .field-hint {
+            max-height: 40px;
+            opacity: 1;
+            transform: translateY(0);
+            margin-bottom: 4px;
+        }
+    </style>
 
     {{-- Display errors summary --}}
     @if($errors->any())
@@ -128,6 +149,10 @@
                             <x-text-input id="phone" class="block mt-1 w-full" type="tel"
                                 name="phone" :value="old('phone')" required
                                 placeholder="0761-xxxxxx" />
+                            <div class="field-hint">
+                                <svg class="w-3.5 h-3.5 text-[#CD422B] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <span>Nomor telepon berupa angka, panjang 10-13 digit.</span>
+                            </div>
                             <x-input-error :messages="$errors->get('phone')" class="mt-1" />
                         </div>
                     </div>
@@ -146,7 +171,10 @@
                             <x-input-label for="password" :value="__('Kata Sandi')" />
                             <x-text-input id="password" class="block mt-1 w-full" type="password"
                                 name="password" required autocomplete="new-password" />
-                            <p class="text-xs text-gray-400 mt-1">Minimal 8 karakter</p>
+                            <div class="field-hint">
+                                <svg class="w-3.5 h-3.5 text-[#CD422B] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <span>Kata sandi minimal 8 karakter.</span>
+                            </div>
                             <x-input-error :messages="$errors->get('password')" class="mt-1" />
                         </div>
                         <div>
