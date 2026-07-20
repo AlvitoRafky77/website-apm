@@ -832,6 +832,7 @@
     }
 
     function sendB2bFaq(q) {
+        isWelcomeFlow = false;
         appendB2bBubble('user', q);
         setTimeout(function () {
             appendB2bBubble('bot', b2bFaqs[q] || 'Untuk pertanyaan ini, silakan hubungi Account Manager kami via WhatsApp ya! 😊');
@@ -841,6 +842,8 @@
     async function sendB2bMessage() {
         const text = input.value.trim();
         if (!text || isTyping) return;
+
+        isWelcomeFlow = false;
 
         input.value = '';
         appendB2bBubble('user', text);

@@ -350,6 +350,7 @@
     function sendMessage() {
         var text = input.value.trim();
         if (!text || isTyping) return;
+        isWelcomeFlow = false;
         input.value = '';
         appendBubble('user', text);
         fetchBot(text, null);
@@ -378,6 +379,7 @@
 
     // ── Fetch by free text ────────────────────────────────
     function fetchBot(text) {
+        isWelcomeFlow = false;
         showTyping();
         apiFetch({ message: text });
     }
