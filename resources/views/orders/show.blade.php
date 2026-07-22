@@ -339,22 +339,30 @@
 
         {{-- ===== ACTION BUTTONS ===== --}}
         <div class="flex flex-col gap-3">
-            {{-- Konfirmasi Diterima (untuk order yang shipped) --}}
-            @if($order->status === 'shipped' && $order->payment_status === 'paid')
-                @if(!$order->user_confirmed)
-                <form method="POST" action="{{ route('orders.confirm', $order->order_id) }}" class="w-full">
-                    @csrf
-                    <button type="submit"
-                            onclick="return confirm('Konfirmasi bahwa pesanan Anda sudah diterima?')"
-                            class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-xl transition shadow-md flex items-center justify-center gap-2 text-sm">
-                        ✅ Pesanan Diterima
-                    </button>
-                </form>
-                @else
-                <div class="w-full bg-green-50 border border-green-200 text-green-700 font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 text-sm text-center">
-                    ✅ Anda telah mengkonfirmasi penerimaan pesanan ini
+            {{-- Konfirmasi Diterima & Bantuan Komplain (untuk order yang shipped / delivered) --}}
+            @if(in_array($order->status, ['shipped', 'delivered']) && $order->payment_status === 'paid')
+                <div class="flex flex-col sm:flex-row gap-3 w-full">
+                    @if(!$order->user_confirmed && $order->status === 'shipped')
+                    <form method="POST" action="{{ route('orders.confirm', $order->order_id) }}" class="flex-1">
+                        @csrf
+                        <button type="submit"
+                                onclick="return confirm('Konfirmasi bahwa pesanan Anda sudah diterima?')"
+                                class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-xl transition shadow-md flex items-center justify-center gap-2 text-sm">
+                            ✅ Pesanan Diterima
+                        </button>
+                    </form>
+                    @else
+                    <div class="flex-1 bg-green-50 border border-green-200 text-green-700 font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 text-sm text-center">
+                        ✅ Penerimaan Dikonfirmasi
+                    </div>
+                    @endif
+
+                    <a href="https://wa.me/6281234567890?text=Halo%20Admin%20CS%20APM%2C%20saya%20ingin%20melaporkan%20kendala%2Fkomplain%20pada%20Pesanan%20%23{{ $order->order_id }}"
+                       target="_blank"
+                       class="flex-1 bg-amber-50 border border-amber-300 text-amber-800 hover:bg-amber-100 font-bold py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 text-sm text-center">
+                        ⚠️ Laporkan Kendala / Komplain
+                    </a>
                 </div>
-                @endif
             @endif
 
             <div class="flex flex-col sm:flex-row gap-3">

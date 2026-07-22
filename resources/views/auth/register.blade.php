@@ -45,7 +45,11 @@
         <!-- Email -->
         <div>
             <x-input-label for="email" :value="__('Alamat Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
+            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required placeholder="contoh: nama@domain.com" autocomplete="username" />
+            <div class="field-hint">
+                <svg class="w-3.5 h-3.5 text-[#CD422B] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Format email harus valid dan mengandung '@' (contoh: nama@domain.com).</span>
+            </div>
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 

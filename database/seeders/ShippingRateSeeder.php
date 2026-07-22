@@ -7,34 +7,38 @@ use Illuminate\Database\Seeder;
 
 class ShippingRateSeeder extends Seeder
 {
+    /**
+     * Seed shipping rates for major Indonesian B2B cities.
+     */
     public function run(): void
     {
         $rates = [
-            ['destination_city' => 'Padang',      'rate_per_kg' => 500,  'estimated_days' => 2, 'notes' => 'Via jalur darat Pekanbaru-Padang'],
-            ['destination_city' => 'Medan',        'rate_per_kg' => 800,  'estimated_days' => 3, 'notes' => 'Via jalur darat Sumatra'],
-            ['destination_city' => 'Dumai',        'rate_per_kg' => 300,  'estimated_days' => 1, 'notes' => 'Kota terdekat'],
-            ['destination_city' => 'Bengkalis',    'rate_per_kg' => 350,  'estimated_days' => 1, 'notes' => 'Via jalur darat'],
-            ['destination_city' => 'Kampar',       'rate_per_kg' => 200,  'estimated_days' => 1, 'notes' => 'Jarak dekat'],
-            ['destination_city' => 'Siak',         'rate_per_kg' => 250,  'estimated_days' => 1, 'notes' => 'Via jalur darat'],
-            ['destination_city' => 'Rokan Hilir',  'rate_per_kg' => 400,  'estimated_days' => 2, 'notes' => 'Via jalur darat'],
-            ['destination_city' => 'Indragiri Hulu', 'rate_per_kg' => 450, 'estimated_days' => 2, 'notes' => 'Via jalur darat'],
-            ['destination_city' => 'Batam',        'rate_per_kg' => 1000, 'estimated_days' => 3, 'notes' => 'Via darat + laut'],
-            ['destination_city' => 'Jakarta',      'rate_per_kg' => 1200, 'estimated_days' => 4, 'notes' => 'Via jalur darat antar pulau'],
+            ['origin_city' => 'Pekanbaru', 'destination_city' => 'Jakarta Pusat',   'rate_per_kg' => 2500, 'min_weight_kg' => 100, 'estimated_days' => 2, 'notes' => 'Armada Pendingin B2B Utama'],
+            ['origin_city' => 'Pekanbaru', 'destination_city' => 'Jakarta Selatan', 'rate_per_kg' => 2500, 'min_weight_kg' => 100, 'estimated_days' => 2, 'notes' => 'Armada Pendingin B2B Utama'],
+            ['origin_city' => 'Pekanbaru', 'destination_city' => 'Jakarta Barat',   'rate_per_kg' => 2500, 'min_weight_kg' => 100, 'estimated_days' => 2, 'notes' => 'Armada Pendingin B2B Utama'],
+            ['origin_city' => 'Pekanbaru', 'destination_city' => 'Jakarta Timur',   'rate_per_kg' => 2500, 'min_weight_kg' => 100, 'estimated_days' => 2, 'notes' => 'Armada Pendingin B2B Utama'],
+            ['origin_city' => 'Pekanbaru', 'destination_city' => 'Jakarta Utara',   'rate_per_kg' => 2500, 'min_weight_kg' => 100, 'estimated_days' => 2, 'notes' => 'Armada Pendingin B2B Utama'],
+            ['origin_city' => 'Pekanbaru', 'destination_city' => 'Jakarta',         'rate_per_kg' => 2500, 'min_weight_kg' => 100, 'estimated_days' => 2, 'notes' => 'Armada Pendingin B2B Utama'],
+            ['origin_city' => 'Pekanbaru', 'destination_city' => 'DKI Jakarta',     'rate_per_kg' => 2500, 'min_weight_kg' => 100, 'estimated_days' => 2, 'notes' => 'Armada Pendingin B2B Utama'],
+            ['origin_city' => 'Pekanbaru', 'destination_city' => 'Pekanbaru',       'rate_per_kg' => 1000, 'min_weight_kg' => 50,  'estimated_days' => 1, 'notes' => 'Lokal Dalam Kota'],
+            ['origin_city' => 'Pekanbaru', 'destination_city' => 'Surabaya',        'rate_per_kg' => 3500, 'min_weight_kg' => 100, 'estimated_days' => 3, 'notes' => 'Jalur Ekspedisi Beku Jawa'],
+            ['origin_city' => 'Pekanbaru', 'destination_city' => 'Bandung',         'rate_per_kg' => 3000, 'min_weight_kg' => 100, 'estimated_days' => 3, 'notes' => 'Jalur Ekspedisi Beku Jawa'],
+            ['origin_city' => 'Pekanbaru', 'destination_city' => 'Medan',           'rate_per_kg' => 2000, 'min_weight_kg' => 100, 'estimated_days' => 2, 'notes' => 'Jalur Sumatera Barat/Utara'],
+            ['origin_city' => 'Pekanbaru', 'destination_city' => 'Padang',          'rate_per_kg' => 1800, 'min_weight_kg' => 100, 'estimated_days' => 2, 'notes' => 'Jalur Lintas Sumatera'],
+            ['origin_city' => 'Pekanbaru', 'destination_city' => 'Batam',           'rate_per_kg' => 2800, 'min_weight_kg' => 100, 'estimated_days' => 2, 'notes' => 'Jalur Laut & Udara Kepri'],
+            ['origin_city' => 'Pekanbaru', 'destination_city' => 'Palembang',       'rate_per_kg' => 2200, 'min_weight_kg' => 100, 'estimated_days' => 2, 'notes' => 'Jalur Lintas Sumatera'],
+            ['origin_city' => 'Pekanbaru', 'destination_city' => 'Semarang',        'rate_per_kg' => 3200, 'min_weight_kg' => 100, 'estimated_days' => 3, 'notes' => 'Jalur Ekspedisi Beku Jawa'],
+            ['origin_city' => 'Pekanbaru', 'destination_city' => 'Makassar',        'rate_per_kg' => 4500, 'min_weight_kg' => 100, 'estimated_days' => 4, 'notes' => 'Jalur Ekspedisi Sulawesi'],
+            ['origin_city' => 'Pekanbaru', 'destination_city' => 'Denpasar',       'rate_per_kg' => 4000, 'min_weight_kg' => 100, 'estimated_days' => 4, 'notes' => 'Jalur Ekspedisi Bali'],
         ];
 
-        foreach ($rates as $rate) {
+        foreach ($rates as $rateData) {
             ShippingRate::updateOrCreate(
                 [
-                    'origin_city'      => 'Pekanbaru',
-                    'destination_city' => $rate['destination_city'],
+                    'origin_city'      => $rateData['origin_city'],
+                    'destination_city' => $rateData['destination_city'],
                 ],
-                [
-                    'rate_per_kg'    => $rate['rate_per_kg'],
-                    'min_weight_kg'  => 1000,
-                    'estimated_days' => $rate['estimated_days'],
-                    'notes'          => $rate['notes'],
-                    'is_active'      => true,
-                ]
+                array_merge($rateData, ['is_active' => true])
             );
         }
     }

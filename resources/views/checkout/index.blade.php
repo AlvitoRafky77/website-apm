@@ -696,8 +696,7 @@
                                                     class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-[#CD422B] hover:bg-red-50 transition font-bold text-base">−</button>
                                               <input type="number" value="{{ $item['quantity'] }}" min="10" max="{{ $item['max_order'] }}"
                                                    data-qty-input
-                                                   style="-webkit-appearance:none;-moz-appearance:textfield;"
-                                                   class="w-16 min-w-[4rem] h-8 text-center text-sm font-bold text-gray-800 border-x border-gray-200 bg-white focus:outline-none tabular-nums px-1"
+                                                   class="w-16 min-w-[4rem] h-8 text-center text-sm font-bold text-gray-800 border-x border-gray-200 bg-white focus:outline-none tabular-nums px-1 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                                                   onchange="changeQty({{ $item['product_id'] }}, 0); this.value = Math.max(10, Math.min({{ $item['max_order'] }}, parseInt(this.value)||10));">
                                             <button type="button" onclick="changeQty({{ $item['product_id'] }}, 1)"
                                                     class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-[#CD422B] hover:bg-red-50 transition font-bold text-base">+</button>

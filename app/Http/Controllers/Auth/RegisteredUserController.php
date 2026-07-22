@@ -42,6 +42,16 @@ class RegisteredUserController extends Controller
             'email'    => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'phone'    => ['nullable', 'string', 'regex:/^[0-9]+$/', 'min:10', 'max:13'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ], [
+            'name.required'      => 'Nama lengkap wajib diisi.',
+            'email.required'     => 'Alamat email wajib diisi.',
+            'email.email'        => 'Alamat email harus menggunakan format yang valid dan mengandung \'@\' (contoh: nama@domain.com).',
+            'email.unique'       => 'Alamat email ini sudah terdaftar.',
+            'phone.regex'        => 'Nomor HP hanya boleh berisi angka.',
+            'phone.min'          => 'Nomor HP minimal 10 digit.',
+            'phone.max'          => 'Nomor HP maksimal 13 digit.',
+            'password.required'  => 'Kata sandi wajib diisi.',
+            'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
         ]);
 
         $user = User::create([

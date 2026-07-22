@@ -8,7 +8,7 @@
         </a>
 
         <!-- Desktop Navigation Links -->
-        <nav class="hidden md:flex items-center gap-1 text-sm font-semibold text-gray-600">
+        <nav class="hidden md:flex items-center gap-1.5 lg:gap-2.5 text-sm font-semibold text-gray-600">
             <a href="{{ route('home') }}"
                class="px-3 py-2 rounded-lg {{ request()->routeIs('home') ? 'text-[#CD422B] bg-red-50' : 'hover:text-[#CD422B] hover:bg-red-50' }} transition-all duration-200">Home</a>
             <a href="{{ route('about') }}"
@@ -17,9 +17,15 @@
                class="px-3 py-2 rounded-lg {{ request()->routeIs('products*') ? 'text-[#CD422B] bg-red-50' : 'hover:text-[#CD422B] hover:bg-red-50' }} transition-all duration-200">Product</a>
             <a href="{{ route('contact') }}"
                class="px-3 py-2 rounded-lg {{ request()->routeIs('contact') ? 'text-[#CD422B] bg-red-50' : 'hover:text-[#CD422B] hover:bg-red-50' }} transition-all duration-200">Contact Us</a>
+            @auth
+                @if(!Auth::user()->hasRole('admin') && !Auth::user()->isB2b())
+                    <a href="{{ route('orders.index') }}"
+                       class="px-3 py-2 rounded-lg {{ request()->routeIs('orders*') ? 'text-[#CD422B] bg-red-50' : 'hover:text-[#CD422B] hover:bg-red-50' }} transition-all duration-200">Pesanan Saya</a>
+                @endif
+            @endauth
 
             <!-- Separator -->
-            <div class="h-5 w-px bg-gray-200 mx-1"></div>
+            <div class="h-5 w-px bg-gray-200 mx-2 lg:mx-3"></div>
 
             <!-- ===== CART ICON with hover dropdown ===== -->
             @auth
@@ -42,31 +48,22 @@
                         </span>
                     </a>
 
-                    {{-- ===== 2-TAB DROPDOWN: Keranjang | Pesanan Saya ===== --}}
+                    {{-- ===== SINGLE DROPDOWN: Keranjang Belanja ===== --}}
                     <div id="cartDropdown"
-                         class="absolute right-0 top-full mt-2 w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50 opacity-0 invisible translate-y-2 transition-all duration-200 pointer-events-none">
+                         class="absolute right-0 top-full mt-2 w-88 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50 opacity-0 invisible translate-y-2 transition-all duration-200 pointer-events-none">
 
-                        {{-- Tab Headers --}}
-                        <div class="flex border-b border-gray-100">
-                            <button id="tabCartBtn"
-                                    onclick="switchCartTab('cart')"
-                                    class="flex-1 py-3 text-xs font-bold border-b-2 transition-all duration-200 border-[#CD422B] text-[#CD422B]">
-                                🛒 Keranjang
-                            </button>
-                            <button id="tabOrderBtn"
-                                    onclick="switchCartTab('orders')"
-                                    class="flex-1 py-3 text-xs font-bold border-b-2 transition-all duration-200 border-transparent text-gray-400 hover:text-gray-700">
-                                📋 Pesanan Saya
-                            </button>
+                        {{-- Header Keranjang --}}
+                        <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50/80">
+                            <span class="text-xs font-bold text-gray-800 flex items-center gap-1.5 whitespace-nowrap">
+                                <svg class="w-4 h-4 text-[#CD422B] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                Keranjang Belanja
+                            </span>
+                            <span id="cartDropCount" class="text-[11px] font-semibold text-gray-400 whitespace-nowrap shrink-0">0 item</span>
                         </div>
 
-                        {{-- ====== TAB 1: Keranjang ====== --}}
+                        {{-- Cart Items --}}
                         <div id="tabCartPanel">
-                            <div class="flex items-center justify-between px-4 py-2.5 bg-gray-50/60">
-                                <span class="text-[11px] text-gray-500">Item di keranjang</span>
-                                <span id="cartDropCount" class="text-[11px] text-gray-400">0 item</span>
-                            </div>
-                            <div id="cartDropItems" class="max-h-56 overflow-y-auto divide-y divide-gray-50 px-1 py-1">
+                            <div id="cartDropItems" class="max-h-64 overflow-y-auto divide-y divide-gray-50 px-1 py-1">
                                 <div id="cartDropEmpty" class="flex flex-col items-center justify-center py-8 text-gray-400">
                                     <svg class="w-10 h-10 mb-2 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                                     <p class="text-xs font-medium">Keranjang kosong</p>
@@ -81,75 +78,6 @@
                                 <a href="{{ route('checkout.index') }}"
                                    class="block w-full bg-gradient-to-r from-[#CD422B] to-[#b83220] text-white text-center font-bold text-xs py-2.5 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
                                     Lanjut ke Checkout →
-                                </a>
-                            </div>
-                        </div>
-
-                        {{-- ====== TAB 2: Pesanan Saya ====== --}}
-                        <div id="tabOrderPanel" class="hidden">
-                            <div class="px-4 py-2.5 bg-gray-50/60 flex items-center justify-between">
-                                <span class="text-[11px] text-gray-500">Transaksi terbaru</span>
-                                <a href="{{ route('orders.index') }}" class="text-[11px] text-[#CD422B] font-bold hover:underline">Lihat Semua</a>
-                            </div>
-                            @auth
-                            @php
-                                $recentOrders = \App\Models\Order::where('user_id', auth()->id())
-                                    ->latest()->take(3)->get();
-                            @endphp
-                            @if($recentOrders->isNotEmpty())
-                            <div class="divide-y divide-gray-50">
-                                @foreach($recentOrders as $ro)
-                                @php
-                                    $roStatus = match($ro->status) {
-                                        'pending'    => ['label' => 'Menunggu Bayar', 'bg' => 'bg-amber-100',  'text' => 'text-amber-700'],
-                                        'confirmed'  => ['label' => 'Dikonfirmasi',    'bg' => 'bg-blue-100',   'text' => 'text-blue-700'],
-                                        'processing' => ['label' => 'Diproses',         'bg' => 'bg-purple-100', 'text' => 'text-purple-700'],
-                                        'shipped'    => ['label' => 'Dikirim',          'bg' => 'bg-indigo-100', 'text' => 'text-indigo-700'],
-                                        'delivered'  => ['label' => 'Selesai',          'bg' => 'bg-green-100',  'text' => 'text-green-700'],
-                                        default      => ['label' => 'Dibatalkan',       'bg' => 'bg-red-100',    'text' => 'text-red-700'],
-                                    };
-                                    $roItems = is_array($ro->items) ? $ro->items : json_decode((string) $ro->items, true) ?? [];
-                                @endphp
-                                <a href="{{ route('orders.show', $ro->order_id) }}"
-                                   class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition group">
-                                    {{-- Icon --}}
-                                    <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0 text-base">
-                                        {{ match($ro->status) {
-                                            'delivered'  => '🎉',
-                                            'shipped'    => '🚚',
-                                            'processing' => '📦',
-                                            'confirmed'  => '✅',
-                                            'cancelled'  => '❌',
-                                            default      => '⏳',
-                                        } }}
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-xs font-bold text-gray-800 font-mono truncate">{{ $ro->order_id }}</p>
-                                        <p class="text-[11px] text-gray-400 truncate">
-                                            {{ count($roItems) }} produk · {{ $ro->created_at->diffForHumans() }}
-                                        </p>
-                                    </div>
-                                    <div class="text-right flex-shrink-0">
-                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ $roStatus['bg'] }} {{ $roStatus['text'] }}">
-                                            {{ $roStatus['label'] }}
-                                        </span>
-                                        <p class="text-xs font-bold text-gray-700 mt-1">Rp {{ number_format($ro->total, 0, ',', '.') }}</p>
-                                    </div>
-                                </a>
-                                @endforeach
-                            </div>
-                            @else
-                            <div class="flex flex-col items-center justify-center py-8 text-gray-400">
-                                <span class="text-3xl mb-2">📋</span>
-                                <p class="text-xs font-medium">Belum ada pesanan</p>
-                                <p class="text-[11px] text-gray-300 mt-0.5">Mulai belanja sekarang!</p>
-                            </div>
-                            @endif
-                            @endauth
-                            <div class="border-t border-gray-100 px-4 py-3">
-                                <a href="{{ route('orders.index') }}"
-                                   class="block w-full bg-gray-50 border border-gray-200 text-gray-700 text-center font-bold text-xs py-2.5 rounded-xl hover:border-[#CD422B] hover:text-[#CD422B] transition">
-                                    Semua Pesanan →
                                 </a>
                             </div>
                         </div>
@@ -177,6 +105,9 @@
                                 <p class="text-xs font-bold text-gray-800">{{ Auth::user()->name }}</p>
                                 <p class="text-[11px] text-gray-400 truncate">{{ Auth::user()->email }}</p>
                             </div>
+                            @if(!Auth::user()->hasRole('admin') && !Auth::user()->isB2b())
+                                <x-dropdown-link :href="route('orders.index')">Pesanan Saya</x-dropdown-link>
+                            @endif
                             <x-dropdown-link :href="route('profile.edit')">Profil Saya</x-dropdown-link>
                             @if(Auth::user()->isB2b())
                                 <x-dropdown-link :href="route('b2b.dashboard')">Dashboard B2B</x-dropdown-link>
@@ -227,6 +158,9 @@
             <a href="{{ route('products.index') }}" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-red-50 hover:text-[#CD422B] transition">Product</a>
             <a href="{{ route('contact') }}" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-red-50 hover:text-[#CD422B] transition">Contact Us</a>
             @auth
+                @if(!Auth::user()->hasRole('admin') && !Auth::user()->isB2b())
+                    <a href="{{ route('orders.index') }}" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-red-50 hover:text-[#CD422B] transition">Pesanan Saya</a>
+                @endif
                 <div class="flex items-center gap-3 px-4 py-2.5 mt-1 border-t border-gray-100 pt-3">
                     <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=CD422B&color=fff&bold=true"
                          class="w-8 h-8 rounded-full" alt="Avatar">
@@ -358,31 +292,6 @@
     // Expose globally so product pages can call it after adding to cart
     window.refreshCartBadge = loadCartData;
 })();
-
-// ===== Tab switching: Keranjang ↔ Pesanan Saya =====
-function switchCartTab(tab) {
-    var cartPanel  = document.getElementById('tabCartPanel');
-    var orderPanel = document.getElementById('tabOrderPanel');
-    var cartBtn    = document.getElementById('tabCartBtn');
-    var orderBtn   = document.getElementById('tabOrderBtn');
-    if (!cartPanel || !orderPanel) return;
-
-    if (tab === 'cart') {
-        cartPanel.classList.remove('hidden');
-        orderPanel.classList.add('hidden');
-        cartBtn.classList.add('border-[#CD422B]', 'text-[#CD422B]');
-        cartBtn.classList.remove('border-transparent', 'text-gray-400');
-        orderBtn.classList.add('border-transparent', 'text-gray-400');
-        orderBtn.classList.remove('border-[#CD422B]', 'text-[#CD422B]');
-    } else {
-        orderPanel.classList.remove('hidden');
-        cartPanel.classList.add('hidden');
-        orderBtn.classList.add('border-[#CD422B]', 'text-[#CD422B]');
-        orderBtn.classList.remove('border-transparent', 'text-gray-400');
-        cartBtn.classList.add('border-transparent', 'text-gray-400');
-        cartBtn.classList.remove('border-[#CD422B]', 'text-[#CD422B]');
-    }
-}
 </script>
 
 {{-- ===== Chatbot Widget (muncul di semua halaman) ===== --}}

@@ -1,46 +1,59 @@
 @extends('admin.layout')
-@section('title', 'Daftar Transaksi')
+@section('title', 'Transaksi B2C')
 @section('subtitle', 'Manajemen pesanan dan pembayaran customer')
 
 @section('content')
-<div class="mb-5">
-    <h2 class="text-base font-bold text-gray-500">Transaksi B2C (E-Commerce)</h2>
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+    <div>
+        <h2 class="text-base font-bold text-gray-500">Transaksi B2C (E-Commerce)</h2>
+    </div>
+
+    <!-- Search Form -->
+    <form method="GET" action="{{ route('admin.orders.index') }}" class="flex items-center gap-2">
+        <input type="hidden" name="status" value="{{ request('status', 'all') }}">
+        <div class="relative w-full sm:w-72">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari Order ID / Nama..." 
+                   class="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#CD422B]/20 transition-all">
+            <svg class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        </div>
+        <button type="submit" class="bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 px-4 py-2 rounded-xl font-semibold text-sm transition-all whitespace-nowrap">
+            Cari
+        </button>
+        @if(request()->filled('search'))
+            <a href="{{ route('admin.orders.index', ['status' => request('status', 'all')]) }}" class="text-xs text-red-500 font-medium hover:underline whitespace-nowrap">Reset</a>
+        @endif
+    </form>
+</div>
+
+{{-- Filter Tabs (Disamakan dengan B2B) --}}
+<div class="flex gap-2 flex-wrap mb-6">
+    @php
+        $currentStatus = $status ?? request('status', 'all');
+        $tabs = [
+            'all'             => ['label' => 'Semua',             'count' => $counts['all'] ?? 0],
+            'pending_payment' => ['label' => 'Menunggu Bayar',    'count' => $counts['pending_payment'] ?? 0],
+            'paid_pending'    => ['label' => 'Perlu Diproses',     'count' => $counts['paid_pending'] ?? 0],
+            'processing'      => ['label' => 'Sedang Diproses',   'count' => $counts['processing'] ?? 0],
+            'shipped'         => ['label' => 'Dalam Pengiriman',  'count' => $counts['shipped'] ?? 0],
+            'delivered'       => ['label' => 'Selesai',           'count' => $counts['delivered'] ?? 0],
+            'cancelled'       => ['label' => 'Dibatalkan',        'count' => $counts['cancelled'] ?? 0],
+        ];
+    @endphp
+    @foreach($tabs as $key => $tab)
+    <a href="{{ route('admin.orders.index', array_merge(request()->except('page'), ['status' => $key])) }}"
+       class="px-4 py-2 rounded-full text-sm font-semibold border transition
+           {{ $currentStatus === $key
+               ? 'bg-[#CD422B] text-white border-[#CD422B]'
+               : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300' }}">
+        {{ $tab['label'] }}
+        @if($tab['count'] > 0)
+            <span class="ml-1 {{ $currentStatus === $key ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-700' }} px-2 py-0.5 rounded-full text-xs font-bold">{{ $tab['count'] }}</span>
+        @endif
+    </a>
+    @endforeach
 </div>
 
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-    
-    <!-- Top Controls -->
-    <div class="p-6 border-b border-gray-100 bg-gray-50/50">
-        <form method="GET" action="{{ route('admin.orders.index') }}" class="flex flex-col md:flex-row gap-4 justify-between items-center">
-            <input type="hidden" name="type" value="{{ request('type', 'b2c') }}">
-            
-            <div class="flex items-center gap-3 w-full md:w-auto">
-                <div class="relative w-full md:w-80">
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari Order ID / Nama..." 
-                           class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#CD422B]/20 transition-all">
-                    <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                </div>
-            </div>
-
-            <div class="flex items-center gap-2 w-full md:w-auto">
-                <select name="status" class="bg-white border border-gray-200 rounded-xl pl-4 pr-8 py-2.5 text-sm focus:ring-2 focus:ring-[#CD422B]/20 w-full md:w-48 transition-all">
-                    <option value="">Semua Status</option>
-                    <option value="paid_pending" {{ request('status') === 'paid_pending' ? 'selected' : '' }}>Lunas (Perlu Diproses)</option>
-                    <option value="processing" {{ request('status') === 'processing' ? 'selected' : '' }}>Sedang Diproses</option>
-                    <option value="shipped" {{ request('status') === 'shipped' ? 'selected' : '' }}>Sedang Dikirim</option>
-                    <option value="delivered" {{ request('status') === 'delivered' ? 'selected' : '' }}>Selesai</option>
-                    <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
-                </select>
-                <button type="submit" class="bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all whitespace-nowrap">
-                    Terapkan
-                </button>
-                @if(request()->hasAny(['search', 'status']))
-                    <a href="{{ route('admin.orders.index') }}" class="text-xs text-red-500 font-medium hover:underline whitespace-nowrap">Reset</a>
-                @endif
-            </div>
-
-        </form>
-    </div>
 
     <!-- Table -->
     <div class="overflow-x-auto">
@@ -113,6 +126,14 @@
                                 <span class="inline-flex items-center px-2 py-0.5 rounded border text-[10px] font-semibold {{ $shipStyle }}">
                                     🚚 {{ $shipLabel }}
                                 </span>
+
+                                {{-- SLA Indicator Badge --}}
+                                @if(in_array($order->status, ['pending', 'confirmed', 'processing'], true))
+                                    @php $sla = $order->sla_status_info; @endphp
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold {{ $sla['badge'] }}">
+                                        ⏱️ {{ $sla['label'] }}
+                                    </span>
+                                @endif
                             @endif
                         </div>
                     </td>

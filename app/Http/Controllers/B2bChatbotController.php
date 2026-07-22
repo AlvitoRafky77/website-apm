@@ -52,6 +52,10 @@ class B2bChatbotController extends Controller
             'alamat', 'lokasi', 'dimana', 'gudang', 'kantor', 'pekanbaru', 'panam', 'jam buka',
             'jam operasional', 'hari apa', 'tutup', 'operasional', 'alamatnya', 'posisi', 'map', 'maps',
         ],
+        'info_sla' => [
+            'sla', 'lama diproses', 'berapa lama', 'tenggat', 'cut off', 'cutoff', 'proses pengiriman',
+            'jam kerja', 'proses berapa lama', 'kapan dikirim', 'estimasi pengemasan', 'sla b2b',
+        ],
     ];
 
     private array $flows = [
@@ -61,11 +65,21 @@ class B2bChatbotController extends Controller
                 ['label' => '📦 Status Order',        'flow' => 'order_status'],
                 ['label' => '💳 Info Pembayaran',     'flow' => 'payment_info'],
                 ['label' => '🚚 Info Pengiriman',     'flow' => 'shipping_info'],
+                ['label' => '⏱️ SLA Pemrosesan (2-3 Hari)', 'flow' => 'info_sla'],
                 ['label' => '⚠️ Komplain & Dispute',  'flow' => 'complaint_info'],
                 ['label' => '🏢 Profil Mitra & MoU',   'flow' => 'account_info'],
                 ['label' => '🏅 Halal, NKV & Kualitas', 'flow' => 'sertifikasi'],
                 ['label' => '📍 Alamat & Jam Kerja',   'flow' => 'lokasi_operasional'],
                 ['label' => '📞 Hubungi AM Prioritas',  'flow' => 'contact_am'],
+            ],
+        ],
+
+        'info_sla' => [
+            'message' => "⏱️ **SLA Pemrosesan & Pengiriman B2B**\n\n**1. Jam Operasional & Cut-Off:**\n• Jam Layanan: Senin – Jumat, 08.00 – 17.00 WIB\n• Cut-off order & verifikasi: **17.00 WIB**\n\n**2. Standar SLA Pemrosesan B2B:**\n• **Penyiapan & QC Daging/Seafood B2B:** 2–3 Hari Kerja.\n• Terhitung sejak DP 50% diverifikasi Admin APM.\n\n**3. Estimasi Pengiriman Armada Beku:**\n• Pengiriman menggunakan armada *Cold Chain Truck* (-18°C).\n• Jadwal pengiriman dikonfirmasi langsung oleh Account Manager (AM) Anda.",
+            'buttons' => [
+                ['label' => '🚚 Status Pengiriman', 'flow' => 'shipping_info'],
+                ['label' => '📞 Hubungi AM Prioritas', 'flow' => 'contact_am'],
+                ['label' => '🏠 Menu Utama',          'flow' => 'welcome'],
             ],
         ],
 

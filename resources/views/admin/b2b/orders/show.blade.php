@@ -283,7 +283,9 @@
             </div>
             @endif
 
-            <form method="POST" action="{{ route('admin.b2b.orders.approve-review', $order->order_number) }}">
+            <form method="POST" 
+                  action="{{ route('admin.b2b.orders.approve-review', $order->order_number) }}"
+                  onsubmit="return confirm('Apakah Anda yakin biaya ongkir sebesar Rp ' + new Intl.NumberFormat('id-ID').format(document.getElementById('shipping_cost_input').value || 0) + ' sudah benar?\n\nTotal pesanan dan DP mitra akan otomatis dihitung ulang setelah disimpan.');">
                 @csrf
                 <div class="mb-4">
                     <label class="text-xs font-semibold text-gray-600 block mb-1.5">Biaya Ongkir (Rp)</label>

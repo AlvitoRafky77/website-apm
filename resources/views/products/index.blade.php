@@ -122,16 +122,40 @@
                         <!-- The Slider -->
                         <div x-ref="slider{{$category->id}}" class="flex gap-6 overflow-x-auto snap-x snap-mandatory py-4 scrollbar-hide px-2 md:px-4" style="scrollbar-width: none; -ms-overflow-style: none;">
                             @foreach($category->products as $item)
-                                <!-- Product Card (Minimalist) -->
+                                <!-- Product Card (Minimalist with High-Contrast Price & Stock) -->
                                 <a href="{{ route('product.show', $item->slug) }}" class="shrink-0 w-[240px] sm:w-[280px] bg-white rounded-2xl shadow-sm hover:shadow-lg transition-transform duration-300 snap-start overflow-hidden group/item cursor-pointer block transform hover:-translate-y-2">
                                     <div class="h-48 w-full bg-gray-100 overflow-hidden relative border-b border-gray-100">
                                         @if($item->image)
                                             <img src="{{ $item->image }}" class="w-full h-full object-cover group-hover/item:scale-105 transition-transform duration-500" alt="{{ $item->name }}">
                                         @endif
                                     </div>
-                                    <div class="p-6 text-center">
-                                        <h4 class="font-bold text-gray-900 text-base leading-snug mb-3 line-clamp-2 min-h-[3.25rem] border-b border-gray-100 pb-3">{{ $item->name }}</h4>
-                                        <p class="text-[13px] text-gray-500 leading-relaxed line-clamp-3 min-h-[3.75rem]">{{ $item->description }}</p>
+                                    <div class="p-5 text-center">
+                                        <h4 class="font-bold text-gray-900 text-base leading-snug mb-3 line-clamp-2 min-h-[2.5rem]">{{ $item->name }}</h4>
+                                        
+                                        <!-- Price & Stock Badges Container (Stacked Vertically) -->
+                                        <div class="flex flex-col items-center justify-center gap-1.5 mb-3">
+                                            <!-- Price Badge -->
+                                            <span class="inline-flex items-baseline gap-1 bg-red-50 text-[#CD422B] px-3 py-1 rounded-lg border border-red-100 font-extrabold text-xs sm:text-sm">
+                                                <span>Rp {{ number_format($item->price, 0, ',', '.') }}</span>
+                                                <span class="text-[10px] font-medium text-gray-500">/ {{ $item->unit ?? 'kg' }}</span>
+                                            </span>
+
+                                            <!-- Stock Badge (Below Price) -->
+                                            @if($item->stock_b2c > 0)
+                                                <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-lg border border-emerald-200 font-bold text-xs">
+                                                    <svg class="w-3 h-3 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                                    <span>Stok: {{ $item->stock_b2c }} KG</span>
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center bg-rose-50 text-rose-700 px-2.5 py-1 rounded-lg border border-rose-200 font-bold text-xs">
+                                                    Stok Habis
+                                                </span>
+                                            @endif
+                                        </div>
+
+                                        <div class="w-8 h-[2px] bg-gray-100 mx-auto mb-3"></div>
+
+                                        <p class="text-[12px] text-gray-500 leading-relaxed line-clamp-2 min-h-[2.25rem]">{{ $item->description }}</p>
                                     </div>
                                 </a>
                             @endforeach

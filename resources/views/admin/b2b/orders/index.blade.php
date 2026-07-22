@@ -89,17 +89,44 @@
                         <p class="text-xs text-gray-400 mt-0.5">DP: Rp {{ number_format($order->dp_amount, 0, ',', '.') }}</p>
                     </td>
                     <td class="px-6 py-4">
-                        <span class="px-3 py-1 rounded-full text-xs font-bold {{ $badge }}">
-                            {{ $order->status_label }}
-                        </span>
+                        <div class="flex flex-col gap-1.5 items-start">
+                            <span class="px-3 py-1 rounded-full text-xs font-bold {{ $badge }}">
+                                {{ $order->status_label }}
+                            </span>
+                            @if(in_array($order->status, ['dp_verified', 'in_transit'], true))
+                                @php $sla = $order->sla_status_info; @endphp
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold {{ $sla['badge'] }}">
+                                    {{ $sla['label'] }}
+                                </span>
+                            @endif
+                        </div>
                     </td>
                     <td class="px-6 py-4">
-                        @if($order->dispute_status === 'none')
-                            <span class="text-xs text-gray-300">—</span>
-                        @else
-                            <span class="px-2 py-1 rounded-full text-[10px] font-bold bg-orange-100 text-orange-700">
+                        @if($order->dispute_status && $order->dispute_status !== 'none')
+                            @php
+                                $dispClass = match($order->dispute_status) {
+                                    'open'      => 'bg-red-100 text-red-700 border border-red-200',
+                                    'reviewing' => 'bg-amber-100 text-amber-800 border border-amber-200',
+                                    'resolved'  => 'bg-emerald-100 text-emerald-800 border border-emerald-200',
+                                    'rejected'  => 'bg-gray-100 text-gray-700 border border-gray-200',
+                                    default     => 'bg-orange-100 text-orange-700'
+                                };
+                            @endphp
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold {{ $dispClass }}">
                                 {{ $order->dispute_status_label }}
                             </span>
+                        @elseif($order->inspection_status === 'damaged')
+                            @if($order->status === 'completed' || $order->status === 'settlement_verified')
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-teal-50 text-teal-700 border border-teal-200">
+                                    ✅ Klaim Ditangani
+                                </span>
+                            @else
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-orange-100 text-orange-800 border border-orange-200">
+                                    ⚠️ Ada Kerusakan
+                                </span>
+                            @endif
+                        @else
+                            <span class="text-xs text-gray-300 font-mono">—</span>
                         @endif
                     </td>
                     <td class="px-6 py-4 text-right">

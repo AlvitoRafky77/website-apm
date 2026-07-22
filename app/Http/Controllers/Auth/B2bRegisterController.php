@@ -48,6 +48,7 @@ class B2bRegisterController extends Controller
             'company_address.required' => 'Alamat perusahaan wajib diisi.',
             'pic_name.required'        => 'Nama PIC wajib diisi.',
             'email.required'           => 'Alamat email wajib diisi.',
+            'email.email'              => 'Alamat email harus menggunakan format yang valid dan mengandung \'@\' (contoh: email@perusahaan.com).',
             'email.unique'             => 'Email ini sudah terdaftar.',
             'phone.required'           => 'Nomor telepon wajib diisi.',
             'phone.regex'              => 'Nomor telepon hanya boleh berisi angka.',

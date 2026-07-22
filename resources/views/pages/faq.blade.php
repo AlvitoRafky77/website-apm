@@ -90,8 +90,9 @@
                 @foreach([
                     ['q' => 'Bagaimana cara mendaftar sebagai pelanggan B2C?', 'a' => 'Klik tombol "Daftar" di pojok kanan atas, lalu pilih "Daftar sebagai Pelanggan (B2C)". Isi data diri Anda (nama, email, password, nomor HP) lalu klik Daftar. Akun Anda langsung aktif dan bisa digunakan untuk belanja.'],
                     ['q' => 'Bagaimana cara melakukan pemesanan?', 'a' => 'Setelah login, buka halaman Produk, klik produk yang diinginkan, lalu tambahkan ke keranjang. Setelah selesai memilih, buka keranjang dan lanjutkan ke halaman Checkout untuk menyelesaikan pembayaran.'],
+                    ['q' => 'Berapa lama batas waktu pemrosesan pesanan B2C (SLA)?', 'a' => 'Batas waktu pemrosesan pesanan (Processing SLA) untuk pelanggan retail B2C adalah maksimal 2×24 jam kerja (48 jam) terhitung sejak pembayaran terverifikasi. Jika pesanan belum diproses melebihi SLA, sistem akan membatalkan pesanan secara otomatis (auto-cancel), mengembalikan stok, dan memproses refund dana Midtrans.'],
                     ['q' => 'Metode pembayaran apa yang tersedia?', 'a' => 'Kami menggunakan payment gateway Midtrans yang mendukung berbagai metode pembayaran seperti transfer bank, e-wallet (GoPay, ShopeePay), kartu kredit/debit, dan virtual account dari berbagai bank.'],
-                    ['q' => 'Bagaimana cara mengecek status pesanan saya?', 'a' => 'Setelah login, buka menu "Pesanan Saya" untuk melihat seluruh riwayat dan status pesanan Anda secara real-time, mulai dari pembayaran, proses pengiriman, hingga pesanan selesai.'],
+                    ['q' => 'Bagaimana cara mengecek status pesanan saya?', 'a' => 'Setelah login, buka menu "Pesanan Saya" di navbar untuk melihat seluruh riwayat dan status pesanan Anda secara real-time, mulai dari pembayaran, proses pengiriman, hingga pesanan selesai.'],
                 ] as $faq)
                 @include('pages._faq_item', $faq)
                 @endforeach
@@ -102,6 +103,7 @@
                 @foreach([
                     ['q' => 'Bagaimana cara mendaftar sebagai Mitra B2B?', 'a' => 'Klik "Daftar" lalu pilih "Daftar sebagai Mitra B2B". Lengkapi data PIC, data perusahaan, dan upload dokumen MoU. Setelah dikirim, status pendaftaran Anda akan ditinjau oleh Admin. Jika disetujui, Anda akan menerima email berisi kredensial akun B2B.'],
                     ['q' => 'Berapa minimum pembelian untuk B2B?', 'a' => 'Minimum pembelian B2B adalah 1 Ton (1.000 KG) per transaksi dan maksimum 10 Ton (10.000 KG) per transaksi.'],
+                    ['q' => 'Berapa lama SLA pemrosesan pesanan B2B?', 'a' => 'SLA pemrosesan pesanan B2B adalah 2–3 hari kerja terhitung sejak DP 50% diverifikasi Admin APM. Waktu ini digunakan untuk penyiapan stok dingin, QC suhu, dan penjadwalan armada Cold Chain Truck.'],
                     ['q' => 'Bagaimana sistem pembayaran B2B?', 'a' => 'Sistem pembayaran B2B menggunakan skema DP 50% di awal untuk konfirmasi order, lalu pelunasan 50% sisanya sebelum barang diturunkan dari armada. Bukti transfer wajib diupload melalui portal B2B.'],
                     ['q' => 'Apakah ada fitur inspeksi barang untuk B2B?', 'a' => 'Ya, setelah barang tiba, mitra B2B dapat melakukan inspeksi dan melaporkan kondisi barang melalui portal. Jika ditemukan kerusakan, sistem dispute akan diproses oleh Admin untuk penyelesaian.'],
                 ] as $faq)
@@ -112,9 +114,10 @@
             {{-- FAQ: Pengiriman --}}
             <div id="group-pengiriman" class="faq-group space-y-3">
                 @foreach([
-                    ['q' => 'Bagaimana sistem pengiriman APM?', 'a' => 'Untuk B2C, pengiriman menggunakan jasa kurir pihak ketiga (Lalamove). Untuk B2B, pengiriman menggunakan armada pendingin milik APM sendiri untuk menjaga kualitas produk selama perjalanan.'],
-                    ['q' => 'Berapa lama estimasi pengiriman?', 'a' => 'Estimasi pengiriman B2C tergantung jarak dan layanan kurir yang dipilih saat checkout. Untuk B2B, jadwal pengiriman akan dikonfirmasi oleh Admin setelah DP diverifikasi dan armada dijadwalkan.'],
-                    ['q' => 'Apakah ada biaya pengiriman?', 'a' => 'Ya, biaya pengiriman B2C dihitung otomatis saat checkout berdasarkan alamat tujuan. Untuk B2B, ongkos kirim armada APM akan diinformasikan terpisah saat proses order.'],
+                    ['q' => 'Bagaimana sistem pengiriman APM?', 'a' => 'Untuk B2C, pengiriman menggunakan jasa kurir pihak ketiga (Lalamove/RajaOngkir). Untuk B2B, pengiriman menggunakan armada pendingin (cold chain truck) milik APM sendiri untuk menjaga kualitas produk selama perjalanan.'],
+                    ['q' => 'Berapa jam cut-off pemrosesan pesanan gudang?', 'a' => 'Jam operasional gudang APM adalah Senin–Jumat pukul 08.00–17.00 WIB dengan cut-off pemrosesan pukul 17.00 WIB. Pesanan atau pembayaran yang dikonfirmasi setelah pukul 17.00 WIB atau pada hari libur/akhir pekan akan diproses pada hari kerja berikutnya.'],
+                    ['q' => 'Berapa lama estimasi pengiriman?', 'a' => 'Estimasi pengiriman B2C tergantung jarak dan layanan kurir yang dipilih saat checkout. Untuk B2B (SLA 2-3 hari kerja), jadwal pengiriman akan dikonfirmasi oleh Admin setelah DP diverifikasi dan armada dijadwalkan.'],
+                    ['q' => 'Apakah ada biaya pengiriman?', 'a' => 'Ya, biaya pengiriman B2C dihitung otomatis saat checkout berdasarkan alamat tujuan. Untuk B2B, ongkos kirim armada APM dihitung berdasarkan tarif per-KG kota tujuan dan otomatis dikalkulasi saat review order.'],
                 ] as $faq)
                 @include('pages._faq_item', $faq)
                 @endforeach

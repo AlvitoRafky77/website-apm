@@ -25,34 +25,58 @@ class AdminOrderController extends Controller
      */
     public function index(Request $request)
     {
-        $type  = $request->input('type', 'b2c');
-        $query = Order::with('user')->latest();
+        $type      = $request->input('type', 'b2c');
+        $baseQuery = Order::with('user')->latest();
 
         if ($type === 'b2b') {
-            $query->whereHas('user', fn($q) => $q->where('user_type', 'b2b'));
+            $baseQuery->whereHas('user', fn($q) => $q->where('user_type', 'b2b'));
         } else {
-            $query->whereHas('user', fn($q) => $q->where('user_type', '!=', 'b2b')->orWhereNull('user_type'));
+            $baseQuery->whereHas('user', fn($q) => $q->where('user_type', '!=', 'b2b')->orWhereNull('user_type'));
         }
+
+        // Calculate counts for B2C status tabs
+        $counts = [
+            'all'             => (clone $baseQuery)->count(),
+            'pending_payment' => (clone $baseQuery)->where('payment_status', 'pending')->where('status', '!=', 'cancelled')->count(),
+            'paid_pending'    => (clone $baseQuery)->where('payment_status', 'paid')->whereIn('status', ['pending', 'confirmed'])->count(),
+            'processing'      => (clone $baseQuery)->where('status', 'processing')->count(),
+            'shipped'         => (clone $baseQuery)->where('status', 'shipped')->count(),
+            'delivered'       => (clone $baseQuery)->where('status', 'delivered')->count(),
+            'cancelled'       => (clone $baseQuery)->where(function($q) {
+                $q->where('status', 'cancelled')
+                  ->orWhereIn('payment_status', ['failed', 'expired', 'cancelled']);
+            })->count(),
+        ];
+
+        $status = $request->input('status', 'all');
+        $query  = clone $baseQuery;
 
         if ($request->filled('search')) {
             $search = $request->input('search');
-
             $query->where(function ($q) use ($search) {
                 $q->where('order_id', 'like', '%' . $search . '%')
                   ->orWhere('recipient_name', 'like', '%' . $search . '%');
             });
         }
 
-        if ($request->filled('status')) {
-            if ($request->status === 'paid_pending') {
-                $query->where('payment_status', 'paid')->where('status', 'pending');
+        if ($status && $status !== 'all') {
+            if ($status === 'pending_payment') {
+                $query->where('payment_status', 'pending')->where('status', '!=', 'cancelled');
+            } elseif ($status === 'paid_pending') {
+                $query->where('payment_status', 'paid')->whereIn('status', ['pending', 'confirmed']);
+            } elseif ($status === 'cancelled') {
+                $query->where(function($q) {
+                    $q->where('status', 'cancelled')
+                      ->orWhereIn('payment_status', ['failed', 'expired', 'cancelled']);
+                });
             } else {
-                $query->where('status', $request->status);
+                $query->where('status', $status);
             }
         }
 
         $orders = $query->paginate(20)->withQueryString();
-        return view('admin.orders.index', compact('orders'));
+
+        return view('admin.orders.index', compact('orders', 'counts', 'status'));
     }
 
     /**
