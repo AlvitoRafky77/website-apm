@@ -42,11 +42,11 @@ class ChatbotController extends Controller
         ],
 
         'info_sla' => [
-            'message' => "⏱️ **SLA Layanan & Pengiriman APM**\n\n**1. Jam Operasional Gudang & Cut-Off:**\n• Jam Operasional: Senin – Jumat, 08.00 – 17.00 WIB\n• Order setelah pukul **17.00 WIB** / akhir pekan diproses hari kerja berikutnya.\n\n**2. Waktu Proses Pengemasan (Processing SLA):**\n• **B2C (Retail):** Maksimal **2×24 jam kerja (48 jam)** setelah pembayaran diverifikasi.\n• **B2B (Mitra):** Maksimal **2–3 hari kerja** (penyiapan stok & jadwal armada cold storage).\n\n**3. Garansi SLA & Auto-Cancel:**\n• Pesanan B2C lunas yang belum diproses melebihi SLA (2×24 jam kerja) akan **otomatis dibatalkan oleh sistem**, stok dipulihkan, dan status refund diproses.\n\n**4. Estimasi Pengiriman (Delivery Time):**\n• Mengikuti estimasi kurir (RajaOngkir/Lalamove) atau armada beku APM.",
+            'message' => "⏱️ **SLA Layanan & Pengiriman APM**\n\n**1. Jam Operasional Gudang & Cut-Off:**\n• Jam Operasional: Senin – Jumat, 08.00 – 17.00 WIB\n• Order setelah pukul **17.00 WIB** / akhir pekan diproses hari kerja berikutnya.\n\n**2. Waktu Proses Pengemasan (Processing SLA):**\n• **B2C (Retail):** Maksimal **2×24 jam kerja (48 jam)** setelah pembayaran diverifikasi.\n• **B2B (Mitra):** Review & Ongkir 1×24 jam kerja; Penyiapan stok & armada 2–3 hari kerja.\n\n**3. Garansi SLA & Auto-Cancel:**\n• Pesanan B2C lunas yang belum diproses melebihi SLA (2×24 jam kerja) akan **otomatis dibatalkan oleh sistem**, stok dipulihkan, dan status refund diproses.\n\n**4. Bantuan Keterlambatan Verifikasi / Pemrosesan:**\n• Jika pesanan Anda membutuhkan konfirmasi atau penanganan mendesak, Anda disarankan untuk **langsung menghubungi Admin CS via WhatsApp (+62 812-3456-7890)** atau Formulir Kontak di website dengan menyertakan Nomor Pesanan.",
             'buttons' => [
-                ['label' => '🚚 Info Armada & Ongkir', 'flow' => 'info_pengiriman'],
-                ['label' => '📞 Hubungi Admin CS',      'flow' => 'hubungi_admin'],
-                ['label' => '🏠 Menu Utama',           'flow' => 'welcome'],
+                ['label' => '📞 Chat Admin CS (WhatsApp)', 'flow' => 'hubungi_admin'],
+                ['label' => '🚚 Info Armada & Ongkir',     'flow' => 'info_pengiriman'],
+                ['label' => '🏠 Menu Utama',                'flow' => 'welcome'],
             ],
         ],
 

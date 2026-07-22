@@ -75,11 +75,11 @@ class B2bChatbotController extends Controller
         ],
 
         'info_sla' => [
-            'message' => "⏱️ **SLA Pemrosesan & Pengiriman B2B**\n\n**1. Jam Operasional & Cut-Off:**\n• Jam Layanan: Senin – Jumat, 08.00 – 17.00 WIB\n• Cut-off order & verifikasi: **17.00 WIB**\n\n**2. Standar SLA Pemrosesan B2B:**\n• **Penyiapan & QC Daging/Seafood B2B:** 2–3 Hari Kerja.\n• Terhitung sejak DP 50% diverifikasi Admin APM.\n\n**3. Estimasi Pengiriman Armada Beku:**\n• Pengiriman menggunakan armada *Cold Chain Truck* (-18°C).\n• Jadwal pengiriman dikonfirmasi langsung oleh Account Manager (AM) Anda.",
+            'message' => "⏱️ **SLA Pemrosesan & Pengiriman B2B**\n\n**1. Jam Operasional & Cut-Off:**\n• Jam Layanan: Senin – Jumat, 08.00 – 17.00 WIB\n• Cut-off order & verifikasi: **17.00 WIB**\n\n**2. Tahap Pemrosesan & SLA B2B:**\n• **Review Order & Hitung Ongkir Kota:** Maksimal **1×24 jam kerja** oleh Admin.\n• **Penyiapan & Cold Storage QC:** **2–3 hari kerja** terhitung setelah DP 50% diverifikasi Admin APM.\n\n**3. Kendala Verifikasi & Bantuan Khusus:**\n• Jika pesanan B2B Anda belum di-review, belum diinputkan ongkir, atau DP belum terverifikasi melebihi 1–2 hari kerja, Anda disarankan untuk **langsung menghubungi Account Manager (AM) Prioritas** via WhatsApp CS (+62 812-3456-7890) atau Formulir Kontak di website dengan menyertakan Nomor Order B2B Anda.",
             'buttons' => [
-                ['label' => '🚚 Status Pengiriman', 'flow' => 'shipping_info'],
-                ['label' => '📞 Hubungi AM Prioritas', 'flow' => 'contact_am'],
-                ['label' => '🏠 Menu Utama',          'flow' => 'welcome'],
+                ['label' => '📞 Hubungi AM Prioritas (WA)', 'flow' => 'contact_am'],
+                ['label' => '🚚 Status Pengiriman',        'flow' => 'shipping_info'],
+                ['label' => '🏠 Menu Utama',                 'flow' => 'welcome'],
             ],
         ],
 
