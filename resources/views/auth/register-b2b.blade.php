@@ -36,7 +36,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('register.b2b.store') }}" enctype="multipart/form-data" id="form-b2b">
+    <form method="POST" action="{{ route('register.b2b.store') }}" enctype="multipart/form-data" id="form-b2b" novalidate>
         @csrf
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -56,47 +56,58 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {{-- Nama Perusahaan --}}
                         <div class="sm:col-span-2">
-                            <x-input-label for="company_name" :value="__('Nama Perusahaan')" />
+                            <x-input-label for="company_name" :value="__('Nama Perusahaan *')" />
                             <x-text-input id="company_name" class="block mt-1 w-full" type="text"
                                 name="company_name" :value="old('company_name')" required
                                 placeholder="Contoh: PT Maju Bersama" />
+                            <div id="err-company_name" class="hidden text-xs text-red-600 font-semibold mt-1 flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <span class="err-text">Nama perusahaan wajib diisi.</span>
+                            </div>
                             <x-input-error :messages="$errors->get('company_name')" class="mt-1" />
                         </div>
 
                         {{-- Jenis Perusahaan --}}
                         <div>
-                            <x-input-label for="company_type" :value="__('Jenis Perusahaan')" />
+                            <x-input-label for="company_type" :value="__('Jenis Perusahaan *')" />
                             <select id="company_type" name="company_type" required
                                 class="block mt-1 w-full border-gray-300 focus:border-[#CD422B] focus:ring-[#CD422B] rounded-md shadow-sm text-sm">
                                 @foreach(['PT','CV','UD','Firma','Koperasi','Perorangan','Lainnya'] as $type)
                                     <option value="{{ $type }}" {{ old('company_type') == $type ? 'selected' : '' }}>{{ $type }}</option>
                                 @endforeach
                             </select>
+                            <div id="err-company_type" class="hidden text-xs text-red-600 font-semibold mt-1 flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <span class="err-text">Jenis perusahaan wajib dipilih.</span>
+                            </div>
                             <x-input-error :messages="$errors->get('company_type')" class="mt-1" />
                         </div>
 
                         {{-- NPWP --}}
                         <div>
-                            <x-input-label for="npwp" :value="__('NPWP Perusahaan')" />
+                            <x-input-label for="npwp" :value="__('NPWP Perusahaan (opsional)')" />
                             <x-text-input id="npwp" class="block mt-1 w-full" type="text"
                                 name="npwp" :value="old('npwp')"
                                 placeholder="00.000.000.0-000.000" />
-                            <p class="text-xs text-gray-400 mt-1">Opsional</p>
                             <x-input-error :messages="$errors->get('npwp')" class="mt-1" />
                         </div>
 
                         {{-- Alamat --}}
                         <div class="sm:col-span-2">
-                            <x-input-label for="company_address" :value="__('Alamat Perusahaan')" />
+                            <x-input-label for="company_address" :value="__('Alamat Perusahaan *')" />
                             <textarea id="company_address" name="company_address" rows="3" required
                                 class="block mt-1 w-full border-gray-300 focus:border-[#CD422B] focus:ring-[#CD422B] rounded-md shadow-sm text-sm"
                                 placeholder="Jalan, Kelurahan, Kecamatan ...">{{ old('company_address') }}</textarea>
+                            <div id="err-company_address" class="hidden text-xs text-red-600 font-semibold mt-1 flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <span class="err-text">Alamat perusahaan wajib diisi.</span>
+                            </div>
                             <x-input-error :messages="$errors->get('company_address')" class="mt-1" />
                         </div>
 
                         {{-- Kota --}}
                         <div>
-                            <x-input-label for="company_city" :value="__('Kota')" />
+                            <x-input-label for="company_city" :value="__('Kota (opsional)')" />
                             <x-text-input id="company_city" class="block mt-1 w-full" type="text"
                                 name="company_city" :value="old('company_city')" placeholder="Pekanbaru" />
                             <x-input-error :messages="$errors->get('company_city')" class="mt-1" />
@@ -104,7 +115,7 @@
 
                         {{-- Provinsi --}}
                         <div>
-                            <x-input-label for="company_province" :value="__('Provinsi')" />
+                            <x-input-label for="company_province" :value="__('Provinsi (opsional)')" />
                             <x-text-input id="company_province" class="block mt-1 w-full" type="text"
                                 name="company_province" :value="old('company_province')" placeholder="Riau" />
                             <x-input-error :messages="$errors->get('company_province')" class="mt-1" />
@@ -123,21 +134,25 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <x-input-label for="pic_name" :value="__('Nama PIC')" />
+                            <x-input-label for="pic_name" :value="__('Nama PIC *')" />
                             <x-text-input id="pic_name" class="block mt-1 w-full" type="text"
                                 name="pic_name" :value="old('pic_name')" required
                                 placeholder="Nama lengkap penanggung jawab" />
+                            <div id="err-pic_name" class="hidden text-xs text-red-600 font-semibold mt-1 flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <span class="err-text">Nama PIC wajib diisi.</span>
+                            </div>
                             <x-input-error :messages="$errors->get('pic_name')" class="mt-1" />
                         </div>
                         <div>
-                            <x-input-label for="pic_position" :value="__('Jabatan PIC')" />
+                            <x-input-label for="pic_position" :value="__('Jabatan PIC (opsional)')" />
                             <x-text-input id="pic_position" class="block mt-1 w-full" type="text"
                                 name="pic_position" :value="old('pic_position')"
                                 placeholder="Direktur, Manajer Pengadaan, dll." />
                             <x-input-error :messages="$errors->get('pic_position')" class="mt-1" />
                         </div>
                         <div>
-                            <x-input-label for="email" :value="__('Email Perusahaan')" />
+                            <x-input-label for="email" :value="__('Email Perusahaan *')" />
                             <x-text-input id="email" class="block mt-1 w-full" type="email"
                                 name="email" :value="old('email')" required
                                 placeholder="email@perusahaan.com" />
@@ -145,17 +160,24 @@
                                 <svg class="w-3.5 h-3.5 text-[#CD422B] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                 <span>Format email harus valid dan mengandung '@' (contoh: email@perusahaan.com).</span>
                             </div>
-                            <p class="text-xs text-gray-400 mt-1">Digunakan untuk login & notifikasi</p>
+                            <div id="err-email" class="hidden text-xs text-red-600 font-semibold mt-1 flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <span class="err-text">Email perusahaan wajib diisi.</span>
+                            </div>
                             <x-input-error :messages="$errors->get('email')" class="mt-1" />
                         </div>
                         <div>
-                            <x-input-label for="phone" :value="__('No. Telepon')" />
+                            <x-input-label for="phone" :value="__('No. Telepon *')" />
                             <x-text-input id="phone" class="block mt-1 w-full" type="tel"
                                 name="phone" :value="old('phone')" required
-                                placeholder="0761-xxxxxx" />
+                                placeholder="08123456789" />
                             <div class="field-hint">
                                 <svg class="w-3.5 h-3.5 text-[#CD422B] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                 <span>Nomor telepon berupa angka, panjang 10-13 digit.</span>
+                            </div>
+                            <div id="err-phone" class="hidden text-xs text-red-600 font-semibold mt-1 flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <span class="err-text">No. Telepon wajib diisi.</span>
                             </div>
                             <x-input-error :messages="$errors->get('phone')" class="mt-1" />
                         </div>
@@ -172,19 +194,27 @@
                     </h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <x-input-label for="password" :value="__('Kata Sandi')" />
+                            <x-input-label for="password" :value="__('Kata Sandi *')" />
                             <x-text-input id="password" class="block mt-1 w-full" type="password"
-                                name="password" required autocomplete="new-password" />
+                                name="password" required autocomplete="new-password" placeholder="Minimal 8 karakter" />
                             <div class="field-hint">
                                 <svg class="w-3.5 h-3.5 text-[#CD422B] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                 <span>Kata sandi minimal 8 karakter.</span>
                             </div>
+                            <div id="err-password" class="hidden text-xs text-red-600 font-semibold mt-1 flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <span class="err-text">Kata sandi wajib diisi.</span>
+                            </div>
                             <x-input-error :messages="$errors->get('password')" class="mt-1" />
                         </div>
                         <div>
-                            <x-input-label for="password_confirmation" :value="__('Konfirmasi Kata Sandi')" />
+                            <x-input-label for="password_confirmation" :value="__('Konfirmasi Kata Sandi *')" />
                             <x-text-input id="password_confirmation" class="block mt-1 w-full" type="password"
-                                name="password_confirmation" required autocomplete="new-password" />
+                                name="password_confirmation" required autocomplete="new-password" placeholder="Ulangi kata sandi" />
+                            <div id="err-password_confirmation" class="hidden text-xs text-red-600 font-semibold mt-1 flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <span class="err-text">Konfirmasi kata sandi wajib diisi.</span>
+                            </div>
                             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-1" />
                         </div>
                     </div>
@@ -266,7 +296,7 @@
                     {{-- Terms & Submit Card --}}
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                         {{-- Agree Terms --}}
-                        <div class="flex items-start gap-3 mb-5">
+                        <div class="flex items-start gap-3 mb-2">
                             <input id="agree_terms" type="checkbox" name="agree_terms" value="1" required
                                 class="mt-0.5 w-4 h-4 text-[#CD422B] border-gray-300 rounded focus:ring-[#CD422B] shrink-0">
                             <label for="agree_terms" class="text-xs text-gray-600 leading-relaxed">
@@ -275,7 +305,11 @@
                                 serta bersedia menandatangani Surat Perjanjian (MOU) dengan PT. Agro Pangan Maju.
                             </label>
                         </div>
-                        <x-input-error :messages="$errors->get('agree_terms')" class="-mt-3 mb-3" />
+                        <div id="err-agree_terms" class="hidden text-xs text-red-600 font-semibold mb-4 flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span class="err-text">Anda harus menyetujui syarat & ketentuan.</span>
+                        </div>
+                        <x-input-error :messages="$errors->get('agree_terms')" class="-mt-1 mb-3" />
 
                         <button type="submit" id="btn-submit-b2b"
                             class="w-full flex items-center justify-center gap-2 bg-[#CD422B] hover:bg-red-700 text-white font-bold text-sm px-6 py-3.5 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5">
@@ -326,7 +360,7 @@
                         ? fullName.substring(fullName.lastIndexOf('.'))
                         : '';
                     const nameWithoutExt = fullName.substring(0, fullName.length - ext.length);
-                    const charsToShow = maxLen - ext.length - 3; // 3 for "..."
+                    const charsToShow = maxLen - ext.length - 3;
                     displayName = nameWithoutExt.substring(0, charsToShow) + '...' + ext;
                 }
 
@@ -334,6 +368,156 @@
                 label.classList.remove('hidden');
             }
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('form-b2b');
+            if (!form) return;
+
+            function showError(id, msg) {
+                const errBox = document.getElementById('err-' + id);
+                const input = document.getElementById(id);
+                if (errBox) {
+                    const textSpan = errBox.querySelector('.err-text');
+                    if (textSpan) textSpan.textContent = msg;
+                    errBox.classList.remove('hidden');
+                }
+                if (input) {
+                    input.classList.add('border-red-500', 'bg-red-50/40');
+                }
+            }
+
+            function clearError(id) {
+                const errBox = document.getElementById('err-' + id);
+                const input = document.getElementById(id);
+                if (errBox) errBox.classList.add('hidden');
+                if (input) input.classList.remove('border-red-500', 'bg-red-50/40');
+            }
+
+            ['company_name', 'company_type', 'company_address', 'pic_name', 'email', 'phone', 'password', 'password_confirmation', 'agree_terms'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    const evt = el.type === 'checkbox' ? 'change' : 'input';
+                    el.addEventListener(evt, () => clearError(id));
+                }
+            });
+
+            form.addEventListener('submit', function(e) {
+                let hasError = false;
+                let firstErrorInput = null;
+
+                // Company Name
+                const cName = document.getElementById('company_name');
+                if (!cName || !cName.value.trim()) {
+                    showError('company_name', 'Nama perusahaan wajib diisi.');
+                    hasError = true;
+                    if (!firstErrorInput) firstErrorInput = cName;
+                } else {
+                    clearError('company_name');
+                }
+
+                // Company Address
+                const cAddr = document.getElementById('company_address');
+                if (!cAddr || !cAddr.value.trim()) {
+                    showError('company_address', 'Alamat perusahaan wajib diisi.');
+                    hasError = true;
+                    if (!firstErrorInput) firstErrorInput = cAddr;
+                } else {
+                    clearError('company_address');
+                }
+
+                // PIC Name
+                const pName = document.getElementById('pic_name');
+                if (!pName || !pName.value.trim()) {
+                    showError('pic_name', 'Nama PIC wajib diisi.');
+                    hasError = true;
+                    if (!firstErrorInput) firstErrorInput = pName;
+                } else {
+                    clearError('pic_name');
+                }
+
+                // Email
+                const emailEl = document.getElementById('email');
+                const emailVal = emailEl ? emailEl.value.trim() : '';
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailVal) {
+                    showError('email', 'Email perusahaan wajib diisi.');
+                    hasError = true;
+                    if (!firstErrorInput) firstErrorInput = emailEl;
+                } else if (!emailRegex.test(emailVal)) {
+                    showError('email', 'Format email harus valid dan mengandung "@" (contoh: email@perusahaan.com).');
+                    hasError = true;
+                    if (!firstErrorInput) firstErrorInput = emailEl;
+                } else {
+                    clearError('email');
+                }
+
+                // Phone
+                const phoneEl = document.getElementById('phone');
+                const phoneVal = phoneEl ? phoneEl.value.trim() : '';
+                if (!phoneVal) {
+                    showError('phone', 'No. Telepon wajib diisi.');
+                    hasError = true;
+                    if (!firstErrorInput) firstErrorInput = phoneEl;
+                } else if (!/^[0-9]+$/.test(phoneVal)) {
+                    showError('phone', 'No. Telepon hanya boleh berupa angka.');
+                    hasError = true;
+                    if (!firstErrorInput) firstErrorInput = phoneEl;
+                } else if (phoneVal.length < 10 || phoneVal.length > 13) {
+                    showError('phone', 'No. Telepon harus berkisar 10 - 13 digit angka.');
+                    hasError = true;
+                    if (!firstErrorInput) firstErrorInput = phoneEl;
+                } else {
+                    clearError('phone');
+                }
+
+                // Password
+                const passEl = document.getElementById('password');
+                const passVal = passEl ? passEl.value : '';
+                if (!passVal) {
+                    showError('password', 'Kata sandi wajib diisi.');
+                    hasError = true;
+                    if (!firstErrorInput) firstErrorInput = passEl;
+                } else if (passVal.length < 8) {
+                    showError('password', 'Kata sandi minimal 8 karakter.');
+                    hasError = true;
+                    if (!firstErrorInput) firstErrorInput = passEl;
+                } else {
+                    clearError('password');
+                }
+
+                // Password Confirmation
+                const confirmEl = document.getElementById('password_confirmation');
+                const confirmVal = confirmEl ? confirmEl.value : '';
+                if (!confirmVal) {
+                    showError('password_confirmation', 'Konfirmasi kata sandi wajib diisi.');
+                    hasError = true;
+                    if (!firstErrorInput) firstErrorInput = confirmEl;
+                } else if (confirmVal !== passVal) {
+                    showError('password_confirmation', 'Konfirmasi kata sandi tidak cocok dengan kata sandi.');
+                    hasError = true;
+                    if (!firstErrorInput) firstErrorInput = confirmEl;
+                } else {
+                    clearError('password_confirmation');
+                }
+
+                // Agree terms
+                const agreeEl = document.getElementById('agree_terms');
+                if (agreeEl && !agreeEl.checked) {
+                    showError('agree_terms', 'Anda harus menyetujui syarat & ketentuan.');
+                    hasError = true;
+                    if (!firstErrorInput) firstErrorInput = agreeEl;
+                } else {
+                    clearError('agree_terms');
+                }
+
+                if (hasError) {
+                    e.preventDefault();
+                    if (firstErrorInput) {
+                        firstErrorInput.focus();
+                    }
+                }
+            });
+        });
     </script>
 
 </x-guest-b2b-layout>

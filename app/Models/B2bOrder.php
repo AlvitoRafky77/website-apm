@@ -141,7 +141,7 @@ class B2bOrder extends Model
     }
 
     /**
-     * Hitung indikator status SLA B2B (2-3 hari kerja dari DP terverifikasi)
+     * Hitung indikator status SLA B2B (2-3 hari kerja / 72 jam dari DP terverifikasi)
      */
     public function getSlaStatusInfoAttribute(): array
     {
@@ -149,18 +149,21 @@ class B2bOrder extends Model
             return ['badge' => 'bg-gray-100 text-gray-600', 'label' => '—'];
         }
 
-        $deadline = $this->dp_verified_at->copy()->addHours(72); // 3 hari kerja
-        $remainingHours = (int) now()->diffInHours($deadline, false);
+        $deadline = $this->dp_verified_at->copy()->addHours(72); // 3 hari kerja (72 jam)
+        $now = now();
 
-        if ($remainingHours < 0) {
-            return ['badge' => 'bg-red-100 text-red-700 border border-red-200 font-bold animate-pulse', 'label' => '⏱️ SLA 3 Hari Terlewat!'];
+        if ($now->greaterThan($deadline)) {
+            $overdueHours = (int) ceil($deadline->diffInMinutes($now) / 60);
+            return ['badge' => 'bg-red-100 text-red-700 border border-red-200 font-bold animate-pulse', 'label' => "⏱️ SLA Terlewat ({$overdueHours} Jam Lewat)"];
         }
 
-        if ($remainingHours <= 24) {
-            return ['badge' => 'bg-amber-100 text-amber-800 border border-amber-200 font-bold', 'label' => '⏱️ SLA Sisa ' . ceil($remainingHours) . ' Jam'];
+        $diffHours = (int) ceil($now->diffInMinutes($deadline) / 60);
+
+        if ($diffHours <= 24) {
+            return ['badge' => 'bg-amber-100 text-amber-800 border border-amber-200 font-bold', 'label' => "⏱️ SLA Segera Habis (Sisa {$diffHours} Jam)"];
         }
 
-        return ['badge' => 'bg-blue-50 text-blue-700 border border-blue-200', 'label' => '⏱️ SLA Armada Aman'];
+        return ['badge' => 'bg-blue-50 text-blue-700 border border-blue-200 font-bold', 'label' => "⏱️ SLA Armada Aman (Sisa {$diffHours} Jam)"];
     }
 
     public function canUploadDp(): bool
